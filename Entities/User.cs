@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Entities.Moderation;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,13 @@ namespace Entities
         public string Surname { get; set; }
         public char Gender { get; set; }
         public int Age { get; set; }
+        public string Status { get; set; }
+        public DateTime Created_at { get; set; }
+        public DateTime Uptaded_at { get; set; }
+
+
+        public ICollection<Ticket> ticket { get; set; }
+        public ICollection<AdminOperations> adminOperations { get; set; }
+        public ICollection<Log> log { get; set; }
     }
 }

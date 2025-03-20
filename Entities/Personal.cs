@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace Entities
 {
-    public class Airline
+    public class Personal
     {
         public int id { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
-        public string WebAdress { get; set; }
+        public string Surname { get; set; }
+        public string Role { get; set; }
+        public int Age { get; set; }
+        public char Gender { get; set; }
         public string PhoneNumber { get; set; }
-        public string MailAdress { get; set; }
-        public string Country { get; set; }
+        public DateOnly Start_Date { get; set; }
 
 
         public int airport_id { get; set; }
-        public ICollection<Flight> flight { get; set; }
         public Airport airport { get; set; }
     }
 }

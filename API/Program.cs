@@ -1,3 +1,12 @@
+﻿using DataAccess;
+using Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
+using Utilitys.Configuration;
+
 
 namespace API
 {
@@ -10,9 +19,87 @@ namespace API
             // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddDbContext<DataDbContext>();
+
+            builder.Services.Configure<JwtBearer>(builder.Configuration.GetSection("JwtBearer"));
+
+            builder.Services.AddIdentity<User, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+                options.SignIn.RequireConfirmedPhoneNumber = true;
+                options.SignIn.RequireConfirmedEmail = true;
+
+                options.Password.RequireDigit = true;  // Sayı zorunlu
+                options.Password.RequireLowercase = true;  // Küçük harf zorunlu
+                options.Password.RequireNonAlphanumeric = false;  // Alfasayısal olmayan karakter zorunlu
+                options.Password.RequireUppercase = true;  // Büyük harf zorunlu
+                options.Password.RequiredLength = 8;  // Minimum şifre uzunluğu
+                options.Password.RequiredUniqueChars = 0;  // Benzersiz karakter sayısı zorunlu
+
+                // Lockout ayarları
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);  // Hesap 5 dakika kilitlensin
+                options.Lockout.MaxFailedAccessAttempts = 5;  // Başarısız giriş denemesi sayısı
+                options.Lockout.AllowedForNewUsers = true;  // Yeni kullanıcılar için kilitleme uygulansın
+                
+                // Kullanıcı adı ayarları
+                options.User.RequireUniqueEmail = true;  // Her kullanıcı adı benzersiz olmalı
+                options.User.AllowedUserNameCharacters ="abcdefghýijklmnoöpqrsþtuüvwxyzABCDEFGHIÝJKLMNOÖPQRSTUÜVWXYZ0123456789-_";
+            }).AddEntityFrameworkStores<DataDbContext>().AddDefaultTokenProviders();
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(o =>
+            {
+                o.SaveToken = false;
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidIssuer = builder.Configuration["JwtBearer:Issuer"],
+                    ValidAudience = builder.Configuration["JwtBearer:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtBearer:Key"]))
+                };
+            });
+
+
+
+
+
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(opt =>
+            {
+                opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
+                opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "bearer"
+                });
+
+                opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+            });
 
             var app = builder.Build();
 
@@ -25,9 +112,17 @@ namespace API
 
             app.UseHttpsRedirection();
 
+            app.UseRouting(); 
+            app.UseAuthentication();  
             app.UseAuthorization();
 
-
+            /*
+            app.UseCors(builder =>
+                builder.WithOrigins("http://localhost:3000")
+                       .AllowAnyMethod()
+                       .AllowAnyHeader()
+                       .WithExposedHeaders("Authorization", "RefreshToken"));
+            */
             app.MapControllers();
 
             app.Run();
