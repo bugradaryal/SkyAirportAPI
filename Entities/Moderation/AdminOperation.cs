@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Entities.Moderation
 {
-    public class AdminOperations
+    public class AdminOperation
     {
         public int id { get; set; }
         public string Operation_type { get; set; }

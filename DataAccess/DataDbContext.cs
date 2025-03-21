@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Moderation;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -37,6 +38,8 @@ namespace DataAccess
         public DbSet<Airport> Airports { get; set; }
         public DbSet<Airline> Airlines { get; set; }
         public DbSet<Aircraft> Aircrafts { get; set; }
+        public DbSet<AdminOperation> AdminOperations { get; set; }
+        public DbSet<LogEntry> LogEntrys { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

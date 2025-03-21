@@ -1,12 +1,16 @@
 ﻿using DataAccess;
 using Entities;
+using Entities.Moderation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Threading.RateLimiting;
 using Utilitys.Configuration;
-
+using Serilog;
+using Serilog.Sinks.PostgreSQL;
+using DataAccess.LoggingSink;
 
 namespace API
 {
@@ -16,10 +20,47 @@ namespace API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            builder.WebHost.UseIISIntegration();
+            builder.Services.AddDbContext<DataDbContext>();
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.ListenAnyIP(7257, listenOptions =>
+                {
+                    listenOptions.UseHttps(); // HTTPS
+                });
+            });
+            builder.Services.AddScoped<DatabaseLogSink>();
+
+
+            var columnOptions = new Dictionary<string, ColumnWriterBase>
+            {
+                { "Level", new RenderedMessageColumnWriter() },  // Seviyenin yazılacağı kolon
+                { "Message", new RenderedMessageColumnWriter() }, // Mesajın yazılacağı kolon
+                { "Exception", new ExceptionColumnWriter() }, // İsteğe bağlı: Hata mesajı
+                { "Properties", new PropertiesColumnWriter() } // İsteğe bağlı: Ekstra log bilgileri
+            };
+
+            builder.Host.UseSerilog((context, services, loggerConfig) =>
+            {
+                // Scope oluşturuyoruz
+                using (var scope = services.CreateScope())
+                {
+                    // DbContext'i scoped olarak alıyoruz
+                    var dbContext = scope.ServiceProvider.GetRequiredService<DataDbContext>();
+
+                    // Log sink'i oluşturuyoruz
+                    loggerConfig
+                        .WriteTo.Console()
+                        .WriteTo.Sink(new DatabaseLogSink(dbContext))  // Veritabanına log yazma
+                        .Enrich.FromLogContext();
+                }
+            });
+
+            // Serilog yapılandırmasını ASP.NET Core uygulamasına entegre ediyoruz
+
 
             builder.Services.AddControllers();
-            builder.Services.AddDbContext<DataDbContext>();
+            
 
             builder.Services.Configure<JwtBearer>(builder.Configuration.GetSection("JwtBearer"));
 
@@ -67,8 +108,34 @@ namespace API
                 };
             });
 
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+                {
+                    var userIp = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
+                    if (httpContext.User.IsInRole("Admin"))
+                    {
+                        // Admin'lere loglama yapılmaz
+                        return RateLimitPartition.GetNoLimiter("AdminUser");
+                    }
 
+                    var userId = httpContext.User.Identity?.Name ?? userIp;
+
+                    // Loglama yapalım
+                    Serilog.Log.Information("User {UserId} is making a request from IP {UserIp}", userId, userIp);
+
+                    return RateLimitPartition.GetFixedWindowLimiter(
+                        userId,
+                        _ => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 10,
+                            Window = TimeSpan.FromSeconds(30),
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                            QueueLimit = 2
+                        });
+                });
+            });
 
 
             builder.Services.AddEndpointsApiExplorer();
@@ -111,18 +178,18 @@ namespace API
             }
 
             app.UseHttpsRedirection();
-
+            app.UseRateLimiter();
             app.UseRouting(); 
             app.UseAuthentication();  
             app.UseAuthorization();
 
-            /*
+            var allowedOrigins = builder.Configuration["CORS:Origin"].ToString();
             app.UseCors(builder =>
-                builder.WithOrigins("http://localhost:3000")
+                builder.WithOrigins(allowedOrigins)
                        .AllowAnyMethod()
                        .AllowAnyHeader()
                        .WithExposedHeaders("Authorization", "RefreshToken"));
-            */
+
             app.MapControllers();
 
             app.Run();

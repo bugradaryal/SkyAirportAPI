@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Entities.Moderation
 {
-    public class Log
+    public class LogEntry
     {
         public int id { get; set; }
         public DateTime Timestamp { get; set; }

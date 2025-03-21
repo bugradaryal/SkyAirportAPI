@@ -20,7 +20,7 @@ namespace Entities
 
 
         public ICollection<Ticket> ticket { get; set; }
-        public ICollection<AdminOperations> adminOperations { get; set; }
-        public ICollection<Log> log { get; set; }
+        public ICollection<AdminOperation> adminOperation { get; set; }
+        public ICollection<LogEntry> logEntry { get; set; }
     }
 }
