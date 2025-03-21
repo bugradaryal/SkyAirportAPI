@@ -14,7 +14,7 @@ namespace Entities
         public string Surname { get; set; }
         public char Gender { get; set; }
         public int Age { get; set; }
-        public string Status { get; set; }
+        public bool IsSuspended { get; set; }
         public DateTime Created_at { get; set; }
         public DateTime Uptaded_at { get; set; }
 

@@ -3,6 +3,7 @@ using Entities.Moderation;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace DataAccess
 {
@@ -44,7 +45,15 @@ namespace DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+            modelBuilder.Entity<User>().Property(x => x.Name).HasColumnType("nvarchar").IsRequired().HasMaxLength(64);
+            modelBuilder.Entity<User>().Property(x => x.Surname).HasColumnType("nvarchar").IsRequired().HasMaxLength(64);
+            modelBuilder.Entity<User>().Property(x => x.Gender).HasColumnType("char").HasDefaultValue("U");
+            modelBuilder.Entity<User>().Property(x => x.Age).IsRequired();
+            modelBuilder.Entity<User>().Property(x => x.IsSuspended).HasColumnType("boolean").HasDefaultValue(false);
+            modelBuilder.Entity<User>().Property(x => x.Created_at).HasColumnType("DATETIME").HasDefaultValue(DateTime.UtcNow);
+            modelBuilder.Entity<User>().Property(x => x.Uptaded_at).HasColumnType("DATETIME").HasDefaultValue(DateTime.UtcNow);
+            ////////////////////////////
+            
         }
     }
 }
