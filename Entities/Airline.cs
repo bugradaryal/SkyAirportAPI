@@ -13,7 +13,6 @@ namespace Entities
         public string Description { get; set; }
         public string WebAdress { get; set; }
         public string PhoneNumber { get; set; }
-        public string MailAdress { get; set; }
         public string Country { get; set; }
 
 

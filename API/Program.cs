@@ -10,7 +10,9 @@ using System.Threading.RateLimiting;
 using Utilitys.Configuration;
 using Serilog;
 using Serilog.Sinks.PostgreSQL;
-using DataAccess.LoggingSink;
+using DataAccess.LogManager;
+using Serilog.Core;
+using Microsoft.Extensions.Configuration;
 
 namespace API
 {
@@ -20,8 +22,11 @@ namespace API
         {
             var builder = WebApplication.CreateBuilder(args);
 
+
+            builder.Services.AddDbContext<DataDbContext>();  
+
+
             builder.WebHost.UseIISIntegration();
-            builder.Services.AddDbContext<DataDbContext>();
             builder.WebHost.ConfigureKestrel(options =>
             {
                 options.ListenAnyIP(7257, listenOptions =>
@@ -29,35 +34,15 @@ namespace API
                     listenOptions.UseHttps(); // HTTPS
                 });
             });
-            builder.Services.AddScoped<DatabaseLogSink>();
 
-
-            var columnOptions = new Dictionary<string, ColumnWriterBase>
+            builder.Services.AddScoped<DatabaseLogSink>(); // DatabaseLogSink'i DI container'a kaydediyoruz.
+            builder.Services.AddLogging(loggingBuilder =>
             {
-                { "Level", new RenderedMessageColumnWriter() },  // Seviyenin yazılacağı kolon
-                { "Message", new RenderedMessageColumnWriter() }, // Mesajın yazılacağı kolon
-                { "Exception", new ExceptionColumnWriter() }, // İsteğe bağlı: Hata mesajı
-                { "Properties", new PropertiesColumnWriter() } // İsteğe bağlı: Ekstra log bilgileri
-            };
-
-            builder.Host.UseSerilog((context, services, loggerConfig) =>
-            {
-                // Scope oluşturuyoruz
-                using (var scope = services.CreateScope())
-                {
-                    // DbContext'i scoped olarak alıyoruz
-                    var dbContext = scope.ServiceProvider.GetRequiredService<DataDbContext>();
-
-                    // Log sink'i oluşturuyoruz
-                    loggerConfig
-                        .WriteTo.Console()
-                        .WriteTo.Sink(new DatabaseLogSink(dbContext))  // Veritabanına log yazma
-                        .Enrich.FromLogContext();
-                }
+                loggingBuilder.AddSerilog(new LoggerConfiguration()
+                    .WriteTo.Console()  // Konsola log yazma (isteğe bağlı)
+                    .WriteTo.Sink(new DatabaseLogSink(builder.Services.BuildServiceProvider().GetRequiredService<DataDbContext>()))  // Burada lambda kullanmak yerine direkt olarak kullanıyoruz
+                    .CreateLogger());
             });
-
-            // Serilog yapılandırmasını ASP.NET Core uygulamasına entegre ediyoruz
-
 
             builder.Services.AddControllers();
             

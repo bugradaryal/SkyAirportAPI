@@ -13,12 +13,13 @@ namespace Entities
         public DateTime Last_Maintenance_Date { get; set; }
         public double Fuel_Capacity { get; set; }
         public double Max_Altitude { get; set; }
-        public double Engine_Power { get; set; }
+        public int Engine_Power { get; set; }
         public double Carry_Capacity { get; set; }
-        public string Status { get; set; }
 
 
-        public Flight_Aircraft flight_Aircraft { get; set; }
-        public Crew_Aircraft crew_Aircraft { get; set; }
+        public int aircraftStatus_id { get; set; }
+        public AircraftStatus aircraftStatus { get; set; }
+        public ICollection<Flight_Aircraft> flight_Aircraft { get; set; }
+        public ICollection<Crew_Aircraft> crew_Aircraft { get; set; }
     }
 }

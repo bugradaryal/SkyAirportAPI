@@ -13,7 +13,7 @@ namespace Entities
 
         public int crew_id { get; set; }
         public int aircraft_id { get; set; }
-        public ICollection<Aircraft> aircraft { get; set; }
-        public ICollection<Crew> crew { get; set; }
+        public Aircraft aircraft { get; set; }
+        public Crew crew { get; set; }
     }
 }

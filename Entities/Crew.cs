@@ -16,6 +16,6 @@ namespace Entities
         public char Gender { get; set; }
 
 
-        public Crew_Aircraft crew_Aircraft { get; set; }
+        public ICollection<Crew_Aircraft> crew_Aircraft { get; set; }
     }
 }

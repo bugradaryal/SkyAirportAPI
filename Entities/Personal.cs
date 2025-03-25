@@ -15,7 +15,7 @@ namespace Entities
         public int Age { get; set; }
         public char Gender { get; set; }
         public string PhoneNumber { get; set; }
-        public DateOnly Start_Date { get; set; }
+        public DateTime Start_Date { get; set; }
 
 
         public int airport_id { get; set; }
