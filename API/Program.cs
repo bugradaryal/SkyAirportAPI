@@ -13,6 +13,7 @@ using Serilog.Sinks.PostgreSQL;
 using DataAccess.LogManager;
 using Serilog.Core;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace API
 {
@@ -22,8 +23,7 @@ namespace API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-
-            builder.Services.AddDbContext<DataDbContext>();  
+            builder.Services.AddDbContext<DataDbContext>();
 
 
             builder.WebHost.UseIISIntegration();

@@ -336,7 +336,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Operation_Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 3, 25, 3, 55, 49, 570, DateTimeKind.Utc).AddTicks(9456));
+                        .HasDefaultValue(new DateTime(2025, 3, 25, 18, 36, 21, 165, DateTimeKind.Local).AddTicks(6755));
 
                     b.Property<string>("Operation_type")
                         .IsRequired()
@@ -393,7 +393,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Timestamp")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 3, 25, 3, 55, 49, 570, DateTimeKind.Utc).AddTicks(6724));
+                        .HasDefaultValue(new DateTime(2025, 3, 25, 18, 36, 21, 165, DateTimeKind.Local).AddTicks(4202));
 
                     b.Property<int>("loglevel_id")
                         .HasColumnType("integer");
@@ -542,7 +542,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Start_Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 3, 25, 3, 55, 49, 569, DateTimeKind.Utc).AddTicks(7858));
+                        .HasDefaultValue(new DateTime(2025, 3, 25, 18, 36, 21, 164, DateTimeKind.Local).AddTicks(5445));
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -619,7 +619,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Puchase_date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 3, 25, 3, 55, 49, 569, DateTimeKind.Utc).AddTicks(2134));
+                        .HasDefaultValue(new DateTime(2025, 3, 25, 18, 36, 21, 164, DateTimeKind.Local).AddTicks(561));
 
                     b.Property<int>("seet_id")
                         .HasColumnType("integer");
@@ -656,7 +656,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Created_at")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 3, 25, 3, 55, 49, 569, DateTimeKind.Utc).AddTicks(955));
+                        .HasDefaultValue(new DateTime(2025, 3, 25, 18, 36, 21, 163, DateTimeKind.Local).AddTicks(9458));
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -717,7 +717,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Uptaded_at")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 3, 25, 3, 55, 49, 569, DateTimeKind.Utc).AddTicks(1330));
+                        .HasDefaultValue(new DateTime(2025, 3, 25, 18, 36, 21, 163, DateTimeKind.Local).AddTicks(9830));
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
@@ -763,13 +763,13 @@ namespace DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ff567fc2-9f7f-430e-ad6b-05396448790f",
+                            Id = "f2d1844c-2b45-45b7-a06e-a8f19472e505",
                             Name = "Administrator",
                             NormalizedName = "ADMİNİSTRATOR"
                         },
                         new
                         {
-                            Id = "0f3d3028-3ac3-48f7-8d03-2b8d1c95754b",
+                            Id = "e74fc55e-8440-4738-ad36-f94e1ba98dfb",
                             Name = "User",
                             NormalizedName = "USER"
                         });

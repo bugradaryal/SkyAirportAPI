@@ -10,28 +10,11 @@ namespace DataAccess
 {
     public class DataDbContext : IdentityDbContext<User>
     {
-        private readonly IConfiguration _configuration;
-
         public DataDbContext() { }
-
-        public DataDbContext(DbContextOptions<DataDbContext> options, IConfiguration configuration)
-            : base(options)
-        {
-            _configuration = configuration;
-        }
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                var connectionString = _configuration.GetConnectionString("DefaultConnection");
-                Console.WriteLine($"Connection String: {connectionString}");  // Bu satır ile bağlantı dizesini kontrol et
-                optionsBuilder.UseNpgsql(connectionString);
-            }
-
-            base.OnConfiguring(optionsBuilder);
+            optionsBuilder.UseNpgsql("Host=localhost;Database=SkyAirportAPI;Username=postgres;Password=123456;Port=5432");
         }
-
         public DbSet<User> Users { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Seat> Seats { get; set; }
@@ -55,12 +38,12 @@ namespace DataAccess
             modelBuilder.Entity<User>().Property(x => x.Gender).HasColumnType("char(1)").HasDefaultValue("U");
             modelBuilder.Entity<User>().Property(x => x.Age).IsRequired();
             modelBuilder.Entity<User>().Property(x => x.IsSuspended).HasColumnType("boolean").HasDefaultValue(false);
-            modelBuilder.Entity<User>().Property(x => x.Created_at).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.UtcNow);
-            modelBuilder.Entity<User>().Property(x => x.Uptaded_at).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.UtcNow);
+            modelBuilder.Entity<User>().Property(x => x.Created_at).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.Now);
+            modelBuilder.Entity<User>().Property(x => x.Uptaded_at).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.Now);
             ////////////////////////////
             modelBuilder.Entity<Ticket>().HasKey(x => x.id);
             modelBuilder.Entity<Ticket>().Property(x => x.Price).HasColumnType("DECIMAL(10,2)").IsRequired();
-            modelBuilder.Entity<Ticket>().Property(x => x.Puchase_date).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.UtcNow);
+            modelBuilder.Entity<Ticket>().Property(x => x.Puchase_date).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.Now);
             modelBuilder.Entity<Ticket>().Property(x => x.Baggage_weight).HasColumnType("DECIMAL(8,2)").HasDefaultValue(0);
             modelBuilder.Entity<Ticket>().Property(x => x.seet_id).IsRequired();
             modelBuilder.Entity<Ticket>().Property(x => x.user_id).IsRequired();
@@ -80,7 +63,7 @@ namespace DataAccess
             modelBuilder.Entity<Personal>().Property(x => x.Gender).HasColumnType("char(1)").HasDefaultValue("U");
             modelBuilder.Entity<Personal>().Property(x => x.PhoneNumber).HasColumnType("text").HasDefaultValue("Undefined").HasMaxLength(16);
             modelBuilder.Entity<Personal>().HasIndex(x => x.PhoneNumber).IsUnique();
-            modelBuilder.Entity<Personal>().Property(x => x.Start_Date).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.UtcNow);
+            modelBuilder.Entity<Personal>().Property(x => x.Start_Date).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.Now);
             modelBuilder.Entity<Personal>().Property(x => x.airport_id).IsRequired();
             ////////////////////////////
             modelBuilder.Entity<OperationalDelay>().HasKey(x => x.id);
@@ -141,7 +124,7 @@ namespace DataAccess
             modelBuilder.Entity<Aircraft>().Property(x => x.aircraftStatus_id).IsRequired();
             ////////////////////////////
             modelBuilder.Entity<LogEntry>().HasKey(x => x.id);
-            modelBuilder.Entity<LogEntry>().Property(x => x.Timestamp).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.UtcNow);
+            modelBuilder.Entity<LogEntry>().Property(x => x.Timestamp).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.Now);
             modelBuilder.Entity<LogEntry>().Property(x => x.Message).HasColumnType("text").IsRequired().HasMaxLength(5096);
             modelBuilder.Entity<LogEntry>().Property(x => x.Action_type).HasConversion(new EnumToStringConverter<Action_Type>()).IsRequired();
             modelBuilder.Entity<LogEntry>().Property(x => x.Target_table).HasColumnType("text").HasMaxLength(64);
@@ -158,7 +141,7 @@ namespace DataAccess
             modelBuilder.Entity<AdminOperation>().Property(x => x.Operation_type).HasConversion(new EnumToStringConverter<Operation_Type>()).IsRequired();
             modelBuilder.Entity<AdminOperation>().Property(x => x.Target_table).HasColumnType("text").IsRequired().HasMaxLength(64);
             modelBuilder.Entity<AdminOperation>().Property(x => x.Target_id).IsRequired();
-            modelBuilder.Entity<AdminOperation>().Property(x => x.Operation_Date).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.UtcNow);
+            modelBuilder.Entity<AdminOperation>().Property(x => x.Operation_Date).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.Now);
             modelBuilder.Entity<AdminOperation>().Property(x => x.user_id).IsRequired();
             ////////////////////////////
             modelBuilder.Entity<LogLevel>().HasKey(x => x.id);

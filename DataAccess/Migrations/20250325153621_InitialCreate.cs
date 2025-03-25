@@ -69,8 +69,8 @@ namespace DataAccess.Migrations
                     Gender = table.Column<char>(type: "char(1)", nullable: false, defaultValue: 'U'),
                     Age = table.Column<int>(type: "integer", nullable: false),
                     IsSuspended = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    Created_at = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 3, 25, 3, 55, 49, 569, DateTimeKind.Utc).AddTicks(955)),
-                    Uptaded_at = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 3, 25, 3, 55, 49, 569, DateTimeKind.Utc).AddTicks(1330)),
+                    Created_at = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 3, 25, 18, 36, 21, 163, DateTimeKind.Local).AddTicks(9458)),
+                    Uptaded_at = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 3, 25, 18, 36, 21, 163, DateTimeKind.Local).AddTicks(9830)),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -181,7 +181,7 @@ namespace DataAccess.Migrations
                     Age = table.Column<int>(type: "integer", nullable: false),
                     Gender = table.Column<char>(type: "char(1)", nullable: false, defaultValue: 'U'),
                     PhoneNumber = table.Column<string>(type: "text", maxLength: 16, nullable: false, defaultValue: "Undefined"),
-                    Start_Date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 3, 25, 3, 55, 49, 569, DateTimeKind.Utc).AddTicks(7858)),
+                    Start_Date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 3, 25, 18, 36, 21, 164, DateTimeKind.Local).AddTicks(5445)),
                     airport_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -225,7 +225,7 @@ namespace DataAccess.Migrations
                     Operation_type = table.Column<string>(type: "text", nullable: false),
                     Target_table = table.Column<string>(type: "text", maxLength: 64, nullable: false),
                     Target_id = table.Column<int>(type: "integer", nullable: false),
-                    Operation_Date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 3, 25, 3, 55, 49, 570, DateTimeKind.Utc).AddTicks(9456)),
+                    Operation_Date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 3, 25, 18, 36, 21, 165, DateTimeKind.Local).AddTicks(6755)),
                     user_id = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -329,7 +329,7 @@ namespace DataAccess.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Timestamp = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 3, 25, 3, 55, 49, 570, DateTimeKind.Utc).AddTicks(6724)),
+                    Timestamp = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 3, 25, 18, 36, 21, 165, DateTimeKind.Local).AddTicks(4202)),
                     Message = table.Column<string>(type: "text", maxLength: 5096, nullable: false),
                     Action_type = table.Column<string>(type: "text", nullable: false),
                     Target_table = table.Column<string>(type: "text", maxLength: 64, nullable: false),
@@ -476,7 +476,7 @@ namespace DataAccess.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Price = table.Column<double>(type: "numeric(10,2)", nullable: false),
-                    Puchase_date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 3, 25, 3, 55, 49, 569, DateTimeKind.Utc).AddTicks(2134)),
+                    Puchase_date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 3, 25, 18, 36, 21, 164, DateTimeKind.Local).AddTicks(561)),
                     Baggage_weight = table.Column<double>(type: "numeric(8,2)", nullable: false, defaultValue: 0.0),
                     seet_id = table.Column<int>(type: "integer", nullable: false),
                     user_id = table.Column<string>(type: "text", nullable: false)
@@ -514,8 +514,8 @@ namespace DataAccess.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "0f3d3028-3ac3-48f7-8d03-2b8d1c95754b", null, "User", "USER" },
-                    { "ff567fc2-9f7f-430e-ad6b-05396448790f", null, "Administrator", "ADMİNİSTRATOR" }
+                    { "e74fc55e-8440-4738-ad36-f94e1ba98dfb", null, "User", "USER" },
+                    { "f2d1844c-2b45-45b7-a06e-a8f19472e505", null, "Administrator", "ADMİNİSTRATOR" }
                 });
 
             migrationBuilder.InsertData(
