@@ -17,7 +17,7 @@ namespace Entities
         public bool IsSuspended { get; set; }
         public DateTime Created_at { get; set; }
         public DateTime Uptaded_at { get; set; }
-
+        public string CountryCode { get; set; }
 
         public ICollection<Ticket> ticket { get; set; }
         public ICollection<AdminOperation> adminOperation { get; set; }

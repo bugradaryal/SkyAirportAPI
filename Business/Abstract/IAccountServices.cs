@@ -9,6 +9,6 @@ namespace Business.Abstract
 {
     public interface IAccountServices
     {
-        void CreateAccount(CreateAccountDTO createAccountDTO);
+        Task CreateAccount(CreateAccountDTO createAccountDTO);
     }
 }

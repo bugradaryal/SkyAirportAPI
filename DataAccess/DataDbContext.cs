@@ -35,6 +35,7 @@ namespace DataAccess
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<User>().Property(x => x.Name).HasColumnType("text").IsRequired().HasMaxLength(64);
             modelBuilder.Entity<User>().Property(x => x.Surname).HasColumnType("text").IsRequired().HasMaxLength(64);
+            modelBuilder.Entity<User>().Property(x => x.CountryCode).HasColumnType("text").IsRequired().HasMaxLength(5);
             modelBuilder.Entity<User>().Property(x => x.Gender).HasColumnType("char(1)").HasDefaultValue("U");
             modelBuilder.Entity<User>().Property(x => x.Age).IsRequired();
             modelBuilder.Entity<User>().Property(x => x.IsSuspended).HasColumnType("boolean").HasDefaultValue(false);

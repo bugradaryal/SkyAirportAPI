@@ -11,10 +11,10 @@ namespace DTO
     public class CreateAccountDTO
     {
         [Required]
-        [StringLength(2, MinimumLength = 64)]
+        [StringLength(64, MinimumLength = 2)]
         public string Name { get; set; }
         [Required]
-        [StringLength(2, MinimumLength = 64)]
+        [StringLength(64, MinimumLength = 2)]
         public string Surname { get; set; }
         [RegularExpression(@"^(E|K|U)$")]
         public char Gender { get; set; }
@@ -29,6 +29,10 @@ namespace DTO
         [Required]
         [StringLength(16, MinimumLength = 10)]
         public string PhoneNumber { get; set; }
+        [Required]
+        [RegularExpression(@"^[+0-9]$")]
+        [StringLength(5, MinimumLength = 2)]
+        public string CountryCode { get; set; }
         [Required]
         [StringLength(32, MinimumLength = 5)]
         public string UserName { get; set; }

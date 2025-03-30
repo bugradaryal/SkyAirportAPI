@@ -14,6 +14,7 @@ using DataAccess.LogManager;
 using Serilog.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace API
 {
@@ -34,7 +35,7 @@ namespace API
                     listenOptions.UseHttps(); // HTTPS
                 });
             });
-
+            /*
             builder.Services.AddScoped<DatabaseLogSink>(); // DatabaseLogSink'i DI container'a kaydediyoruz.
             builder.Services.AddLogging(loggingBuilder =>
             {
@@ -43,9 +44,10 @@ namespace API
                     .WriteTo.Sink(new DatabaseLogSink(builder.Services.BuildServiceProvider().GetRequiredService<DataDbContext>()))  // Burada lambda kullanmak yerine direkt olarak kullanıyoruz
                     .CreateLogger());
             });
-
+            */
             builder.Services.AddControllers();
-            
+
+            builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             builder.Services.Configure<JwtBearer>(builder.Configuration.GetSection("JwtBearer"));
 
