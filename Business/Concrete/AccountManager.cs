@@ -16,6 +16,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Business.Concrete
 {
@@ -101,6 +102,19 @@ namespace Business.Concrete
                 throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
             }
 
+        }
+        public async Task UpdateAccount(UpdateAccountDTO updateAccountDTO)
+        {
+            try
+            {
+                var result = await _userManager.UpdateAsync(_mapper.Map<User>(updateAccountDTO));///////////////
+                if (!result.Succeeded)
+                    throw new CustomException(result.Errors.FirstOrDefault().ToString(), (int)HttpStatusCode.BadRequest);
+            }
+            catch (Exception ex)
+            {
+                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+            }
         }
     }
 }

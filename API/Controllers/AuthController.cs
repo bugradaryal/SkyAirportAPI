@@ -4,10 +4,12 @@ using Business.Concrete;
 using DTO;
 using Entities;
 using Entities.Configuration;
+using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System;
 
 namespace API.Controllers
 {
@@ -27,13 +29,13 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPost("Register")]
-        public async Task<IActionResult> CreateAccount([FromBody]CreateAccountDTO createAccountDTO)
+        public async Task<IActionResult> CreateAccount([FromBody]CreateAccountDTO createAccountDTO) ///////////////////////
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
 
             await _accountServices.CreateAccount(createAccountDTO);
-            return Ok( new { message = "Account Created!" });
+            return Ok(new { message = "Account Created!" });
         }
 
         [AllowAnonymous]
@@ -82,7 +84,7 @@ namespace API.Controllers
 
         [Authorize(Policy = "IsUserSuspended")]
         [HttpDelete("UpdateAccount")]
-        public async Task<IActionResult> UpdateAccount([FromBody] string userId)
+        public async Task<IActionResult> UpdateAccount([FromBody] UpdateAccountDTO updateAccountDTO) ///////////////////////
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
@@ -91,7 +93,8 @@ namespace API.Controllers
                 return BadRequest(new { message = "Token not valid!!" });
             else
             {
-                return Ok(new { message = "Account Deleted!!" });
+                await _accountServices.UpdateAccount(updateAccountDTO);
+                return Ok(new { message = "Account Updated!!" });
             }
         }
     }
