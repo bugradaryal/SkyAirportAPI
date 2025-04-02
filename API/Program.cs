@@ -7,7 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Threading.RateLimiting;
-using Utilitys.Configuration;
 using Serilog;
 using Serilog.Sinks.PostgreSQL;
 using DataAccess.LogManager;
@@ -15,6 +14,9 @@ using Serilog.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using Entities.Configuration;
+using Utilitys.Mapper;
+using AutoMapper;
 
 namespace API
 {
@@ -47,9 +49,8 @@ namespace API
             */
             builder.Services.AddControllers();
 
-            builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
-
-            builder.Services.Configure<JwtBearer>(builder.Configuration.GetSection("JwtBearer"));
+            builder.Services.AddAutoMapper(typeof(Mapper).Assembly);
+            builder.Services.Configure<JWT_Conf>(builder.Configuration.GetSection("JwtBearer"));
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {
@@ -94,7 +95,11 @@ namespace API
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtBearer:Key"]))
                 };
             });
-
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("IsUserSuspended", policy =>
+                    policy.RequireClaim("IsSuspended", "false"));
+            });
             builder.Services.AddRateLimiter(options =>
             {
                 options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>

@@ -1,4 +1,5 @@
 ﻿using DTO;
+using Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,8 @@ namespace Business.Abstract
     public interface IAccountServices
     {
         Task CreateAccount(CreateAccountDTO createAccountDTO);
+        Task<User> LoginAccount(LoginAccountDTO loginAccountDTO);
+        Task<List<string>> GetUserRoles(string userId);
+        Task DeleteAccount(User user);
     }
 }
