@@ -12,6 +12,6 @@ namespace Business.Abstract
     public interface ITokenServices
     {
         Task<ValidateTokenDTO> ValidateToken(HttpContext httpContext);
-        string CreateTokenJWT(User user);
+        Task<string> CreateTokenJWT(User user);
     }
 }

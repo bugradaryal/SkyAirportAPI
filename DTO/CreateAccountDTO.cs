@@ -30,7 +30,7 @@ namespace DTO
         [StringLength(16, MinimumLength = 10)]
         public string PhoneNumber { get; set; }
         [Required]
-        [RegularExpression(@"^[+0-9]$")]
+        [RegularExpression(@"^\+[0-9]{1,4}$", ErrorMessage = "Invalid country code format.")]
         [StringLength(5, MinimumLength = 2)]
         public string CountryCode { get; set; }
         [Required]

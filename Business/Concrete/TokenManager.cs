@@ -46,20 +46,24 @@ namespace Business.Concrete
             };
             var token = httpContext.Request.Headers["Authorization"].FirstOrDefault();
 
-            if (!string.IsNullOrEmpty(token) || token.StartsWith("Bearer "))
+            if (!string.IsNullOrEmpty(token))
             {
-                var clearToken = token.Substring("Bearer ".Length).Trim();
-                var principal = tokenHandler.ValidateToken(clearToken, validationParameters, out var validatedToken);
-                if((validatedToken is JwtSecurityToken jwtToken))
+                if(token.StartsWith("Bearer "))
                 {
-                    var userId = principal.FindFirst("uid")?.Value;
-                    var claimUser = await _userManager.FindByIdAsync(userId);
-                    if (claimUser == null)
-                        return new ValidateTokenDTO { user = null, roles = null, IsTokenValid = false, Token = null };
+                    var clearToken = token.Substring("Bearer ".Length).Trim();
+                    var principal = tokenHandler.ValidateToken(clearToken, validationParameters, out var validatedToken);
+                    if((validatedToken is JwtSecurityToken jwtToken))
+                    {
+                        var userId = principal.FindFirst("uid")?.Value;
+                        var claimUser = await _userManager.FindByIdAsync(userId);
+                        if (claimUser == null)
+                            return new ValidateTokenDTO { user = null, roles = null, IsTokenValid = false, Token = null };
 
-                    var userRole = await _userManager.GetRolesAsync(claimUser);
-                    return new ValidateTokenDTO { user = claimUser, roles = userRole.ToList(), IsTokenValid = true, Token = token };
+                        var userRole = await _userManager.GetRolesAsync(claimUser);
+                        return new ValidateTokenDTO { user = claimUser, roles = userRole.ToList(), IsTokenValid = true, Token = token };
+                    }
                 }
+
             }
             return new ValidateTokenDTO { user = null, roles = null, IsTokenValid = false, Token = null };
         }
@@ -75,7 +79,7 @@ namespace Business.Concrete
             var claims = new List<Claim>
             {
                 new Claim("uid", user.Id),
-                new Claim("IsSuspended", user.IsSuspended.ToString()) // 'added' claim'i ekleniyor
+                new Claim("IsSuspended", user.IsSuspended.ToString().ToLower())
             };
             claims.AddRange(roleClaims);
             var signingCredentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256Signature);
@@ -91,7 +95,7 @@ namespace Business.Concrete
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescrtiptor);
 
-            return tokenHandler.WriteToken(token);
+            return "Bearer " + tokenHandler.WriteToken(token);
         }
     }
 }

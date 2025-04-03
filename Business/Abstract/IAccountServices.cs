@@ -14,6 +14,7 @@ namespace Business.Abstract
         Task<User> LoginAccount(LoginAccountDTO loginAccountDTO);
         Task<List<string>> GetUserRoles(string userId);
         Task DeleteAccount(User user);
-        Task UpdateAccount(UpdateAccountDTO updateAccountDTO);
+        Task UpdateAccount(User user);
+        Task ChangePassword(User user, ChangePasswordDTO changePasswordDTO);
     }
 }

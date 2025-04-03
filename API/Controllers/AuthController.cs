@@ -29,7 +29,7 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPost("Register")]
-        public async Task<IActionResult> CreateAccount([FromBody]CreateAccountDTO createAccountDTO) ///////////////////////
+        public async Task<IActionResult> CreateAccount([FromBody]CreateAccountDTO createAccountDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
@@ -51,7 +51,7 @@ namespace API.Controllers
                 User user = await _accountServices.LoginAccount(loginAccountDTO);
                 if (user.IsSuspended)
                     return BadRequest(new { message = "User is suspended!!" });
-                var token = _tokenServices.CreateTokenJWT(user);
+                var token = await _tokenServices.CreateTokenJWT(user);
                 return Ok(new AuthenticationModel
                 {
                     Email = user.Email,
@@ -64,17 +64,17 @@ namespace API.Controllers
         }
 
         [Authorize(Policy = "IsUserSuspended")]
-        [HttpDelete("DeleteAccount/{userId}")]
-        public async Task<IActionResult> DeleteAccount([FromRoute] string userId)
+        [HttpDelete("DeleteAccount")]
+        public async Task<IActionResult> DeleteAccount([FromQuery] string userId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
             var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
             if (!validateTokenDTO.IsTokenValid)
-                return BadRequest(new { message = "Token not valid!!" });
+                return Unauthorized(new { message = "Token not valid!!" });
             else
             {
-                if(userId == validateTokenDTO.user.Id)
+                if(userId != validateTokenDTO.user.Id)
                     return BadRequest(new { message = "Unauthorized Action!!" });
                 await _accountServices.DeleteAccount(validateTokenDTO.user);
                 return Ok( new { message = "Account Deleted!!" });
@@ -83,17 +83,34 @@ namespace API.Controllers
         }
 
         [Authorize(Policy = "IsUserSuspended")]
-        [HttpDelete("UpdateAccount")]
-        public async Task<IActionResult> UpdateAccount([FromBody] UpdateAccountDTO updateAccountDTO) ///////////////////////
+        [HttpPut("UpdateAccount")]
+        public async Task<IActionResult> UpdateAccount([FromBody] UpdateAccountDTO updateAccountDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
             var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
             if (!validateTokenDTO.IsTokenValid)
-                return BadRequest(new { message = "Token not valid!!" });
+                return Unauthorized(new { message = "Token not valid!!" });
             else
             {
-                await _accountServices.UpdateAccount(updateAccountDTO);
+                User user = _mapper.Map(updateAccountDTO,validateTokenDTO.user);
+                await _accountServices.UpdateAccount(user);
+                return Ok(new { message = "Account Updated!!" });
+            }
+        }
+
+        [Authorize(Policy = "IsUserSuspended")]
+        [HttpPut("ChangePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO changePasswordDTO) 
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new { message = ModelState });
+            var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
+            if (!validateTokenDTO.IsTokenValid)
+                return Unauthorized(new { message = "Token not valid!!" });
+            else
+            {
+                await _accountServices.ChangePassword(validateTokenDTO.user, changePasswordDTO);
                 return Ok(new { message = "Account Updated!!" });
             }
         }

@@ -16,7 +16,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Entities.Configuration;
 using Utilitys.Mapper;
-using AutoMapper;
 
 namespace API
 {
@@ -49,7 +48,11 @@ namespace API
             */
             builder.Services.AddControllers();
 
-            builder.Services.AddAutoMapper(typeof(Mapper).Assembly);
+
+            builder.Services.AddAutoMapper(typeof(UserProfile).Assembly);
+            builder.Services.AddAutoMapper(typeof(ValidateTokenProfile).Assembly);
+
+
             builder.Services.Configure<JWT_Conf>(builder.Configuration.GetSection("JwtBearer"));
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>

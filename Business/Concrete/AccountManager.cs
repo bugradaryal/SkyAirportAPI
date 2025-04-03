@@ -58,12 +58,14 @@ namespace Business.Concrete
             try 
             { 
                 string password = loginAccountDTO.Password;
-                var result = await _signManager.PasswordSignInAsync(loginAccountDTO.Email, loginAccountDTO.Password,false,lockoutOnFailure: true);
+                User user = await _userManager.FindByEmailAsync(loginAccountDTO.Email);
+                if (user == null)
+                    throw new CustomException("User not exist!", (int)HttpStatusCode.NotFound);
+                if (user.IsSuspended)
+                    throw new CustomException("User's account suspended!", (int)HttpStatusCode.Unauthorized);
+                var result = await _signManager.PasswordSignInAsync(user, loginAccountDTO.Password,false,lockoutOnFailure: true);
                 if (result.Succeeded)
-                {
-                    User user = await _userManager.FindByEmailAsync(loginAccountDTO.Email);
                     return user;
-                }
                 else if (result.IsLockedOut)
                     throw new CustomException("Account is locked. Try few minutes later!", (int)HttpStatusCode.BadRequest);
                 else if(result.IsNotAllowed)
@@ -103,11 +105,24 @@ namespace Business.Concrete
             }
 
         }
-        public async Task UpdateAccount(UpdateAccountDTO updateAccountDTO)
+        public async Task UpdateAccount(User user)
         {
             try
             {
-                var result = await _userManager.UpdateAsync(_mapper.Map<User>(updateAccountDTO));///////////////
+                var result = await _userManager.UpdateAsync(user);
+                if (!result.Succeeded)
+                    throw new CustomException(result.Errors.FirstOrDefault().ToString(), (int)HttpStatusCode.BadRequest);
+            }
+            catch (Exception ex)
+            {
+                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+            }
+        }
+        public async Task ChangePassword(User user, ChangePasswordDTO changePasswordDTO)
+        {
+            try
+            {
+                var result = await _userManager.ChangePasswordAsync(user, changePasswordDTO.OldPassword, changePasswordDTO.NewPassword);
                 if (!result.Succeeded)
                     throw new CustomException(result.Errors.FirstOrDefault().ToString(), (int)HttpStatusCode.BadRequest);
             }

@@ -336,7 +336,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Operation_Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 3, 25, 18, 36, 21, 165, DateTimeKind.Local).AddTicks(6755));
+                        .HasDefaultValue(new DateTime(2025, 4, 3, 3, 45, 57, 782, DateTimeKind.Local).AddTicks(4746));
 
                     b.Property<string>("Operation_type")
                         .IsRequired()
@@ -393,7 +393,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Timestamp")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 3, 25, 18, 36, 21, 165, DateTimeKind.Local).AddTicks(4202));
+                        .HasDefaultValue(new DateTime(2025, 4, 3, 3, 45, 57, 782, DateTimeKind.Local).AddTicks(1999));
 
                     b.Property<int>("loglevel_id")
                         .HasColumnType("integer");
@@ -542,7 +542,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Start_Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 3, 25, 18, 36, 21, 164, DateTimeKind.Local).AddTicks(5445));
+                        .HasDefaultValue(new DateTime(2025, 4, 3, 3, 45, 57, 781, DateTimeKind.Local).AddTicks(3082));
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -619,7 +619,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Puchase_date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 3, 25, 18, 36, 21, 164, DateTimeKind.Local).AddTicks(561));
+                        .HasDefaultValue(new DateTime(2025, 4, 3, 3, 45, 57, 780, DateTimeKind.Local).AddTicks(8080));
 
                     b.Property<int>("seet_id")
                         .HasColumnType("integer");
@@ -653,10 +653,15 @@ namespace DataAccess.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
+                    b.Property<string>("CountryCode")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("Created_at")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 3, 25, 18, 36, 21, 163, DateTimeKind.Local).AddTicks(9458));
+                        .HasDefaultValue(new DateTime(2025, 4, 3, 3, 45, 57, 780, DateTimeKind.Local).AddTicks(6659));
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -717,7 +722,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Uptaded_at")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 3, 25, 18, 36, 21, 163, DateTimeKind.Local).AddTicks(9830));
+                        .HasDefaultValue(new DateTime(2025, 4, 3, 3, 45, 57, 780, DateTimeKind.Local).AddTicks(7069));
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
@@ -763,13 +768,13 @@ namespace DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "f2d1844c-2b45-45b7-a06e-a8f19472e505",
+                            Id = "8b832739-21d6-4e2a-801f-2b1b322aef8b",
                             Name = "Administrator",
                             NormalizedName = "ADMİNİSTRATOR"
                         },
                         new
                         {
-                            Id = "e74fc55e-8440-4738-ad36-f94e1ba98dfb",
+                            Id = "be6ef88e-e798-493f-846a-97812152d846",
                             Name = "User",
                             NormalizedName = "USER"
                         });
