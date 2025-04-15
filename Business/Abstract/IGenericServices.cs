@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Business.Abstract
 {
-    public interface IGenericManager<T>
+    public interface IGenericServices<T>
     {
         Task<List<T>> GetAll();
         Task<T> GetValue(int id);
