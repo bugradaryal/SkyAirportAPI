@@ -3,7 +3,6 @@ using Business.Concrete.Generic;
 using DTO;
 using Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -17,16 +16,17 @@ namespace API.Controllers
         public AirlineController() 
         {
             _genericServices = new GenericManager<Airline>();
+            _dtogenericServices = new GenericManager<AirlineDTO>();
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("GetAllAirlines")]
         public async Task<IActionResult> GetAllAirlines()
         {
             return Ok(_genericServices.GetAll());
         }
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("GetAirlineById")]
         public async Task<IActionResult> GetAirlineById([FromQuery] int id)
         {
             if (id == null || id == 0)
@@ -34,7 +34,7 @@ namespace API.Controllers
             return Ok(await _genericServices.GetValue(id));
         }
         [Authorize(Roles = "Administrator")]
-        [HttpPost]
+        [HttpPost("AddAirline")]
         public async Task<IActionResult> AddAirline(AirlineDTO airlineDTO)
         {
             if (!ModelState.IsValid)
@@ -43,13 +43,13 @@ namespace API.Controllers
             return Ok();
         }
         [Authorize(Roles = "Administrator")]
-        [HttpDelete]
+        [HttpDelete("DeleteAirline")]
         public async Task<IActionResult> DeleteAirline([FromQuery] int id)
         {
             return Ok(_genericServices.Delete(id));
         }
         [Authorize(Roles = "Administrator")]
-        [HttpPut]
+        [HttpPut("UpdateAirline")]
         public async Task<IActionResult> UpdateAirline(AirlineDTO airlineDTO)
         {
             return Ok(_dtogenericServices.Update(airlineDTO));

@@ -20,14 +20,14 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("GetAllSeats")]
         public async Task<IActionResult> GetAllSeats()
         {
             return Ok(_genericServices.GetAll());
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("GetSeatById")]
         public async Task<IActionResult> GetSeatById([FromQuery] int id)
         {
             if (id == null || id == 0)
@@ -36,7 +36,7 @@ namespace API.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpPost]
+        [HttpPost("AddSeat")]
         public async Task<IActionResult> AddSeat(SeatDTO seatDTO)
         {
             if (!ModelState.IsValid)
@@ -46,14 +46,14 @@ namespace API.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpDelete]
+        [HttpDelete("DeleteSeat")]
         public async Task<IActionResult> DeleteSeat([FromQuery] int id)
         {
             return Ok(_genericServices.Delete(id));
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpPut]
+        [HttpPut("UpdateSeat")]
         public async Task<IActionResult> UpdateSeat(SeatDTO seatDTO)
         {
             return Ok(_dtogenericServices.Update(seatDTO));

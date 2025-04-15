@@ -17,15 +17,16 @@ namespace API.Controllers
         public AirportController() 
         {
             _genericServices = new GenericManager<Airport>();
+            _dtogenericServices = new GenericManager<AirportDTO>();
         }
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("GetAllAirports")]
         public async Task<IActionResult> GetAllAirports()
         {
             return Ok(_genericServices.GetAll());
         }
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("GetAirportById")]
         public async Task<IActionResult> GetAirportById([FromQuery]int id)
         {
             if (id == null || id == 0)
@@ -33,7 +34,7 @@ namespace API.Controllers
             return Ok(await _genericServices.GetValue(id));
         }
         [Authorize(Roles = "Administrator")]
-        [HttpPost]
+        [HttpPost("AddAirport")]
         public async Task<IActionResult> AddAirport(AirportDTO airportDTO)
         {
             if (!ModelState.IsValid)
@@ -42,13 +43,13 @@ namespace API.Controllers
             return Ok();
         }
         [Authorize(Roles = "Administrator")]
-        [HttpDelete]
+        [HttpDelete("DeleteAirport")]
         public async Task<IActionResult> DeleteAirport([FromQuery] int id)
         {
             return Ok(_genericServices.Delete(id));
         }
         [Authorize(Roles = "Administrator")]
-        [HttpPut]
+        [HttpPut("UpdateAirport")]
         public async Task<IActionResult> UpdateAirport(AirportDTO airportDTO)
         {
             return Ok(_dtogenericServices.Update(airportDTO));

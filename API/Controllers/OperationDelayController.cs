@@ -12,22 +12,23 @@ namespace API.Controllers
     [ApiController]
     public class OperationDelayController : ControllerBase
     {
-        private readonly IGenericServices<OperationDelay> _genericServices;
-        private readonly IGenericServices<OperationDelayDTO> _dtogenericServices;
+        private readonly IGenericServices<OperationalDelay> _genericServices;
+        private readonly IGenericServices<OperationalDelayDTO> _dtogenericServices;
         public OperationDelayController() 
         {
-            _genericServices = new GenericManager<OperationDelay>();
+            _genericServices = new GenericManager<OperationalDelay>();
+            _dtogenericServices = new GenericManager<OperationalDelayDTO>();    
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("GetAllOperationDelays")]
         public async Task<IActionResult> GetAllOperationDelays()
         {
             return Ok(_genericServices.GetAll());
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("GetOperationDelayById")]
         public async Task<IActionResult> GetOperationDelayById([FromQuery] int id)
         {
             if (id == null || id == 0)
@@ -36,8 +37,8 @@ namespace API.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpPost]
-        public async Task<IActionResult> AddOperationDelay(OperationDelayDTO operationDelayDTO)
+        [HttpPost("AddOperationDelay")]
+        public async Task<IActionResult> AddOperationDelay(DTO.OperationalDelayDTO operationDelayDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
@@ -46,15 +47,15 @@ namespace API.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpDelete]
+        [HttpDelete("DeleteOperationDelay")]
         public async Task<IActionResult> DeleteOperationDelay([FromQuery] int id)
         {
             return Ok(_genericServices.Delete(id));
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpPut]
-        public async Task<IActionResult> UpdateOperationDelay(OperationDelayDTO operationDelayDTO)
+        [HttpPut("UpdateOperationDelay")]
+        public async Task<IActionResult> UpdateOperationDelay(DTO.OperationalDelayDTO operationDelayDTO)
         {
             return Ok(_dtogenericServices.Update(operationDelayDTO));
         }

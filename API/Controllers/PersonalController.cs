@@ -20,14 +20,14 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("GetAllPersonals")]
         public async Task<IActionResult> GetAllPersonals()
         {
             return Ok(_genericServices.GetAll());
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("GetPersonalById")]
         public async Task<IActionResult> GetPersonalById([FromQuery] int id)
         {
             if (id == null || id == 0)
@@ -36,7 +36,7 @@ namespace API.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpPost]
+        [HttpPost("AddPersonal")]
         public async Task<IActionResult> AddPersonal(PersonalDTO personalDTO)
         {
             if (!ModelState.IsValid)
@@ -46,14 +46,14 @@ namespace API.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpDelete]
+        [HttpDelete("DeletePersonal")]
         public async Task<IActionResult> DeletePersonal([FromQuery] int id)
         {
             return Ok(_genericServices.Delete(id));
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpPut]
+        [HttpPut("UpdatePersonal")]
         public async Task<IActionResult> UpdatePersonal(PersonalDTO personalDTO)
         {
             return Ok(_dtogenericServices.Update(personalDTO));

@@ -20,14 +20,14 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("GetAllTickets")]
         public async Task<IActionResult> GetAllTickets()
         {
             return Ok(_genericServices.GetAll());
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("GetTicketById")]
         public async Task<IActionResult> GetTicketById([FromQuery] int id)
         {
             if (id == null || id == 0)
@@ -36,7 +36,7 @@ namespace API.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpPost]
+        [HttpPost("AddTicket")]
         public async Task<IActionResult> AddTicket(TicketDTO ticketDTO)
         {
             if (!ModelState.IsValid)
@@ -46,14 +46,14 @@ namespace API.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpDelete]
+        [HttpDelete("DeleteTicket")]
         public async Task<IActionResult> DeleteTicket([FromQuery] int id)
         {
             return Ok(_genericServices.Delete(id));
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpPut]
+        [HttpPut("UpdateTicket")]
         public async Task<IActionResult> UpdateTicket(TicketDTO ticketDTO)
         {
             return Ok(_dtogenericServices.Update(ticketDTO));

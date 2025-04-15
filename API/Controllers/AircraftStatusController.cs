@@ -17,17 +17,18 @@ namespace API.Controllers
         public AircraftStatusController() 
         {
             _genericServices = new GenericManager<AircraftStatus>();
+            _dtogenericServices = new GenericManager<AircraftStatusDTO>();
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("GetAllAircraftStatuss")]
         public async Task<IActionResult> GetAllAircraftStatuss()
         {
             return Ok(_genericServices.GetAll());
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("GetAircraftStatusById")]
         public async Task<IActionResult> GetAircraftStatusById([FromQuery] int id)
         {
             if (id == null || id == 0)
@@ -36,7 +37,7 @@ namespace API.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpPost]
+        [HttpPost("AddAircraftStatus")]
         public async Task<IActionResult> AddAircraftStatus(AircraftStatusDTO aircraftStatusDTO)
         {
             if (!ModelState.IsValid)
@@ -46,14 +47,14 @@ namespace API.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpDelete]
+        [HttpDelete("DeleteAircraftStatus")]
         public async Task<IActionResult> DeleteAircraftStatus([FromQuery] int id)
         {
             return Ok(_genericServices.Delete(id));
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpPut]
+        [HttpPut("UpdateAircraftStatus")]
         public async Task<IActionResult> UpdateAircraftStatus(AircraftStatusDTO aircraftStatusDTO)
         {
             return Ok(_dtogenericServices.Update(aircraftStatusDTO));

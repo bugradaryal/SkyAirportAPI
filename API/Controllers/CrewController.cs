@@ -17,17 +17,18 @@ namespace API.Controllers
         public CrewController() 
         {
             _genericServices = new GenericManager<Crew>();
+            _dtogenericServices = new GenericManager<CrewDTO>();   
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("GetAllCrews")]
         public async Task<IActionResult> GetAllCrews()
         {
             return Ok(_genericServices.GetAll());
         }
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("GetCrewById")]
         public async Task<IActionResult> GetCrewById([FromQuery] int id)
         {
             if (id == null || id == 0)
@@ -36,7 +37,7 @@ namespace API.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpPost]
+        [HttpPost("AddCrew")]
         public async Task<IActionResult> AddCrew(CrewDTO crewDTO)
         {
             if (!ModelState.IsValid)
@@ -46,14 +47,14 @@ namespace API.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpDelete]
+        [HttpDelete("DeleteCrew")]
         public async Task<IActionResult> DeleteCrew([FromQuery] int id)
         {
             return Ok(_genericServices.Delete(id));
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpPut]
+        [HttpPut("UpdateCrew")]
         public async Task<IActionResult> UpdateCrew(CrewDTO crewDTO)
         {
             return Ok(_dtogenericServices.Update(crewDTO));
