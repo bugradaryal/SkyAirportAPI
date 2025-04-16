@@ -18,4 +18,11 @@
     <ProjectReference Include="..\Utilitys\Utilitys.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="CQRS\Handlers\" />
+    <Folder Include="CQRS\Commands\" />
+    <Folder Include="CQRS\" />
+    <Folder Include="CQRS\Queries\" />
+  </ItemGroup>
+
 </Project>

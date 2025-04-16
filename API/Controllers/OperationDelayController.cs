@@ -50,14 +50,20 @@ namespace API.Controllers
         [HttpDelete("DeleteOperationDelay")]
         public async Task<IActionResult> DeleteOperationDelay([FromQuery] int id)
         {
-            return Ok(_genericServices.Delete(id));
+            if (id == null || id == 0)
+                return BadRequest(new { message = "Invalid Id!!" });
+            await _genericServices.Delete(id);
+            return Ok();
         }
 
         [Authorize(Roles = "Administrator")]
         [HttpPut("UpdateOperationDelay")]
         public async Task<IActionResult> UpdateOperationDelay(DTO.OperationalDelayDTO operationDelayDTO)
         {
-            return Ok(_dtogenericServices.Update(operationDelayDTO));
+            if (!ModelState.IsValid)
+                return BadRequest(new { message = ModelState });
+            await _dtogenericServices.Update(operationDelayDTO);
+            return Ok();
         }
     }
 }

@@ -50,14 +50,20 @@ namespace API.Controllers
         [HttpDelete("DeleteCrew")]
         public async Task<IActionResult> DeleteCrew([FromQuery] int id)
         {
-            return Ok(_genericServices.Delete(id));
+            if (id == null || id == 0)
+                return BadRequest(new { message = "Invalid Id!!" });
+            await _genericServices.Delete(id);
+            return Ok();
         }
 
         [Authorize(Roles = "Administrator")]
         [HttpPut("UpdateCrew")]
         public async Task<IActionResult> UpdateCrew(CrewDTO crewDTO)
         {
-            return Ok(_dtogenericServices.Update(crewDTO));
+            if (!ModelState.IsValid)
+                return BadRequest(new { message = ModelState });
+            await _dtogenericServices.Update(crewDTO);
+            return Ok();
         }
     }
 }
