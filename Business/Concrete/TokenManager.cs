@@ -88,7 +88,7 @@ namespace Business.Concrete
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddMinutes(_jwt.DurationInMinutes),
                 SigningCredentials = signingCredentials,
-                Issuer = _jwt.Issuer,
+                Issuer = _jwt.Issuer,W
                 Audience = _jwt.Audience
             };
 

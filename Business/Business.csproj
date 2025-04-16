@@ -19,10 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="CQRS\Handlers\" />
-    <Folder Include="CQRS\Commands\" />
-    <Folder Include="CQRS\" />
-    <Folder Include="CQRS\Queries\" />
+    <Folder Include="Features\Handlers\" />
+    <Folder Include="Features\Commands\" />
+    <Folder Include="Features\Account\" />
+    <Folder Include="Features\Queries\" />
   </ItemGroup>
 
 </Project>
