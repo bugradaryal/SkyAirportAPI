@@ -1,10 +1,17 @@
 ﻿using AutoMapper;
 using Business.Abstract;
 using Business.Concrete;
+using Business.Features.Account.Commands.ChangePassword;
+using Business.Features.Account.Commands.CreateAccount;
+using Business.Features.Account.Commands.DeleteAccount;
+using Business.Features.Account.Commands.UpdateAccount;
+using Business.Features.Account.Queries.GetUserRole;
+using Business.Features.Account.Queries.Login;
 using DTO;
 using Entities;
 using Entities.Configuration;
 using Entities.Enums;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,13 +24,15 @@ namespace API.Controllers
     public class AuthController : Controller
     {
         public readonly IAccountServices _accountServices;
+        private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly ITokenServices _tokenServices;
-        public AuthController(UserManager<User> userManager, IMapper mapper, SignInManager<User> signInManager, IOptions<JWT_Conf> jwt) 
+        public AuthController(UserManager<User> userManager, IMapper mapper, SignInManager<User> signInManager, IOptions<JWT_Conf> jwt, IMediator mediator) 
         {
             _accountServices = new AccountManager(userManager,mapper,signInManager);
             _tokenServices = new TokenManager(jwt,userManager);
             _mapper = mapper;
+            _mediator = mediator;
         }
 
 
@@ -34,7 +43,9 @@ namespace API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
 
-            await _accountServices.CreateAccount(createAccountDTO);
+            var createResponse = await _mediator.Send(new CreateAccountRequest(createAccountDTO));
+            if(createResponse != null)
+                return BadRequest(new { message = createResponse });
             return Ok(new { message = "Account Created!" });
         }
 
@@ -48,17 +59,27 @@ namespace API.Controllers
             var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
             if (!validateTokenDTO.IsTokenValid)
             {
-                User user = await _accountServices.LoginAccount(loginAccountDTO);
-                if (user.IsSuspended)
-                    return BadRequest(new { message = "User is suspended!!" });
-                var token = await _tokenServices.CreateTokenJWT(user);
-                return Ok(new AuthenticationModel
+                var userResponse = await _mediator.Send(new LoginRequest(loginAccountDTO));
+                if (userResponse.exception == null)
                 {
-                    Email = user.Email,
-                    Roles = await _accountServices.GetUserRoles(user.Id),
-                    UserName = user.UserName,
-                    Token = token
-                });
+                    if (userResponse.user.IsSuspended)
+                        return BadRequest(new { message = "User is suspended!!" });
+                    var token = await _tokenServices.CreateTokenJWT(userResponse.user);
+                    var roleResponse = await _mediator.Send(new GetUserRoleRequest(userResponse.user.Id));
+                    if (roleResponse.exception == null)
+                    {
+                        return Ok(new AuthenticationModel
+                        {
+                            Email = userResponse.user.Email,
+                            Roles = roleResponse.UserRoles,
+                            UserName = userResponse.user.UserName,
+                            Token = token
+                        });
+                    }
+                    return BadRequest(new { message = roleResponse.exception });
+                }
+                return BadRequest(new { message = userResponse.exception });
+
             }
             return Ok(_mapper.Map<ValidateTokenDTO>(validateTokenDTO));         
         }
@@ -76,7 +97,9 @@ namespace API.Controllers
             {
                 if(userId != validateTokenDTO.user.Id)
                     return BadRequest(new { message = "Unauthorized Action!!" });
-                await _accountServices.DeleteAccount(validateTokenDTO.user);
+                var deleteResponse = await _mediator.Send(new DeleteAccountRequest(validateTokenDTO.user));
+                if (deleteResponse != null)
+                    return BadRequest(new { message = deleteResponse });
                 return Ok( new { message = "Account Deleted!!" });
             }
 
@@ -94,14 +117,16 @@ namespace API.Controllers
             else
             {
                 User user = _mapper.Map(updateAccountDTO,validateTokenDTO.user);
-                await _accountServices.UpdateAccount(user);
+                var updateResponse = await _mediator.Send(new UpdateAccountRequest(user));
+                if(updateResponse != null)
+                    return BadRequest(new { message = updateResponse });
                 return Ok(new { message = "Account Updated!!" });
             }
         }
 
         [Authorize(Policy = "IsUserSuspended")]
         [HttpPut("ChangePassword")]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO changePasswordDTO) 
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO changePasswordDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
@@ -110,7 +135,9 @@ namespace API.Controllers
                 return Unauthorized(new { message = "Token not valid!!" });
             else
             {
-                await _accountServices.ChangePassword(validateTokenDTO.user, changePasswordDTO);
+                var changePasswordResponse = await _mediator.Send(new ChangePasswordRequest(validateTokenDTO.user, changePasswordDTO));
+                if(changePasswordResponse != null)
+                    return BadRequest(new { message = changePasswordResponse });
                 return Ok(new { message = "Account Updated!!" });
             }
         }
