@@ -4,6 +4,8 @@ using Business.Concrete.Generic;
 using Business.Features.Generic.Commands.Add;
 using Business.Features.Generic.Commands.Delete;
 using Business.Features.Generic.Commands.Update;
+using Business.Features.Generic.Queries.GetAll;
+using Business.Features.Generic.Queries.GetById;
 using DTO;
 using Entities;
 using MediatR;
@@ -30,7 +32,10 @@ namespace API.Controllers
         [HttpGet("GetAllAirports")]
         public async Task<IActionResult> GetAllAirports()
         {
-            return Ok(_genericServices.GetAll());
+            var getAllResponse = await _mediator.Send(new GenericGetAllRequest<Airport>());
+            if(getAllResponse.error)
+                return BadRequest(getAllResponse.exception);
+            return Ok(getAllResponse.data);
         }
         [AllowAnonymous]
         [HttpGet("GetAirportById")]
@@ -38,7 +43,10 @@ namespace API.Controllers
         {
             if (id == null || id == 0)
                 return BadRequest(new { message = "Invalid Id!!" });
-            return Ok(await _genericServices.GetValue(id));
+            var getByIdResponse = await _mediator.Send(new GenericGetByIdRequest<Airport>(id));
+            if(getByIdResponse.error)
+                return BadRequest(getByIdResponse.exception);
+            return Ok(getByIdResponse.entity);
         }
         [Authorize(Roles = "Administrator")]
         [HttpPost("AddAirport")]
@@ -69,8 +77,8 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var airport = _mapper.Map(airportDTO,);
-            var updateResponse = await _mediator.Send(new GenericUpdateRequest());
+            var airport = _mapper.Map(airportDTO,new Airport());
+            var updateResponse = await _mediator.Send(new GenericUpdateRequest<Airport>(airport));
             return Ok();
         }
     }

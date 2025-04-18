@@ -30,12 +30,12 @@ namespace Business.Features.Account.Queries.Login
                 string password = request.loginAccountDTO.Password;
                 User user = await _userManager.FindByEmailAsync(request.loginAccountDTO.Email);
                 if (user == null)
-                    throw new CustomException("User not exist!", (int)HttpStatusCode.NotFound);
+                    return new LoginResponse { exception = new CustomException("User not exist!", (int)HttpStatusCode.NotFound) };
                 if (user.IsSuspended)
-                    throw new CustomException("User's account suspended!", (int)HttpStatusCode.Unauthorized);
+                    return new LoginResponse { exception = new CustomException("User's account suspended!", (int)HttpStatusCode.Unauthorized) };
                 var result = await _signInManager.PasswordSignInAsync(user, request.loginAccountDTO.Password, false, lockoutOnFailure: true);
                 if (result.Succeeded)
-                    return new LoginResponse { user = user };
+                    return new LoginResponse { user = user, error = false };
                 else if (result.IsLockedOut)
                     return new LoginResponse { exception = new CustomException("Account is locked. Try few minutes later!", (int)HttpStatusCode.BadRequest) };
                 else if (result.IsNotAllowed)

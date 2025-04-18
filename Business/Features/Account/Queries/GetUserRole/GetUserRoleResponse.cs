@@ -12,5 +12,6 @@ namespace Business.Features.Account.Queries.GetUserRole
     {
         public List<string> UserRoles { get; set; }
         public CustomException exception { get; set; }
+        public bool error { get; set; } = true;
     }
 }

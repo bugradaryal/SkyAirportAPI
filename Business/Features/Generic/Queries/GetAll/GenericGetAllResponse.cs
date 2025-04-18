@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Business.ExceptionHandler;
-using Entities;
 
-namespace Business.Features.Account.Queries.Login
+namespace Business.Features.Generic.Queries.GetAll
 {
-    public class LoginResponse
+    public class GenericGetAllResponse<TEntity>
     {
-        public User user { get; set; }
+        public List<TEntity> data { get; set; }
         public CustomException exception { get; set; }
         public bool error { get; set; } = true;
     }

@@ -26,7 +26,7 @@ namespace Business.Features.Account.Queries.GetUserRole
             try
             {
                 var roles = await _userManager.GetRolesAsync(new User { Id = request.id });
-                return new GetUserRoleResponse { UserRoles = roles.ToList() };  // İstenirse ToList() ile dönüştürülür, fakat IList de çalışır
+                return new GetUserRoleResponse { UserRoles = roles.ToList(), error = false }; 
             }
             catch (Exception ex)
             {

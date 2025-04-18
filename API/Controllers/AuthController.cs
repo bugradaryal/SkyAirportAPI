@@ -60,13 +60,13 @@ namespace API.Controllers
             if (!validateTokenDTO.IsTokenValid)
             {
                 var userResponse = await _mediator.Send(new LoginRequest(loginAccountDTO));
-                if (userResponse.exception == null)
+                if (userResponse.error == false)
                 {
                     if (userResponse.user.IsSuspended)
                         return BadRequest(new { message = "User is suspended!!" });
                     var token = await _tokenServices.CreateTokenJWT(userResponse.user);
                     var roleResponse = await _mediator.Send(new GetUserRoleRequest(userResponse.user.Id));
-                    if (roleResponse.exception == null)
+                    if (roleResponse.error == false)
                     {
                         return Ok(new AuthenticationModel
                         {
@@ -76,9 +76,9 @@ namespace API.Controllers
                             Token = token
                         });
                     }
-                    return BadRequest(roleResponse);
+                    return BadRequest(roleResponse.exception);
                 }
-                return BadRequest(userResponse);
+                return BadRequest(userResponse.exception);
 
             }
             return Ok(_mapper.Map(validateTokenDTO, new AuthenticationModel()));         
