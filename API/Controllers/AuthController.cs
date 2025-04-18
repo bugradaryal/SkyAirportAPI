@@ -45,7 +45,7 @@ namespace API.Controllers
 
             var createResponse = await _mediator.Send(new CreateAccountRequest(createAccountDTO));
             if(createResponse != null)
-                return BadRequest(new { message = createResponse });
+                return BadRequest(createResponse);
             return Ok(new { message = "Account Created!" });
         }
 
@@ -76,12 +76,12 @@ namespace API.Controllers
                             Token = token
                         });
                     }
-                    return BadRequest(new { message = roleResponse.exception });
+                    return BadRequest(roleResponse);
                 }
-                return BadRequest(new { message = userResponse.exception });
+                return BadRequest(userResponse);
 
             }
-            return Ok(_mapper.Map<ValidateTokenDTO>(validateTokenDTO));         
+            return Ok(_mapper.Map(validateTokenDTO, new AuthenticationModel()));         
         }
 
         [Authorize(Policy = "IsUserSuspended")]
@@ -99,7 +99,7 @@ namespace API.Controllers
                     return BadRequest(new { message = "Unauthorized Action!!" });
                 var deleteResponse = await _mediator.Send(new DeleteAccountRequest(validateTokenDTO.user));
                 if (deleteResponse != null)
-                    return BadRequest(new { message = deleteResponse });
+                    return BadRequest(deleteResponse);
                 return Ok( new { message = "Account Deleted!!" });
             }
 
@@ -119,7 +119,7 @@ namespace API.Controllers
                 User user = _mapper.Map(updateAccountDTO,validateTokenDTO.user);
                 var updateResponse = await _mediator.Send(new UpdateAccountRequest(user));
                 if(updateResponse != null)
-                    return BadRequest(new { message = updateResponse });
+                    return BadRequest(updateResponse);
                 return Ok(new { message = "Account Updated!!" });
             }
         }
@@ -137,8 +137,8 @@ namespace API.Controllers
             {
                 var changePasswordResponse = await _mediator.Send(new ChangePasswordRequest(validateTokenDTO.user, changePasswordDTO));
                 if(changePasswordResponse != null)
-                    return BadRequest(new { message = changePasswordResponse });
-                return Ok(new { message = "Account Updated!!" });
+                    return BadRequest(changePasswordResponse);
+                return Ok(new { message = "Password changed!!" });
             }
         }
     }

@@ -6,26 +6,28 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.ExceptionHandler;
-using Business.Features.Account.Commands.DeleteAccount;
+using Business.Features.Account.Commands.CreateAccount;
+using Entities.Enums;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using DTO;
 
-namespace Business.Features.Account.Commands.UpdateAccount
+namespace Business.Features.Account.Commands.ChangePassword
 {
-    public class UpdateAccountHeader : IRequestHandler<UpdateAccountRequest, CustomException>
+    public class ChangePasswordHandle : IRequestHandler<ChangePasswordRequest, CustomException>
     {
         private UserManager<User> _userManager;
-        public UpdateAccountHeader(UserManager<User> userManager)
+        public ChangePasswordHandle(UserManager<User> userManager)
         {
             _userManager = userManager;
         }
 
-        public async Task<CustomException> Handle(UpdateAccountRequest request, CancellationToken cancellationToken)
+        public async Task<CustomException> Handle(ChangePasswordRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                var result = await _userManager.UpdateAsync(request.user);
+                var result = await _userManager.ChangePasswordAsync(request.user, request.changePasswordDTO.OldPassword, request.changePasswordDTO.NewPassword);
                 if (!result.Succeeded)
                     return new CustomException(result.Errors.FirstOrDefault().ToString(), (int)HttpStatusCode.BadRequest);
                 return null;

@@ -17,7 +17,8 @@ namespace Utilitys
 
             services.AddAutoMapper(
                 typeof(UserProfile).Assembly,
-                typeof(ValidateTokenProfile).Assembly
+                typeof(ValidateTokenProfile).Assembly,
+                typeof(AirportProfile).Assembly
             );
         }
     }

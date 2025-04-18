@@ -1,7 +1,12 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Business.Concrete.Generic;
+using Business.Features.Generic.Commands.Add;
+using Business.Features.Generic.Commands.Delete;
+using Business.Features.Generic.Commands.Update;
 using DTO;
 using Entities;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +17,14 @@ namespace API.Controllers
     [ApiController]
     public class AirportController : ControllerBase
     {
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
         private readonly IGenericServices<Airport> _genericServices;
         private readonly IGenericServices<AirportDTO> _dtogenericServices;
-        public AirportController() 
+        public AirportController(IMediator mediator, IMapper mapper) 
         {
-            _genericServices = new GenericManager<Airport>();
-            _dtogenericServices = new GenericManager<AirportDTO>();
+            _mediator = mediator;
+            _mapper = mapper;
         }
         [AllowAnonymous]
         [HttpGet("GetAllAirports")]
@@ -39,8 +46,11 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            await _dtogenericServices.Add(airportDTO);
-            return Ok();
+            var airport = _mapper.Map(airportDTO, new Airport());
+            var addResponse =  await _mediator.Send(new GenericAddRequest<Airport>(airport));
+            if(addResponse != null)
+                return BadRequest(addResponse);
+            return Ok(new { message = "Airport added!" });
         }
         [Authorize(Roles = "Administrator")]
         [HttpDelete("DeleteAirport")]
@@ -48,8 +58,10 @@ namespace API.Controllers
         {
             if (id == null || id == 0)
                 return BadRequest(new { message = "Invalid Id!!" });
-            await _genericServices.Delete(id);
-            return Ok();
+            var deleteResponse = await _mediator.Send(new GenericDeleteRequest(id));
+            if (deleteResponse != null)
+                return BadRequest(deleteResponse);
+            return Ok(new { message = "Airport deleted!" });
         }
         [Authorize(Roles = "Administrator")]
         [HttpPut("UpdateAirport")]
@@ -57,7 +69,8 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            await _dtogenericServices.Update(airportDTO);
+            var airport = _mapper.Map(airportDTO,);
+            var updateResponse = await _mediator.Send(new GenericUpdateRequest());
             return Ok();
         }
     }

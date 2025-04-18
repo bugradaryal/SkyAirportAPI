@@ -14,11 +14,11 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Business.Features.Account.Commands.CreateAccount
 {
-    public class CreateAccountHeader : IRequestHandler<CreateAccountRequest, CustomException>
+    public class CreateAccountHandle : IRequestHandler<CreateAccountRequest, CustomException>
     {
         private readonly IMapper _mapper;
         private UserManager<User> _userManager;
-        public CreateAccountHeader(IMapper mapper, UserManager<User> userManager)
+        public CreateAccountHandle(IMapper mapper, UserManager<User> userManager)
         {
             this._mapper = mapper;
             _userManager = userManager;

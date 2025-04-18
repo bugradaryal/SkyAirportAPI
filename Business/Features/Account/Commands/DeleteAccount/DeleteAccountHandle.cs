@@ -14,10 +14,10 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Business.Features.Account.Commands.DeleteAccount
 {
-    public class DeleteAccountHeader : IRequestHandler<DeleteAccountRequest, CustomException>
+    public class DeleteAccountHandle : IRequestHandler<DeleteAccountRequest, CustomException>
     {
         private UserManager<User> _userManager;
-        public DeleteAccountHeader(UserManager<User> userManager)
+        public DeleteAccountHandle(UserManager<User> userManager)
         {
             _userManager = userManager;
         }
