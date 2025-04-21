@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Business.ExceptionHandler;
 
-namespace Business.Features.Personal.Queries.GetAllPesonalsByAirportId
+namespace Business.Features.Personal.Queries
 {
     public class GetAllPersonalByAirportIdResponse
     {

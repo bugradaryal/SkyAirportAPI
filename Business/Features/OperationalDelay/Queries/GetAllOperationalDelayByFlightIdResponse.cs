@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Business.ExceptionHandler;
 
-namespace Business.Features.Flight.Queries
+namespace Business.Features.OperationalDelay.Queries
 {
-    public class GetAllFlightByAirlineIdResponse
+    public class GetAllOperationalDelayByFlightIdResponse
     {
-        public List<Entities.Flight> entity { get; set; }
+        public List<Entities.OperationalDelay> entity { get; set; }
         public CustomException exception { get; set; }
         public bool error { get; set; } = true;
     }

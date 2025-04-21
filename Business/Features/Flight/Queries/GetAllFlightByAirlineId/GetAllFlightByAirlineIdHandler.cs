@@ -10,7 +10,7 @@ using DataAccess.Abstract;
 using DataAccess.Concrete;
 using MediatR;
 
-namespace Business.Features.Flight.Queries
+namespace Business.Features.Flight.Queries.GetAllFlightByAirlineId
 {
     public class GetAllFlightByAirlineIdHandler : IRequestHandler<GetAllFlightByAirlineIdRequest, GetAllFlightByAirlineIdResponse>
     {

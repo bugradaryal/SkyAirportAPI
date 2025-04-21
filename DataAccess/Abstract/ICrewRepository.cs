@@ -7,9 +7,8 @@ using Entities;
 
 namespace DataAccess.Abstract
 {
-    public interface IFlightRepository
+    public interface ICrewRepository
     {
-        Task<List<Flight>> GetAllByAirlineId(int id);
-        Task<List<Flight>> GetAllByAircraftId(int id);
+        Task<List<Crew>> GetAllByAircraftId(int id);
     }
 }

@@ -7,9 +7,8 @@ using Entities;
 
 namespace DataAccess.Abstract
 {
-    public interface IFlightRepository
+    public interface IOperationalDelayRepository
     {
-        Task<List<Flight>> GetAllByAirlineId(int id);
-        Task<List<Flight>> GetAllByAircraftId(int id);
+        Task<List<OperationalDelay>> GetAllByFlightId(int id);
     }
 }

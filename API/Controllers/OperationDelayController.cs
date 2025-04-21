@@ -1,7 +1,14 @@
+using AutoMapper;
 using Business.Abstract;
-using Business.Concrete.Generic;
+using Business.Features.Generic.Commands.Add;
+using Business.Features.Generic.Commands.Delete;
+using Business.Features.Generic.Commands.Update;
+using Business.Features.Generic.Queries.GetAll;
+using Business.Features.Generic.Queries.GetById;
+using Business.Features.OperationalDelay.Queries;
 using DTO;
 using Entities;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,60 +17,79 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OperationDelayController : ControllerBase
+    public class OperationalDelayDTOController : ControllerBase
     {
-        private readonly IGenericServices<OperationalDelay> _genericServices;
-        private readonly IGenericServices<OperationalDelayDTO> _dtogenericServices;
-        public OperationDelayController() 
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
+
+        public OperationalDelayDTOController(IMediator mediator, IMapper mapper)
         {
-            _genericServices = new GenericManager<OperationalDelay>();
-            _dtogenericServices = new GenericManager<OperationalDelayDTO>();    
+            _mediator = mediator;
+            _mapper = mapper;
         }
 
-        [AllowAnonymous]
-        [HttpGet("GetAllOperationDelays")]
-        public async Task<IActionResult> GetAllOperationDelays()
+        [HttpGet("GetAllOperationalDelay")]
+        public async Task<IActionResult> GetAllOperationalDelay()
         {
-            return Ok(_genericServices.GetAll());
+            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<OperationalDelayDTO>());
+            if (getAllRepository.error == true)
+                return BadRequest(getAllRepository.exception);
+            return Ok(getAllRepository.data);
         }
 
-        [AllowAnonymous]
-        [HttpGet("GetOperationDelayById")]
-        public async Task<IActionResult> GetOperationDelayById([FromQuery] int id)
+
+        [HttpGet("GetAllOperationalDelayByFlightId")]
+        public async Task<IActionResult> GetAllOperationalDelayByFlightId([FromQuery] int id)
+        {
+            var getAllResponse = await _mediator.Send(new GetAllOperationalDelayByFlightIdRequest(id));
+            if (getAllResponse.error)
+                return BadRequest(getAllResponse.exception);
+            return Ok(getAllResponse.entity);
+        }
+
+        [HttpGet("GetOperationalDelayById")]
+        public async Task<IActionResult> GetOperationalDelayById([FromQuery] int id)
         {
             if (id == null || id == 0)
                 return BadRequest(new { message = "Invalid Id!!" });
-            return Ok(await _genericServices.GetValue(id));
+            var getByIdResponse = await _mediator.Send(new GenericGetByIdRequest<OperationalDelayDTO>(id));
+            if (getByIdResponse.error)
+                return BadRequest(getByIdResponse.exception);
+            return Ok(getByIdResponse.entity);
         }
 
-        [Authorize(Roles = "Administrator")]
-        [HttpPost("AddOperationDelay")]
-        public async Task<IActionResult> AddOperationDelay(DTO.OperationalDelayDTO operationDelayDTO)
+        [HttpPost("AddOperationalDelay")]
+        public async Task<IActionResult> AddOperationalDelay(OperationalDelayDTO operationDelayDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            await _dtogenericServices.Add(operationDelayDTO);
-            return Ok();
+            var personal = _mapper.Map(operationDelayDTO, new OperationalDelayDTO());
+            var addResponse = await _mediator.Send(new GenericAddRequest<OperationalDelayDTO>(personal));
+            if (addResponse != null)
+                return BadRequest(addResponse);
+            return Ok(new { message = "Delay added!" });
         }
 
-        [Authorize(Roles = "Administrator")]
-        [HttpDelete("DeleteOperationDelay")]
-        public async Task<IActionResult> DeleteOperationDelay([FromQuery] int id)
+        [HttpDelete("DeleteOperationalDelay")]
+        public async Task<IActionResult> DeleteOperationalDelay([FromQuery] int id)
         {
             if (id == null || id == 0)
                 return BadRequest(new { message = "Invalid Id!!" });
-            await _genericServices.Delete(id);
-            return Ok();
+            var deleteResponse = await _mediator.Send(new GenericDeleteRequest<OperationalDelayDTO>(id));
+            if (deleteResponse != null)
+                return BadRequest(deleteResponse);
+            return Ok(new { message = "OperationalDelay deleted!" });
         }
 
-        [Authorize(Roles = "Administrator")]
-        [HttpPut("UpdateOperationDelay")]
-        public async Task<IActionResult> UpdateOperationDelay(DTO.OperationalDelayDTO operationDelayDTO)
+        [HttpPut("UpdateOperationalDelay")]
+        public async Task<IActionResult> UpdateOperationalDelayDTO(OperationalDelayDTO operationDelayDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            await _dtogenericServices.Update(operationDelayDTO);
-            return Ok();
+            var data = await _mediator.Send(new GenericGetByIdRequest<OperationalDelayDTO>(operationDelayDTO.id));
+            var personal = _mapper.Map(operationDelayDTO, data.entity);
+            var updateResponse = await _mediator.Send(new GenericUpdateRequest<OperationalDelayDTO>(personal));
+            return Ok(new { message = "Updated!" });
         }
     }
 }

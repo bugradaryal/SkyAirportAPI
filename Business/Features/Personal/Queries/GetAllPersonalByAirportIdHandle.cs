@@ -6,14 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Business.ExceptionHandler;
 using Business.Features.Account.Commands.ChangePassword;
-using Business.Features.Personal.Queries.GetAllPesonalsByAirportId;
 using DataAccess.Abstract;
 using DataAccess.Concrete;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace Business.Features.Personal.Commands.GetAllPesonalsByAirportId
+namespace Business.Features.Personal.Queries
 {
     public class GetAllPersonalByAirportIdHandle : IRequestHandler<GetAllPersonalByAirportIdRequest, GetAllPersonalByAirportIdResponse>
     {

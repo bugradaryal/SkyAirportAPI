@@ -18,5 +18,17 @@ namespace DataAccess.Concrete
                 return await _dbContext.Flights.Where(x => x.airline_id == id).ToListAsync();
             }
         }
+        public async Task<List<Flight>> GetAllByAircraftId(int id)
+        {
+            using (var _dbContext = new DataDbContext())
+            {
+                var flights = await _dbContext.Flight_Aircrafts
+                    .Where(af => af.aircraft_id == id)
+                    .Include(af => af.flight)
+                    .Select(af => af.flight)
+                    .ToListAsync();
+                return flights;
+            }
+        }
     }
 }

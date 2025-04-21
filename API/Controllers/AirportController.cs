@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Business.Abstract;
-using Business.Concrete.Generic;
 using Business.Features.Generic.Commands.Add;
 using Business.Features.Generic.Commands.Delete;
 using Business.Features.Generic.Commands.Update;

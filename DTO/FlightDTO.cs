@@ -15,5 +15,6 @@ namespace DTO
         public DateTime Deperture_Date { get; set; }
         public string Status { get; set; }
         public int airline_id { get; set; }
+        public int aircraft_id { get; set; }
     }
 }

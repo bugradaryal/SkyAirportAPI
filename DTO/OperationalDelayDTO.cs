@@ -6,5 +6,6 @@ namespace DTO
         public string Delay_Reason { get; set; }
         public string Delay_Duration { get; set; }
         public DateTime Delay_Time { get; set; }
+        public int flight_id {  get; set; }
     }
 }

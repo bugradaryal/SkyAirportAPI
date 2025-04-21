@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Business.Features.Airline.Queries;
+using Business.Features.Flight.Queries.GetAllFlightByAircraftId;
+using Business.Features.Flight.Queries.GetAllFlightByAirlineId;
 using Business.Features.Generic.Commands.Add;
 using Business.Features.Generic.Commands.Delete;
 using Business.Features.Generic.Commands.Update;
@@ -41,7 +43,16 @@ namespace API.Controllers
         [HttpGet("GetAllFlightByAirlineId")]
         public async Task<IActionResult> GetAllFlightByAirlineId([FromQuery] int id)
         {
-            var getAllResponse = await _mediator.Send(new GetAllAirlinesByAirportIdRequest(id));
+            var getAllResponse = await _mediator.Send(new GetAllFlightByAirlineIdRequest(id));
+            if (getAllResponse.error)
+                return BadRequest(getAllResponse.exception);
+            return Ok(getAllResponse.entity);
+        }
+        [AllowAnonymous]
+        [HttpGet("GetAllFlightByAircraftId")]
+        public async Task<IActionResult> GetAllFlightByAircraftId([FromQuery] int id)
+        {
+            var getAllResponse = await _mediator.Send(new GetAllFlightByAircraftIdRequest(id));
             if (getAllResponse.error)
                 return BadRequest(getAllResponse.exception);
             return Ok(getAllResponse.entity);
@@ -68,6 +79,12 @@ namespace API.Controllers
             var addResponse = await _mediator.Send(new GenericAddRequest<Flight>(flight));
             if (addResponse != null)
                 return BadRequest(addResponse);
+            var flightAircraftResponse = await _mediator.Send(new GenericAddRequest<Flight_Aircraft>(new Flight_Aircraft {
+                aircraft_id = flightDTO.aircraft_id,
+                flight_id = flightDTO.id
+            }));
+            if (flightAircraftResponse != null)
+                return BadRequest(flightAircraftResponse);
             return Ok(new { message = "Flight added!" });
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]

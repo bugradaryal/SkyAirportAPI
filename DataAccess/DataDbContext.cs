@@ -17,6 +17,7 @@ namespace DataAccess
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<OperationalDelay> OperationalDelays { get; set; }
         public DbSet<Seat> Seats { get; set; }
         public DbSet<Personal> Personals { get; set; }
         public DbSet<Flight_Aircraft> Flight_Aircrafts { get; set; }
@@ -168,6 +169,11 @@ namespace DataAccess
             modelBuilder.Entity<Personal>().HasOne<Airport>(s => s.airport).WithMany(g => g.personal).HasForeignKey(s => s.airport_id).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<LogEntry>().HasOne<LogLevel>(s => s.logLevel).WithMany(g => g.logEntry).HasForeignKey(s => s.loglevel_id).OnDelete(DeleteBehavior.NoAction);
             //modelBuilder.Entity<Aircraft>().HasOne<AircraftStatus>(s => s.aircraftStatus).WithMany(g => g.aircraft).HasForeignKey(s => s.aircraftStatus_id).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Aircraft>()
+                .HasMany(a => a.aircraftStatus)
+                .WithOne(s => s.Aircraft)
+                .HasForeignKey(s => s.AircraftId)
+                .OnDelete(DeleteBehavior.NoAction);
             ////////////////////////////
             modelBuilder.ApplyConfiguration(new SeedData.LevelSeed());
             modelBuilder.ApplyConfiguration(new SeedData.RoleSeed());
