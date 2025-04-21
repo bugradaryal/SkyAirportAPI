@@ -123,6 +123,7 @@ namespace DataAccess
             modelBuilder.Entity<Aircraft>().Property(x => x.Max_Altitude).HasColumnType("DECIMAL(8,1)").IsRequired();
             modelBuilder.Entity<Aircraft>().Property(x => x.Engine_Power).IsRequired();
             modelBuilder.Entity<Aircraft>().Property(x => x.Carry_Capacity).HasColumnType("DECIMAL(7,2)").IsRequired();
+            modelBuilder.Entity<Aircraft>().Property(x => x.aircraftStatus_id).HasDefaultValue("NotOperational");
             ////////////////////////////
             modelBuilder.Entity<LogEntry>().HasKey(x => x.id);
             modelBuilder.Entity<LogEntry>().Property(x => x.Timestamp).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.Now);
@@ -152,7 +153,6 @@ namespace DataAccess
             modelBuilder.Entity<AircraftStatus>().HasKey(x => x.id);
             modelBuilder.Entity<AircraftStatus>().Property(x => x.Status).HasColumnType("text").IsRequired().HasMaxLength(64);
             modelBuilder.Entity<AircraftStatus>().HasIndex(x => x.Status).IsUnique();
-            modelBuilder.Entity<AircraftStatus>().Property(x => x.aircraft_id).IsRequired();
             ////////////////////////////
             modelBuilder.Entity<Ticket>().HasOne<User>(s => s.user).WithMany(g => g.ticket).HasForeignKey(s => s.user_id).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<AdminOperation>().HasOne<User>(s => s.user).WithMany(g => g.adminOperation).HasForeignKey(s => s.user_id).OnDelete(DeleteBehavior.NoAction);
@@ -168,7 +168,7 @@ namespace DataAccess
             modelBuilder.Entity<Airline>().HasOne<Airport>(s => s.airport).WithMany(g => g.airline).HasForeignKey(s => s.airport_id).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Personal>().HasOne<Airport>(s => s.airport).WithMany(g => g.personal).HasForeignKey(s => s.airport_id).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<LogEntry>().HasOne<LogLevel>(s => s.logLevel).WithMany(g => g.logEntry).HasForeignKey(s => s.loglevel_id).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<Aircraft>().HasOne<AircraftStatus>(s => s.aircraftStatus).WithMany(g => g.aircraft).HasForeignKey(s => s.).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Aircraft>().HasOne<AircraftStatus>(s => s.aircraftStatus).WithMany(g => g.aircraft).HasForeignKey(s => s.aircraftStatus_id).OnDelete(DeleteBehavior.NoAction);
             ////////////////////////////
             modelBuilder.ApplyConfiguration(new SeedData.LevelSeed());
             modelBuilder.ApplyConfiguration(new SeedData.RoleSeed());

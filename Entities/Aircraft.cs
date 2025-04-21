@@ -15,7 +15,7 @@ namespace Entities
         public double Max_Altitude { get; set; }
         public int Engine_Power { get; set; }
         public double Carry_Capacity { get; set; }
-
+        public int aircraftStatus_id { get; set; }
 
         public AircraftStatus aircraftStatus { get; set; }
         public ICollection<Flight_Aircraft> flight_Aircraft { get; set; }

@@ -22,7 +22,9 @@ namespace Utilitys
                 typeof(PersonalProfile).Assembly,
                 typeof(AirlineProfile).Assembly,
                 typeof(SeatProfile).Assembly,
-                typeof(TicketProfile).Assembly
+                typeof(TicketProfile).Assembly,
+                typeof(AircraftProfile).Assembly,
+                typeof(CrewProfile).Assembly
             );
         }
     }
