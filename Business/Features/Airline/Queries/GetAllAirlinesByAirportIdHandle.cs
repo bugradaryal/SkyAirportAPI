@@ -5,8 +5,6 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Business.ExceptionHandler;
-using Business.Features.Personal.Commands.GetAllPesonalsByAirportId;
-using Business.Features.Personal.Queries.GetAllPesonalsByAirportId;
 using DataAccess.Abstract;
 using DataAccess.Concrete;
 using MediatR;

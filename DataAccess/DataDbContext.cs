@@ -168,12 +168,7 @@ namespace DataAccess
             modelBuilder.Entity<Airline>().HasOne<Airport>(s => s.airport).WithMany(g => g.airline).HasForeignKey(s => s.airport_id).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Personal>().HasOne<Airport>(s => s.airport).WithMany(g => g.personal).HasForeignKey(s => s.airport_id).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<LogEntry>().HasOne<LogLevel>(s => s.logLevel).WithMany(g => g.logEntry).HasForeignKey(s => s.loglevel_id).OnDelete(DeleteBehavior.NoAction);
-            //modelBuilder.Entity<Aircraft>().HasOne<AircraftStatus>(s => s.aircraftStatus).WithMany(g => g.aircraft).HasForeignKey(s => s.aircraftStatus_id).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<Aircraft>()
-                .HasMany(a => a.aircraftStatus)
-                .WithOne(s => s.Aircraft)
-                .HasForeignKey(s => s.AircraftId)
-                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Aircraft>().HasOne<AircraftStatus>(s => s.aircraftStatus).WithMany(g => g.aircraft).HasForeignKey(s => s.).OnDelete(DeleteBehavior.NoAction);
             ////////////////////////////
             modelBuilder.ApplyConfiguration(new SeedData.LevelSeed());
             modelBuilder.ApplyConfiguration(new SeedData.RoleSeed());

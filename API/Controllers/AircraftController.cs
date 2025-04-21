@@ -1,6 +1,7 @@
 using AutoMapper;
 using Business.Abstract;
-using Business.Concrete.Generic;
+using Business.Features.Aircraft.Queries.GetAircraftById;
+using Business.Features.Aircraft.Queries.GetAllAircrafts;
 using Business.Features.Generic.Commands.Add;
 using Business.Features.Generic.Commands.Delete;
 using Business.Features.Generic.Commands.Update;
@@ -30,10 +31,10 @@ namespace API.Controllers
         [HttpGet("GetAllAircrafts")]
         public async Task<IActionResult> GetAllAircrafts()
         {
-            var getAllResponse = await _mediator.Send(new GenericGetAllRequest<Aircraft>());
+            var getAllResponse = await _mediator.Send(new GetAllAircraftsRequest());
             if (getAllResponse.error)
                 return BadRequest(getAllResponse.exception);
-            return Ok(getAllResponse.data);
+            return Ok(getAllResponse.entity);
         }
         [AllowAnonymous]
         [HttpGet("GetAircraftById")]
@@ -41,7 +42,7 @@ namespace API.Controllers
         {
             if (id == null || id == 0)
                 return BadRequest(new { message = "Invalid Id!!" });
-            var getByIdResponse = await _mediator.Send(new GenericGetByIdRequest<Aircraft>(id));
+            var getByIdResponse = await _mediator.Send(new GetAircraftByIdRequest(id));
             if (getByIdResponse.error)
                 return BadRequest(getByIdResponse.exception);
             return Ok(getByIdResponse.entity);
