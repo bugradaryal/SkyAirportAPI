@@ -11,7 +11,7 @@ using MediatR;
 
 namespace Business.Features.Generic.Commands.Delete
 {
-    public class GenericDeleteHandle<TEntity> : IRequestHandler<GenericDeleteRequest, CustomException> where TEntity : class
+    public class GenericDeleteHandle<TEntity> : IRequestHandler<GenericDeleteRequest<TEntity>, CustomException> where TEntity : class
     {
         private readonly IGenericRepository<TEntity> _genericRepository;
 
@@ -20,7 +20,7 @@ namespace Business.Features.Generic.Commands.Delete
             _genericRepository = new GenericRepository<TEntity>();
         }
 
-        public async Task<CustomException> Handle(GenericDeleteRequest request, CancellationToken cancellationToken)
+        public async Task<CustomException> Handle(GenericDeleteRequest<TEntity> request, CancellationToken cancellationToken)
         {
             try
             {

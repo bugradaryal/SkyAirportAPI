@@ -23,7 +23,6 @@ namespace API.Controllers
     [ApiController]
     public class AuthController : Controller
     {
-        public readonly IAccountServices _accountServices;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly ITokenServices _tokenServices;

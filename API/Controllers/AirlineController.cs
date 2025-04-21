@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
 using Business.Abstract;
-using Business.Concrete.Generic;
 using Business.Features.Airline.Queries;
 using Business.Features.Generic.Commands.Add;
 using Business.Features.Generic.Commands.Delete;
 using Business.Features.Generic.Commands.Update;
 using Business.Features.Generic.Queries.GetAll;
 using Business.Features.Generic.Queries.GetById;
-using Business.Features.Personal.Commands.GetAllPesonalsByAirportId;
 using DTO;
 using Entities;
 using MediatR;
