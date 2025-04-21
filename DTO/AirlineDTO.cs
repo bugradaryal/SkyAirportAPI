@@ -14,5 +14,6 @@ namespace DTO
         public string WebAdress { get; set; }
         public string PhoneNumber { get; set; }
         public string Country { get; set; }
+        public int airport_id { get; set; }
     }
 }

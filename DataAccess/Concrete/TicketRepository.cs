@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DataAccess.Abstract;
+using Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace DataAccess.Concrete
+{
+    public class TicketRepository : ITicketRepository
+    {
+        public async Task<List<Ticket>> GetAllBySeatId(int id)
+        {
+            using (var _dbContext = new DataDbContext())
+            {
+                return await _dbContext.Tickets.Where(x => x.seat_id == id).ToListAsync();
+            }
+        }
+    }
+}

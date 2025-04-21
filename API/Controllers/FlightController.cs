@@ -1,47 +1,45 @@
 ﻿using AutoMapper;
-using Business.Abstract;
-using Business.Concrete.Generic;
 using Business.Features.Airline.Queries;
 using Business.Features.Generic.Commands.Add;
 using Business.Features.Generic.Commands.Delete;
 using Business.Features.Generic.Commands.Update;
 using Business.Features.Generic.Queries.GetAll;
 using Business.Features.Generic.Queries.GetById;
-using Business.Features.Personal.Commands.GetAllPesonalsByAirportId;
 using DTO;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AirlineController : ControllerBase
+    public class FlightController : ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-        public AirlineController(IMediator mediator, IMapper mapper) 
+        public FlightController(IMediator mediator, IMapper mapper)
         {
             _mapper = mapper;
             _mediator = mediator;
         }
 
         [AllowAnonymous]
-        [HttpGet("GetAllAirlines")]
-        public async Task<IActionResult> GetAllAirlines()
+        [HttpGet("GetAllFlight")]
+        public async Task<IActionResult> GetAllFlight()
         {
-            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Airline>());
-            if(getAllRepository.error == true)
+            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Flight>());
+            if (getAllRepository.error == true)
                 return BadRequest(getAllRepository.exception);
             return Ok(getAllRepository.data);
         }
 
         [AllowAnonymous]
-        [HttpGet("GetAllAirlinesByAirportId")]
-        public async Task<IActionResult> GetAllAirlinesByAirportId([FromQuery] int id)
+        [HttpGet("GetAllFlightByAirlineId")]
+        public async Task<IActionResult> GetAllFlightByAirlineId([FromQuery] int id)
         {
             var getAllResponse = await _mediator.Send(new GetAllAirlinesByAirportIdRequest(id));
             if (getAllResponse.error)
@@ -50,51 +48,52 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("GetAirlineById")]
-        public async Task<IActionResult> GetAirlineById([FromQuery] int id)
+        [HttpGet("GetFlightById")]
+        public async Task<IActionResult> GetFlightById([FromQuery] int id)
         {
             if (id == null || id == 0)
                 return BadRequest(new { message = "Invalid Id!!" });
-            var getByIdResponse = await _mediator.Send(new GenericGetByIdRequest<Airline>(id));
+            var getByIdResponse = await _mediator.Send(new GenericGetByIdRequest<Flight>(id));
             if (getByIdResponse.error)
                 return BadRequest(getByIdResponse.exception);
             return Ok(getByIdResponse.entity);
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
-        [HttpPost("AddAirline")]
-        public async Task<IActionResult> AddAirline(AirlineDTO airlineDTO)
+        [HttpPost("AddFlight")]
+        public async Task<IActionResult> AddFlight(FlightDTO flightDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var airline = _mapper.Map(airlineDTO, new Airline());
-            var addResponse = await _mediator.Send(new GenericAddRequest<Airline>(airline));
+            var flight = _mapper.Map(flightDTO, new Flight());
+            var addResponse = await _mediator.Send(new GenericAddRequest<Flight>(flight));
             if (addResponse != null)
                 return BadRequest(addResponse);
-            return Ok(new { message = "Airline added!" });
+            return Ok(new { message = "Flight added!" });
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
-        [HttpDelete("DeleteAirline")]
-        public async Task<IActionResult> DeleteAirline([FromQuery] int id)
+        [HttpDelete("DeleteFlight")]
+        public async Task<IActionResult> DeleteFlight([FromQuery] int id)
         {
             if (id == null || id == 0)
                 return BadRequest(new { message = "Invalid Id!!" });
-            var deleteResponse = await _mediator.Send(new GenericDeleteRequest<Airline>(id));
+            var deleteResponse = await _mediator.Send(new GenericDeleteRequest<Flight>(id));
             if (deleteResponse != null)
                 return BadRequest(deleteResponse);
-            return Ok(new { message = "Airline deleted!" });
+            return Ok(new { message = "Flight deleted!" });
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
-        [HttpPut("UpdateAirline")]
-        public async Task<IActionResult> UpdateAirline(AirlineDTO airlineDTO)
+        [HttpPut("UpdateFlight")]
+        public async Task<IActionResult> UpdateFlight(FlightDTO flightDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var data = await _mediator.Send(new GenericGetByIdRequest<Airline>(airlineDTO.id));
-            var airline = _mapper.Map(airlineDTO, data.entity);
-            var updateResponse = await _mediator.Send(new GenericUpdateRequest<Airline>(airline));
+            var data = await _mediator.Send(new GenericGetByIdRequest<Flight>(flightDTO.id));
+            var flight = _mapper.Map(flightDTO, data.entity);
+            var updateResponse = await _mediator.Send(new GenericUpdateRequest<Flight>(flight));
             if (updateResponse != null)
                 return BadRequest(updateResponse);
             return Ok(new { message = "Updated!" });
         }
+
     }
 }

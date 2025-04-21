@@ -7,5 +7,6 @@ namespace DTO
         public string Seat_Class { get; set; }
         public string Location { get; set; }
         public bool Is_Available { get; set; }
+        public int flight_id { get; set; }
     }
 }

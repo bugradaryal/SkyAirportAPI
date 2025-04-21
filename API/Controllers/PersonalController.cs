@@ -1,68 +1,97 @@
+using AutoMapper;
 using Business.Abstract;
 using Business.Concrete.Generic;
+using Business.Features.Generic.Commands.Add;
+using Business.Features.Generic.Commands.Delete;
+using Business.Features.Generic.Commands.Update;
+using Business.Features.Generic.Queries.GetAll;
+using Business.Features.Generic.Queries.GetById;
+using Business.Features.Personal.Commands.GetAllPesonalsByAirportId;
 using DTO;
 using Entities;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    [Authorize(Roles = "Administrator",Policy = "IsUserSuspended")]
     [Route("api/[controller]")]
     [ApiController]
     public class PersonalController : ControllerBase
     {
-        private readonly IGenericServices<Personal> _genericServices;
-        private readonly IGenericServices<PersonalDTO> _dtogenericServices;
-        public PersonalController() 
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
+
+        public PersonalController(IMediator mediator, IMapper mapper) 
         {
-            _genericServices = new GenericManager<Personal>();
+            _mediator = mediator;
+            _mapper = mapper;
         }
 
-        [AllowAnonymous]
         [HttpGet("GetAllPersonals")]
         public async Task<IActionResult> GetAllPersonals()
         {
-            return Ok(_genericServices.GetAll());
+            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Personal>());
+            if (getAllRepository.error == true)
+                return BadRequest(getAllRepository.exception);
+            return Ok(getAllRepository.data);
         }
 
-        [AllowAnonymous]
+
+        [HttpGet("GetAllPersonalsByAirportId")]
+        public async Task<IActionResult> GetAllPersonalsByAirportId([FromQuery] int id)
+        {
+            var getAllResponse = await _mediator.Send(new GetAllPersonalByAirportIdRequest(id));
+            if (getAllResponse.error)
+                return BadRequest(getAllResponse.exception);
+            return Ok(getAllResponse.entity);
+        }
+
         [HttpGet("GetPersonalById")]
         public async Task<IActionResult> GetPersonalById([FromQuery] int id)
         {
             if (id == null || id == 0)
                 return BadRequest(new { message = "Invalid Id!!" });
-            return Ok(await _genericServices.GetValue(id));
+            var getByIdResponse = await _mediator.Send(new GenericGetByIdRequest<Personal>(id));
+            if (getByIdResponse.error)
+                return BadRequest(getByIdResponse.exception);
+            return Ok(getByIdResponse.entity);
         }
 
-        [Authorize(Roles = "Administrator")]
         [HttpPost("AddPersonal")]
         public async Task<IActionResult> AddPersonal(PersonalDTO personalDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            await _dtogenericServices.Add(personalDTO);
-            return Ok();
+            var personal = _mapper.Map(personalDTO, new Personal());
+            var addResponse = await _mediator.Send(new GenericAddRequest<Personal>(personal));
+            if (addResponse != null)
+                return BadRequest(addResponse);
+            return Ok(new { message = "Personal added!" });
         }
 
-        [Authorize(Roles = "Administrator")]
         [HttpDelete("DeletePersonal")]
         public async Task<IActionResult> DeletePersonal([FromQuery] int id)
         {
             if (id == null || id == 0)
                 return BadRequest(new { message = "Invalid Id!!" });
-            await _genericServices.Delete(id);
-            return Ok();
+            var deleteResponse = await _mediator.Send(new GenericDeleteRequest<Personal>(id));
+            if (deleteResponse != null)
+                return BadRequest(deleteResponse);
+            return Ok(new { message = "Personal deleted!" });
         }
 
-        [Authorize(Roles = "Administrator")]
         [HttpPut("UpdatePersonal")]
         public async Task<IActionResult> UpdatePersonal(PersonalDTO personalDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            await _dtogenericServices.Update(personalDTO);
-            return Ok();
+            var data = await _mediator.Send(new GenericGetByIdRequest<Personal>(personalDTO.id));
+            var personal = _mapper.Map(personalDTO, data.entity);
+            var updateResponse = await _mediator.Send(new GenericUpdateRequest<Personal>(personal));
+            return Ok(new { message = "Updated!" });
         }
     }
 }

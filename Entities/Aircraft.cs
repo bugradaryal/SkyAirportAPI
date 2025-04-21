@@ -17,7 +17,6 @@ namespace Entities
         public double Carry_Capacity { get; set; }
 
 
-        public int aircraftStatus_id { get; set; }
         public AircraftStatus aircraftStatus { get; set; }
         public ICollection<Flight_Aircraft> flight_Aircraft { get; set; }
         public ICollection<Crew_Aircraft> crew_Aircraft { get; set; }

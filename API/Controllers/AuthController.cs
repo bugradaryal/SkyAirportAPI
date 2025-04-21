@@ -27,9 +27,8 @@ namespace API.Controllers
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly ITokenServices _tokenServices;
-        public AuthController(UserManager<User> userManager, IMapper mapper, SignInManager<User> signInManager, IOptions<JWT_Conf> jwt, IMediator mediator) 
+        public AuthController(UserManager<User> userManager, IMapper mapper, IOptions<JWT_Conf> jwt, IMediator mediator) 
         {
-            _accountServices = new AccountManager(userManager,mapper,signInManager);
             _tokenServices = new TokenManager(jwt,userManager);
             _mapper = mapper;
             _mediator = mediator;

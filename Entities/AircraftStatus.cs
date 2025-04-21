@@ -11,7 +11,7 @@ namespace Entities
         public int id { get; set; }
         public string Status { get; set; }
 
-
+        public int aircraft_id { get; set; }
         public ICollection<Aircraft> aircraft { get; set; }
     }
 }

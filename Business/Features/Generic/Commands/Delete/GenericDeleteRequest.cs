@@ -8,5 +8,5 @@ using MediatR;
 
 namespace Business.Features.Generic.Commands.Delete
 {
-    public record GenericDeleteRequest(int objectId) : IRequest<CustomException>;
+    public record GenericDeleteRequest<TEntity>(int objectId) : IRequest<CustomException>;
 }

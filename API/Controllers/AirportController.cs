@@ -21,8 +21,6 @@ namespace API.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly IGenericServices<Airport> _genericServices;
-        private readonly IGenericServices<AirportDTO> _dtogenericServices;
         public AirportController(IMediator mediator, IMapper mapper) 
         {
             _mediator = mediator;
@@ -48,7 +46,7 @@ namespace API.Controllers
                 return BadRequest(getByIdResponse.exception);
             return Ok(getByIdResponse.entity);
         }
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("AddAirport")]
         public async Task<IActionResult> AddAirport(AirportDTO airportDTO)
         {
@@ -60,26 +58,29 @@ namespace API.Controllers
                 return BadRequest(addResponse);
             return Ok(new { message = "Airport added!" });
         }
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpDelete("DeleteAirport")]
         public async Task<IActionResult> DeleteAirport([FromQuery] int id)
         {
             if (id == null || id == 0)
                 return BadRequest(new { message = "Invalid Id!!" });
-            var deleteResponse = await _mediator.Send(new GenericDeleteRequest(id));
+            var deleteResponse = await _mediator.Send(new GenericDeleteRequest<Airport>(id));
             if (deleteResponse != null)
                 return BadRequest(deleteResponse);
             return Ok(new { message = "Airport deleted!" });
         }
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPut("UpdateAirport")]
         public async Task<IActionResult> UpdateAirport(AirportDTO airportDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var airport = _mapper.Map(airportDTO,new Airport());
+            var data = await _mediator.Send(new GenericGetByIdRequest<Airport>(airportDTO.id));
+            var airport = _mapper.Map(airportDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<Airport>(airport));
-            return Ok();
+            if (updateResponse != null)
+                return BadRequest(updateResponse);
+            return Ok(new { message = "Updated!" });
         }
     }
 }

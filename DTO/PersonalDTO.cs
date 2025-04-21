@@ -11,5 +11,7 @@ namespace DTO
         public string PhoneNumber { get; set; }
         public DateTime Start_Date { get; set; }
 
+        public int airport_id { get; set; }
+
     }
 }
