@@ -13,5 +13,6 @@ namespace Business.Abstract
     {
         Task<ValidateTokenDTO> ValidateToken(HttpContext httpContext);
         Task<string> CreateTokenJWT(User user);
+        Task<string> CreateTokenEmailConfirm(User user);
     }
 }

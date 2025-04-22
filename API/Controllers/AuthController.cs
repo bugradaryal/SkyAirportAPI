@@ -5,6 +5,7 @@ using Business.Features.Account.Commands.ChangePassword;
 using Business.Features.Account.Commands.CreateAccount;
 using Business.Features.Account.Commands.DeleteAccount;
 using Business.Features.Account.Commands.UpdateAccount;
+using Business.Features.Account.Queries.GetUserByEmail;
 using Business.Features.Account.Queries.GetUserRole;
 using Business.Features.Account.Queries.Login;
 using DTO;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System;
+using Utilitys.MailServices;
 
 namespace API.Controllers
 {
@@ -26,11 +28,13 @@ namespace API.Controllers
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly ITokenServices _tokenServices;
-        public AuthController(UserManager<User> userManager, IMapper mapper, IOptions<JWT_Conf> jwt, IMediator mediator) 
+        private readonly IMailServices _mailServices;
+        public AuthController(UserManager<User> userManager, IMapper mapper, IOptions<JwtBearer> jwt, IMediator mediator, IOptions<EmailSender> mail) 
         {
             _tokenServices = new TokenManager(jwt,userManager);
             _mapper = mapper;
             _mediator = mediator;
+            _mailServices = new MailManager(mail,userManager);
         }
 
 
@@ -137,6 +141,31 @@ namespace API.Controllers
                 if(changePasswordResponse != null)
                     return BadRequest(changePasswordResponse);
                 return Ok(new { message = "Password changed!!" });
+            }
+        }
+
+        [HttpPost("SendingEmail")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SendingEmail([FromBody] string email)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(email))
+                    return BadRequest(new { message = "Account does not exist!" });
+
+                var mailResponse = await _mediator.Send(new GetUserByEmailRequest(email));
+                if(mailResponse.error == true)
+                    return BadRequest(mailResponse.exception);
+                var emailConfUrl = await _tokenServices.CreateTokenEmailConfirm(mailResponse.user);
+                var callback_url = "http://localhost:3000/EmailVerification?userId=" + mailResponse.user.Id + "&emailConfUrl=" + emailConfUrl;
+
+
+                await _mailServices.SendingEmail(email, callback_url);
+                return Ok(new { message = "Email verification code sended!!!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
     }

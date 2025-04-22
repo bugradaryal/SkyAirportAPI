@@ -52,7 +52,7 @@ namespace API
             builder.Services.AddControllers();
 
 
-            builder.Services.Configure<JWT_Conf>(builder.Configuration.GetSection("JwtBearer"));
+            builder.Services.Configure<JwtBearer>(builder.Configuration.GetSection("JwtBearer"));
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {

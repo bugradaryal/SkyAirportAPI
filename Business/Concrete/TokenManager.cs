@@ -14,19 +14,25 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Business.Abstract;
 using Newtonsoft.Json.Linq;
+using System.Web;
+using System.Security.Cryptography;
+using DataAccess.Abstract;
+using DataAccess.Concrete;
 
 namespace Business.Concrete
 {
     public class TokenManager : ITokenServices
     {
-        private readonly JWT_Conf _jwt;
+        private readonly JwtBearer _jwt;
         public UserManager<User> _userManager;
         private readonly SymmetricSecurityKey _key;
-        public TokenManager(IOptions<JWT_Conf> jwt, UserManager<User> userManager)
+        private readonly ITokenRepository _tokenRepository;
+        public TokenManager(IOptions<JwtBearer> jwt, UserManager<User> userManager)
         {
             _jwt = jwt.Value;
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
             _userManager = userManager;
+            _tokenRepository = new TokenRepository();
         }
 
 
@@ -96,6 +102,42 @@ namespace Business.Concrete
             var token = tokenHandler.CreateToken(tokenDescrtiptor);
 
             return "Bearer " + tokenHandler.WriteToken(token);
+        }
+
+        public async Task<string> CreateTokenEmailConfirm(User user)
+        {
+            string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            string encodedToken = HttpUtility.UrlEncode(token);
+            return encodedToken;
+        }
+
+        public string GenerateRefreshToken()
+        {
+            var randomBytes = new byte[32]; // 32 byte uzunluğunda bir byte dizisi
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(randomBytes); // Rastgele byte dizisi oluşturuluyor
+            }
+            return Convert.ToBase64String(randomBytes); // Base64 formatında döndürülür
+        }
+        public async Task SaveRefreshTokenAsync(User user, string refreshToken)
+        {
+            await _userManager.RemoveAuthenticationTokenAsync(user, "Default", "RefreshToken");
+            var result = await _userManager.SetAuthenticationTokenAsync(user, "Default", "RefreshToken", refreshToken);
+            if (!result.Succeeded)
+            {
+                throw new Exception("Refresh token save failed.");
+            }
+        }
+        public async Task<User> GetUserFromRefreshToken(string refreshToken)
+        {
+            var userToken = await _tokenRepository.GetUserTokenByRefreshTokenAsync(refreshToken);
+            if (userToken != null)
+            {
+                var user = await _userManager.FindByIdAsync(userToken.UserId);
+                return user;
+            }
+            throw new Exception("Reflesh token corrupted!!");
         }
     }
 }

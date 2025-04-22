@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Entities.Configuration
 {
-    public class JWT_Conf
+    public class JwtBearer
     {
         public string Issuer { get; set; }
         public string Audience { get; set; }
