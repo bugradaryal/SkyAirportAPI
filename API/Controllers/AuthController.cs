@@ -70,12 +70,15 @@ namespace API.Controllers
                     var roleResponse = await _mediator.Send(new GetUserRoleRequest(userResponse.user.Id));
                     if (roleResponse.error == false)
                     {
+                        var refleshtoken = _tokenServices.GenerateRefreshToken();
+                        await _tokenServices.SaveRefreshTokenAsync(userResponse.user, refleshtoken);
                         return Ok(new AuthenticationModel
                         {
                             Email = userResponse.user.Email,
                             Roles = roleResponse.UserRoles,
                             UserName = userResponse.user.UserName,
-                            Token = token
+                            JwtToken = token,
+                            RefreshToken = refleshtoken
                         });
                     }
                     return BadRequest(roleResponse.exception);
@@ -157,7 +160,7 @@ namespace API.Controllers
                 if(mailResponse.error == true)
                     return BadRequest(mailResponse.exception);
                 var emailConfUrl = await _tokenServices.CreateTokenEmailConfirm(mailResponse.user);
-                var callback_url = "http://localhost:3000/EmailVerification?userId=" + mailResponse.user.Id + "&emailConfUrl=" + emailConfUrl;
+                var callback_url = "http://localhost:7257/EmailVerification?userId=" + mailResponse.user.Id + "&emailConfUrl=" + emailConfUrl;
 
 
                 await _mailServices.SendingEmail(email, callback_url);
@@ -168,5 +171,20 @@ namespace API.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        [HttpPost("Emailverification")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Emailverification([FromBody] EmailVeificationViewModel emailVeificationViewModel)
+        {
+            try
+            {
+                await _mailServices.ConfirmEmail(emailVeificationViewModel.userId, emailVeificationViewModel.emailConfUrl);
+                return Ok(new { message = "Your email has been successfully confirmed!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
     }
 }

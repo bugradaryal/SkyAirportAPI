@@ -14,5 +14,7 @@ namespace Business.Abstract
         Task<ValidateTokenDTO> ValidateToken(HttpContext httpContext);
         Task<string> CreateTokenJWT(User user);
         Task<string> CreateTokenEmailConfirm(User user);
+        Task SaveRefreshTokenAsync(User user, string refreshToken);
+        string GenerateRefreshToken();
     }
 }

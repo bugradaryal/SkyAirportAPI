@@ -18,6 +18,8 @@ using System.Web;
 using System.Security.Cryptography;
 using DataAccess.Abstract;
 using DataAccess.Concrete;
+using Business.ExceptionHandler;
+using System.Net;
 
 namespace Business.Concrete
 {
@@ -38,106 +40,147 @@ namespace Business.Concrete
 
         public async Task<ValidateTokenDTO> ValidateToken(HttpContext httpContext)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var validationParameters = new TokenValidationParameters
+            try
             {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = _key,
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ClockSkew = TimeSpan.Zero,
-                ValidateLifetime = true,
-                ValidIssuer = _jwt.Issuer,
-                ValidAudience = _jwt.Audience,
-            };
-            var token = httpContext.Request.Headers["Authorization"].FirstOrDefault();
-
-            if (!string.IsNullOrEmpty(token))
-            {
-                if(token.StartsWith("Bearer "))
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var validationParameters = new TokenValidationParameters
                 {
-                    var clearToken = token.Substring("Bearer ".Length).Trim();
-                    var principal = tokenHandler.ValidateToken(clearToken, validationParameters, out var validatedToken);
-                    if((validatedToken is JwtSecurityToken jwtToken))
-                    {
-                        var userId = principal.FindFirst("uid")?.Value;
-                        var claimUser = await _userManager.FindByIdAsync(userId);
-                        if (claimUser == null)
-                            return new ValidateTokenDTO { user = null, roles = null, IsTokenValid = false, Token = null };
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = _key,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidateLifetime = true,
+                    ValidIssuer = _jwt.Issuer,
+                    ValidAudience = _jwt.Audience,
+                };
+                var token = httpContext.Request.Headers["Authorization"].FirstOrDefault();
 
-                        var userRole = await _userManager.GetRolesAsync(claimUser);
-                        return new ValidateTokenDTO { user = claimUser, roles = userRole.ToList(), IsTokenValid = true, Token = token };
+                if (!string.IsNullOrEmpty(token))
+                {
+                    if(token.StartsWith("Bearer "))
+                    {
+                        var clearToken = token.Substring("Bearer ".Length).Trim();
+                        var principal = tokenHandler.ValidateToken(clearToken, validationParameters, out var validatedToken);
+                        if((validatedToken is JwtSecurityToken jwtToken))
+                        {
+                            var userId = principal.FindFirst("uid")?.Value;
+                            var claimUser = await _userManager.FindByIdAsync(userId);
+                            if (claimUser != null)
+                            {
+                                var userRole = await _userManager.GetRolesAsync(claimUser);
+                                return new ValidateTokenDTO { user = claimUser, roles = userRole.ToList(), IsTokenValid = true };
+                            }
+                        }
                     }
                 }
-
+                var refreshToken = httpContext.Request.Headers["RefreshToken"].FirstOrDefault();
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var userToken = await _tokenRepository.GetUserTokenByRefreshTokenAsync(refreshToken);
+                    if (userToken != null)
+                    {
+                        var claimuser2 = await _userManager.FindByIdAsync(userToken.UserId);
+                        if (claimuser2 != null)
+                        {
+                            var userRole2 = await _userManager.GetRolesAsync(claimuser2);
+                            return new ValidateTokenDTO { user = claimuser2, roles = userRole2.ToList(), IsTokenValid = true };
+                        }
+                    }
+                    throw new CustomException("Reflesh token corrupted!!",(int)HttpStatusCode.BadRequest);
+                }
+                return new ValidateTokenDTO { user = null, roles = null, IsTokenValid = false };
             }
-            return new ValidateTokenDTO { user = null, roles = null, IsTokenValid = false, Token = null };
+            catch (Exception ex) 
+            {
+                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+            }
+
         }
 
         public async Task<string> CreateTokenJWT(User user)
         {
-            var userRoles = await _userManager.GetRolesAsync(user);
-            var roleClaims = new List<Claim>();
-            foreach (var role in userRoles)
+            try
             {
-                roleClaims.Add(new Claim(ClaimTypes.Role, role));
+                var userRoles = await _userManager.GetRolesAsync(user);
+                var roleClaims = new List<Claim>();
+                foreach (var role in userRoles)
+                {
+                    roleClaims.Add(new Claim(ClaimTypes.Role, role));
+                }
+                var claims = new List<Claim>
+                {
+                    new Claim("uid", user.Id),
+                    new Claim("IsSuspended", user.IsSuspended.ToString().ToLower())
+                };
+                claims.AddRange(roleClaims);
+                var signingCredentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256Signature);
+                var tokenDescrtiptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(claims),
+                    Expires = DateTime.UtcNow.AddMinutes(_jwt.DurationInMinutes),
+                    SigningCredentials = signingCredentials,
+                    Issuer = _jwt.Issuer,
+                    Audience = _jwt.Audience
+                };
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var token = tokenHandler.CreateToken(tokenDescrtiptor);
+
+                return "Bearer " + tokenHandler.WriteToken(token);
             }
-            var claims = new List<Claim>
+            catch(Exception ex) 
             {
-                new Claim("uid", user.Id),
-                new Claim("IsSuspended", user.IsSuspended.ToString().ToLower())
-            };
-            claims.AddRange(roleClaims);
-            var signingCredentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256Signature);
-            var tokenDescrtiptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(_jwt.DurationInMinutes),
-                SigningCredentials = signingCredentials,
-                Issuer = _jwt.Issuer,
-                Audience = _jwt.Audience
-            };
+                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+            }
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescrtiptor);
-
-            return "Bearer " + tokenHandler.WriteToken(token);
         }
 
         public async Task<string> CreateTokenEmailConfirm(User user)
         {
-            string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            string encodedToken = HttpUtility.UrlEncode(token);
-            return encodedToken;
+            try
+            {
+                string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                string encodedToken = HttpUtility.UrlEncode(token);
+                return encodedToken;
+            }
+            catch (Exception ex) 
+            {
+                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+            }
         }
 
         public string GenerateRefreshToken()
         {
-            var randomBytes = new byte[32]; // 32 byte uzunluğunda bir byte dizisi
-            using (var rng = new RNGCryptoServiceProvider())
+            try
             {
-                rng.GetBytes(randomBytes); // Rastgele byte dizisi oluşturuluyor
+                var randomBytes = new byte[32]; // 32 byte uzunluğunda bir byte dizisi
+                using (var rng = new RNGCryptoServiceProvider())
+                {
+                    rng.GetBytes(randomBytes); // Rastgele byte dizisi oluşturuluyor
+                }
+                return Convert.ToBase64String(randomBytes); // Base64 formatında döndürülür
             }
-            return Convert.ToBase64String(randomBytes); // Base64 formatında döndürülür
+            catch (Exception ex)
+            {
+                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+            }
         }
         public async Task SaveRefreshTokenAsync(User user, string refreshToken)
         {
-            await _userManager.RemoveAuthenticationTokenAsync(user, "Default", "RefreshToken");
-            var result = await _userManager.SetAuthenticationTokenAsync(user, "Default", "RefreshToken", refreshToken);
-            if (!result.Succeeded)
+            try
             {
-                throw new Exception("Refresh token save failed.");
+                await _userManager.RemoveAuthenticationTokenAsync(user, "Default", "RefreshToken");
+                var result = await _userManager.SetAuthenticationTokenAsync(user, "Default", "RefreshToken", refreshToken);
+                if (!result.Succeeded)
+                {
+                    throw new CustomException("Refresh token save failed.", (int)HttpStatusCode.BadRequest);
+                }
             }
-        }
-        public async Task<User> GetUserFromRefreshToken(string refreshToken)
-        {
-            var userToken = await _tokenRepository.GetUserTokenByRefreshTokenAsync(refreshToken);
-            if (userToken != null)
+            catch (Exception ex)
             {
-                var user = await _userManager.FindByIdAsync(userToken.UserId);
-                return user;
+                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
             }
-            throw new Exception("Reflesh token corrupted!!");
         }
     }
 }
