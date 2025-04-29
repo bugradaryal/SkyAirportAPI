@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using Business.ExceptionHandler;
+using Utilitys.ExceptionHandler;
 using Business.Features.Account.Commands.DeleteAccount;
 using Entities;
 using MediatR;

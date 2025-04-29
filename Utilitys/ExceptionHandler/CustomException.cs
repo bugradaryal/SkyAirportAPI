@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.ExceptionHandler
+namespace Utilitys.ExceptionHandler
 {
     public class CustomException : Exception
     {

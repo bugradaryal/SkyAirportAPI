@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Business.ExceptionHandler;
+using Utilitys.ExceptionHandler;
 using Business.Features.Generic.Queries.GetAll;
 using DataAccess.Abstract;
 using DataAccess.Concrete.Generic;
