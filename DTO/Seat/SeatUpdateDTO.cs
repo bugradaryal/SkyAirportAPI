@@ -1,6 +1,12 @@
-namespace DTO
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DTO.Seat
 {
-    public class SeatDTO
+    public class SeatUpdateDTO
     {
         public int id { get; set; }
         public int Seat_number { get; set; }

@@ -6,6 +6,7 @@ using Business.Features.Generic.Commands.Update;
 using Business.Features.Generic.Queries.GetAll;
 using Business.Features.Generic.Queries.GetById;
 using DTO;
+using DTO.Airline;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -31,7 +32,7 @@ namespace API.Controllers
         [HttpGet("GetAllAirlines")]
         public async Task<IActionResult> GetAllAirlines()
         {
-            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Airline>());
+            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<List<Airline>>());
             if(getAllRepository.error == true)
                 return BadRequest(getAllRepository.exception);
             return Ok(getAllRepository.data);
@@ -60,11 +61,11 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("AddAirline")]
-        public async Task<IActionResult> AddAirline(AirlineDTO airlineDTO)
+        public async Task<IActionResult> AddAirline(AirlineAddDTO airlineDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var airline = _mapper.Map<Airline,AirlineDTO>(airlineDTO);
+            var airline = _mapper.Map<Airline, AirlineAddDTO>(airlineDTO);
             var addResponse = await _mediator.Send(new GenericAddRequest<Airline>(airline));
             if (addResponse != null)
                 return BadRequest(addResponse);
@@ -83,12 +84,12 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPut("UpdateAirline")]
-        public async Task<IActionResult> UpdateAirline(AirlineDTO airlineDTO)
+        public async Task<IActionResult> UpdateAirline(AirlineUpdateDTO airlineDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<Airline>(airlineDTO.id));
-            var airline = _mapper.Map<Airline,AirlineDTO>(airlineDTO, data.entity);
+            var airline = _mapper.Map<Airline, AirlineUpdateDTO>(airlineDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<Airline>(airline));
             if (updateResponse != null)
                 return BadRequest(updateResponse);

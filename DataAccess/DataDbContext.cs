@@ -40,12 +40,12 @@ namespace DataAccess
             modelBuilder.Entity<User>().Property(x => x.Gender).HasColumnType("char(1)").HasDefaultValue("U");
             modelBuilder.Entity<User>().Property(x => x.Age).IsRequired();
             modelBuilder.Entity<User>().Property(x => x.IsSuspended).HasColumnType("boolean").HasDefaultValue(false);
-            modelBuilder.Entity<User>().Property(x => x.Created_at).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.Now);
-            modelBuilder.Entity<User>().Property(x => x.Uptaded_at).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.Now);
+            modelBuilder.Entity<User>().Property(x => x.Created_at).HasColumnType("TIMESTAMP WITH TIME ZONE").HasDefaultValueSql("CURRENT_TIMESTAMP");
+            modelBuilder.Entity<User>().Property(x => x.Uptaded_at).HasColumnType("TIMESTAMP WITH TIME ZONE").HasDefaultValueSql("CURRENT_TIMESTAMP");
             ////////////////////////////
             modelBuilder.Entity<Ticket>().HasKey(x => x.id);
             modelBuilder.Entity<Ticket>().Property(x => x.Price).HasColumnType("DECIMAL(10,2)").IsRequired();
-            modelBuilder.Entity<Ticket>().Property(x => x.Puchase_date).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.Now);
+            modelBuilder.Entity<Ticket>().Property(x => x.Puchase_date).HasColumnType("TIMESTAMP WITH TIME ZONE").HasDefaultValueSql("CURRENT_TIMESTAMP");
             modelBuilder.Entity<Ticket>().Property(x => x.Baggage_weight).HasColumnType("DECIMAL(8,2)").HasDefaultValue(0);
             modelBuilder.Entity<Ticket>().Property(x => x.seat_id).IsRequired();
             modelBuilder.Entity<Ticket>().Property(x => x.user_id).IsRequired();
@@ -65,13 +65,13 @@ namespace DataAccess
             modelBuilder.Entity<Personal>().Property(x => x.Gender).HasColumnType("char(1)").HasDefaultValue("U");
             modelBuilder.Entity<Personal>().Property(x => x.PhoneNumber).HasColumnType("text").HasDefaultValue("Undefined").HasMaxLength(16);
             modelBuilder.Entity<Personal>().HasIndex(x => x.PhoneNumber).IsUnique();
-            modelBuilder.Entity<Personal>().Property(x => x.Start_Date).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.Now);
+            modelBuilder.Entity<Personal>().Property(x => x.Start_Date).HasColumnType("TIMESTAMP WITH TIME ZONE").HasDefaultValueSql("CURRENT_TIMESTAMP");
             modelBuilder.Entity<Personal>().Property(x => x.airport_id).IsRequired();
             ////////////////////////////
             modelBuilder.Entity<OperationalDelay>().HasKey(x => x.id);
             modelBuilder.Entity<OperationalDelay>().Property(x => x.Delay_Reason).HasColumnType("text").IsRequired().HasMaxLength(1024);
             modelBuilder.Entity<OperationalDelay>().Property(x => x.Delay_Duration).HasColumnType("text").IsRequired().HasMaxLength(12);
-            modelBuilder.Entity<OperationalDelay>().Property(x => x.Delay_Time).HasColumnType("TIMESTAMP").IsRequired();
+            modelBuilder.Entity<OperationalDelay>().Property(x => x.Delay_Time).HasColumnType("TIMESTAMP WITH TIME ZONE").IsRequired();
             modelBuilder.Entity<OperationalDelay>().Property(x => x.flight_id).IsRequired();
             ////////////////////////////
             modelBuilder.Entity<Flight_Aircraft>().HasKey(x => x.id);
@@ -81,8 +81,8 @@ namespace DataAccess
             modelBuilder.Entity<Flight>().HasKey(x => x.id);
             modelBuilder.Entity<Flight>().Property(x => x.Name).HasColumnType("text").IsRequired().HasMaxLength(128);
             modelBuilder.Entity<Flight>().Property(x => x.Description).HasColumnType("text").HasDefaultValue("No Description").HasMaxLength(1024);
-            modelBuilder.Entity<Flight>().Property(x => x.Arrival_Date).HasColumnType("TIMESTAMP").IsRequired();
-            modelBuilder.Entity<Flight>().Property(x => x.Deperture_Date).HasColumnType("TIMESTAMP").IsRequired();
+            modelBuilder.Entity<Flight>().Property(x => x.Arrival_Date).HasColumnType("TIMESTAMP WITH TIME ZONE").IsRequired();
+            modelBuilder.Entity<Flight>().Property(x => x.Deperture_Date).HasColumnType("TIMESTAMP WITH TIME ZONE").IsRequired();
             modelBuilder.Entity<Flight>().Property(x => x.Status).HasColumnType("text").IsRequired().HasMaxLength(32);
             modelBuilder.Entity<Flight>().Property(x => x.airline_id).IsRequired(); ;
             ////////////////////////////
@@ -118,7 +118,7 @@ namespace DataAccess
             ////////////////////////////
             modelBuilder.Entity<Aircraft>().HasKey(x => x.id);
             modelBuilder.Entity<Aircraft>().Property(x => x.Model).HasColumnType("text").IsRequired().HasMaxLength(64);
-            modelBuilder.Entity<Aircraft>().Property(x => x.Last_Maintenance_Date).HasColumnType("TIMESTAMP");
+            modelBuilder.Entity<Aircraft>().Property(x => x.Last_Maintenance_Date).HasColumnType("TIMESTAMP WITH TIME ZONE");
             modelBuilder.Entity<Aircraft>().Property(x => x.Fuel_Capacity).HasColumnType("DECIMAL(7,1)").IsRequired();
             modelBuilder.Entity<Aircraft>().Property(x => x.Max_Altitude).HasColumnType("DECIMAL(8,1)").IsRequired();
             modelBuilder.Entity<Aircraft>().Property(x => x.Engine_Power).IsRequired();
@@ -126,7 +126,7 @@ namespace DataAccess
             modelBuilder.Entity<Aircraft>().Property(x => x.aircraftStatus_id).IsRequired();
             ////////////////////////////
             modelBuilder.Entity<LogEntry>().HasKey(x => x.id);
-            modelBuilder.Entity<LogEntry>().Property(x => x.Timestamp).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.Now);
+            modelBuilder.Entity<LogEntry>().Property(x => x.Timestamp).HasColumnType("TIMESTAMP WITH TIME ZONE").HasDefaultValueSql("CURRENT_TIMESTAMP");
             modelBuilder.Entity<LogEntry>().Property(x => x.Message).HasColumnType("text").IsRequired().HasMaxLength(5096);
             modelBuilder.Entity<LogEntry>().Property(x => x.Action_type).HasConversion(new EnumToStringConverter<Action_Type>()).IsRequired();
             modelBuilder.Entity<LogEntry>().Property(x => x.Target_table).HasColumnType("text").HasMaxLength(64);
@@ -143,7 +143,7 @@ namespace DataAccess
             modelBuilder.Entity<AdminOperation>().Property(x => x.Operation_type).HasConversion(new EnumToStringConverter<Operation_Type>()).IsRequired();
             modelBuilder.Entity<AdminOperation>().Property(x => x.Target_table).HasColumnType("text").IsRequired().HasMaxLength(64);
             modelBuilder.Entity<AdminOperation>().Property(x => x.Target_id).IsRequired();
-            modelBuilder.Entity<AdminOperation>().Property(x => x.Operation_Date).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.Now);
+            modelBuilder.Entity<AdminOperation>().Property(x => x.Operation_Date).HasColumnType("TIMESTAMP WITH TIME ZONE").HasDefaultValueSql("CURRENT_TIMESTAMP");
             modelBuilder.Entity<AdminOperation>().Property(x => x.user_id).IsRequired();
             ////////////////////////////
             modelBuilder.Entity<LogLevel>().HasKey(x => x.id);

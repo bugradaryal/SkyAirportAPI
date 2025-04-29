@@ -5,6 +5,7 @@ using Business.Features.Generic.Commands.Update;
 using Business.Features.Generic.Queries.GetAll;
 using Business.Features.Generic.Queries.GetById;
 using DTO;
+using DTO.AircraftStatus;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -30,7 +31,7 @@ namespace API.Controllers
         [HttpGet("GetAllAircraftStatus")]
         public async Task<IActionResult> GetAllAircraftStatus()
         {
-            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<AircraftStatus>());
+            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<List<AircraftStatus>>());
             if (getAllRepository.error == true)
                 return BadRequest(getAllRepository.exception);
             return Ok(getAllRepository.data);
@@ -48,11 +49,11 @@ namespace API.Controllers
         }
 
         [HttpPost("AddAircraftStatus")]
-        public async Task<IActionResult> AddAircraftStatus(AircraftStatusDTO aircraftStatusDTO)
+        public async Task<IActionResult> AddAircraftStatus([FromBody]string newStatus)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var aircraftStatus = _mapper.Map<AircraftStatus,AircraftStatusDTO>(aircraftStatusDTO);
+            var aircraftStatus = new AircraftStatus { Status = newStatus };
             var addResponse = await _mediator.Send(new GenericAddRequest<AircraftStatus>(aircraftStatus));
             if (addResponse != null)
                 return BadRequest(addResponse);
@@ -71,12 +72,12 @@ namespace API.Controllers
         }
 
         [HttpPut("UpdateAircraftStatus")]
-        public async Task<IActionResult> UpdateAircraftStatus(AircraftStatusDTO aircraftStatusDTO)
+        public async Task<IActionResult> UpdateAircraftStatus(AircraftStatusUpdateDTO aircraftStatusDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<AircraftStatus>(aircraftStatusDTO.id));
-            var aircraftStatus = _mapper.Map<AircraftStatus,AircraftStatusDTO>(aircraftStatusDTO, data.entity);
+            var aircraftStatus = _mapper.Map<AircraftStatus, AircraftStatusUpdateDTO>(aircraftStatusDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<AircraftStatus>(aircraftStatus));
             return Ok(new { message = "Updated!" });
         }

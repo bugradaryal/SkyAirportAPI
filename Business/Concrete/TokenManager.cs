@@ -1,5 +1,4 @@
-﻿using DTO;
-using Entities.Configuration;
+﻿using Entities.Configuration;
 using Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -20,6 +19,7 @@ using DataAccess.Abstract;
 using DataAccess.Concrete;
 using Utilitys.ExceptionHandler;
 using System.Net;
+using DTO.Account;
 
 namespace Business.Concrete
 {

@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Utilitys.ExceptionHandler;
-using DTO;
 using MediatR;
+using DTO.Account;
 
 namespace Business.Features.Account.Commands.CreateAccount
 {

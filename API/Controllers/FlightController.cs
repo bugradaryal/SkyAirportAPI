@@ -7,6 +7,7 @@ using Business.Features.Generic.Commands.Update;
 using Business.Features.Generic.Queries.GetAll;
 using Business.Features.Generic.Queries.GetById;
 using DTO;
+using DTO.Flight;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -33,7 +34,7 @@ namespace API.Controllers
         [HttpGet("GetAllFlight")]
         public async Task<IActionResult> GetAllFlight()
         {
-            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Flight>());
+            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<List<Flight>>());
             if (getAllRepository.error == true)
                 return BadRequest(getAllRepository.exception);
             return Ok(getAllRepository.data);
@@ -71,20 +72,15 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("AddFlight")]
-        public async Task<IActionResult> AddFlight(FlightDTO flightDTO)
+        public async Task<IActionResult> AddFlight(FlightAddDTO flightDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var flight = _mapper.Map<Flight,FlightDTO>(flightDTO);
+            var flight = _mapper.Map<Flight, FlightAddDTO>(flightDTO);
+            flight.flight_Aircraft = new List<Flight_Aircraft> { new Flight_Aircraft { aircraft_id = flightDTO.aircraft_id } };
             var addResponse = await _mediator.Send(new GenericAddRequest<Flight>(flight));
             if (addResponse != null)
                 return BadRequest(addResponse);
-            var flightAircraftResponse = await _mediator.Send(new GenericAddRequest<Flight_Aircraft>(new Flight_Aircraft {
-                aircraft_id = flightDTO.aircraft_id,
-                flight_id = flightDTO.id
-            }));
-            if (flightAircraftResponse != null)
-                return BadRequest(flightAircraftResponse);
             return Ok(new { message = "Flight added!" });
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
@@ -100,12 +96,12 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPut("UpdateFlight")]
-        public async Task<IActionResult> UpdateFlight(FlightDTO flightDTO)
+        public async Task<IActionResult> UpdateFlight(FlightUpdateDTO flightDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<Flight>(flightDTO.id));
-            var flight = _mapper.Map<Flight,FlightDTO>(flightDTO, data.entity);
+            var flight = _mapper.Map<Flight, FlightUpdateDTO>(flightDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<Flight>(flight));
             if (updateResponse != null)
                 return BadRequest(updateResponse);

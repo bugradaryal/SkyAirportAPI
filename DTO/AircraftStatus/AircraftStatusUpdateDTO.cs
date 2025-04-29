@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace DTO.AircraftStatus
 {
-    internal class AircraftStatusUpdateDTO
+    public class AircraftStatusUpdateDTO
     {
+        public int id { get; set; }
+        public string Status { get; set; }
     }
 }

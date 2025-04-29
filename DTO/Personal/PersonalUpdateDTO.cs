@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace DTO.Personal
 {
-    public class Personal
+    public class PersonalUpdateDTO
     {
         public int id { get; set; }
         public string Name { get; set; }
@@ -17,8 +17,6 @@ namespace Entities
         public string PhoneNumber { get; set; }
         public DateTimeOffset Start_Date { get; set; }
 
-
         public int airport_id { get; set; }
-        public Airport airport { get; set; }
     }
 }

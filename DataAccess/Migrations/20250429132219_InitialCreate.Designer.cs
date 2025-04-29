@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DataDbContext))]
-    [Migration("20250429075543_InitialCreate")]
+    [Migration("20250429132219_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -42,8 +42,8 @@ namespace DataAccess.Migrations
                     b.Property<double>("Fuel_Capacity")
                         .HasColumnType("DECIMAL(7,1)");
 
-                    b.Property<DateTime>("Last_Maintenance_Date")
-                        .HasColumnType("TIMESTAMP");
+                    b.Property<DateTimeOffset>("Last_Maintenance_Date")
+                        .HasColumnType("TIMESTAMP WITH TIME ZONE");
 
                     b.Property<double>("Max_Altitude")
                         .HasColumnType("DECIMAL(8,1)");
@@ -276,11 +276,11 @@ namespace DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
-                    b.Property<DateTime>("Arrival_Date")
-                        .HasColumnType("TIMESTAMP");
+                    b.Property<DateTimeOffset>("Arrival_Date")
+                        .HasColumnType("TIMESTAMP WITH TIME ZONE");
 
-                    b.Property<DateTime>("Deperture_Date")
-                        .HasColumnType("TIMESTAMP");
+                    b.Property<DateTimeOffset>("Deperture_Date")
+                        .HasColumnType("TIMESTAMP WITH TIME ZONE");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -340,8 +340,8 @@ namespace DataAccess.Migrations
 
                     b.Property<DateTime>("Operation_Date")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(6575));
+                        .HasColumnType("TIMESTAMP WITH TIME ZONE")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("Operation_type")
                         .IsRequired()
@@ -397,8 +397,8 @@ namespace DataAccess.Migrations
 
                     b.Property<DateTime>("Timestamp")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(5506));
+                        .HasColumnType("TIMESTAMP WITH TIME ZONE")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("loglevel_id")
                         .HasColumnType("integer");
@@ -497,8 +497,8 @@ namespace DataAccess.Migrations
                         .HasMaxLength(1024)
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("Delay_Time")
-                        .HasColumnType("TIMESTAMP");
+                    b.Property<DateTimeOffset>("Delay_Time")
+                        .HasColumnType("TIMESTAMP WITH TIME ZONE");
 
                     b.Property<int>("flight_id")
                         .HasColumnType("integer");
@@ -544,10 +544,10 @@ namespace DataAccess.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("Start_Date")
+                    b.Property<DateTimeOffset>("Start_Date")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(2446));
+                        .HasColumnType("TIMESTAMP WITH TIME ZONE")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -621,10 +621,10 @@ namespace DataAccess.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("DECIMAL(10,2)");
 
-                    b.Property<DateTime>("Puchase_date")
+                    b.Property<DateTimeOffset>("Puchase_date")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(657));
+                        .HasColumnType("TIMESTAMP WITH TIME ZONE")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("seat_id")
                         .HasColumnType("integer");
@@ -663,10 +663,10 @@ namespace DataAccess.Migrations
                         .HasMaxLength(5)
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("Created_at")
+                    b.Property<DateTimeOffset>("Created_at")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(140));
+                        .HasColumnType("TIMESTAMP WITH TIME ZONE")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -724,10 +724,10 @@ namespace DataAccess.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("Uptaded_at")
+                    b.Property<DateTimeOffset>("Uptaded_at")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(284));
+                        .HasColumnType("TIMESTAMP WITH TIME ZONE")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
@@ -773,13 +773,13 @@ namespace DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "5b009a25-1c1a-4055-84ac-63d80ec2f9a8",
+                            Id = "c920be4f-7763-4238-be66-e1732df08a1d",
                             Name = "Administrator",
                             NormalizedName = "ADMİNİSTRATOR"
                         },
                         new
                         {
-                            Id = "6054a5b8-76f8-413f-bab9-d9404e8fc372",
+                            Id = "14762114-068d-4f76-9d8f-e647c64496b0",
                             Name = "User",
                             NormalizedName = "USER"
                         });

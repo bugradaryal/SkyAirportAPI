@@ -69,8 +69,8 @@ namespace DataAccess.Migrations
                     Gender = table.Column<char>(type: "char(1)", nullable: false, defaultValue: 'U'),
                     Age = table.Column<int>(type: "integer", nullable: false),
                     IsSuspended = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    Created_at = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(140)),
-                    Uptaded_at = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(284)),
+                    Created_at = table.Column<DateTimeOffset>(type: "TIMESTAMP WITH TIME ZONE", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    Uptaded_at = table.Column<DateTimeOffset>(type: "TIMESTAMP WITH TIME ZONE", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     CountryCode = table.Column<string>(type: "text", maxLength: 5, nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -129,7 +129,7 @@ namespace DataAccess.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Model = table.Column<string>(type: "text", maxLength: 64, nullable: false),
-                    Last_Maintenance_Date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false),
+                    Last_Maintenance_Date = table.Column<DateTimeOffset>(type: "TIMESTAMP WITH TIME ZONE", nullable: false),
                     Fuel_Capacity = table.Column<double>(type: "numeric(7,1)", nullable: false),
                     Max_Altitude = table.Column<double>(type: "numeric(8,1)", nullable: false),
                     Engine_Power = table.Column<int>(type: "integer", nullable: false),
@@ -182,7 +182,7 @@ namespace DataAccess.Migrations
                     Age = table.Column<int>(type: "integer", nullable: false),
                     Gender = table.Column<char>(type: "char(1)", nullable: false, defaultValue: 'U'),
                     PhoneNumber = table.Column<string>(type: "text", maxLength: 16, nullable: false, defaultValue: "Undefined"),
-                    Start_Date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(2446)),
+                    Start_Date = table.Column<DateTimeOffset>(type: "TIMESTAMP WITH TIME ZONE", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     airport_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -226,7 +226,7 @@ namespace DataAccess.Migrations
                     Operation_type = table.Column<string>(type: "text", nullable: false),
                     Target_table = table.Column<string>(type: "text", maxLength: 64, nullable: false),
                     Target_id = table.Column<int>(type: "integer", nullable: false),
-                    Operation_Date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(6575)),
+                    Operation_Date = table.Column<DateTime>(type: "TIMESTAMP WITH TIME ZONE", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     user_id = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -330,7 +330,7 @@ namespace DataAccess.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Timestamp = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(5506)),
+                    Timestamp = table.Column<DateTime>(type: "TIMESTAMP WITH TIME ZONE", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     Message = table.Column<string>(type: "text", maxLength: 5096, nullable: false),
                     Action_type = table.Column<string>(type: "text", nullable: false),
                     Target_table = table.Column<string>(type: "text", maxLength: 64, nullable: false),
@@ -386,8 +386,8 @@ namespace DataAccess.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", maxLength: 128, nullable: false),
                     Description = table.Column<string>(type: "text", maxLength: 1024, nullable: false, defaultValue: "No Description"),
-                    Arrival_Date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false),
-                    Deperture_Date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false),
+                    Arrival_Date = table.Column<DateTimeOffset>(type: "TIMESTAMP WITH TIME ZONE", nullable: false),
+                    Deperture_Date = table.Column<DateTimeOffset>(type: "TIMESTAMP WITH TIME ZONE", nullable: false),
                     Status = table.Column<string>(type: "text", maxLength: 32, nullable: false),
                     airline_id = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -433,7 +433,7 @@ namespace DataAccess.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Delay_Reason = table.Column<string>(type: "text", maxLength: 1024, nullable: false),
                     Delay_Duration = table.Column<string>(type: "text", maxLength: 12, nullable: false),
-                    Delay_Time = table.Column<DateTime>(type: "TIMESTAMP", nullable: false),
+                    Delay_Time = table.Column<DateTimeOffset>(type: "TIMESTAMP WITH TIME ZONE", nullable: false),
                     flight_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -477,7 +477,7 @@ namespace DataAccess.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Price = table.Column<double>(type: "numeric(10,2)", nullable: false),
-                    Puchase_date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(657)),
+                    Puchase_date = table.Column<DateTimeOffset>(type: "TIMESTAMP WITH TIME ZONE", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     Baggage_weight = table.Column<double>(type: "numeric(8,2)", nullable: false, defaultValue: 0.0),
                     seat_id = table.Column<int>(type: "integer", nullable: false),
                     user_id = table.Column<string>(type: "text", nullable: false)
@@ -515,8 +515,8 @@ namespace DataAccess.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "5b009a25-1c1a-4055-84ac-63d80ec2f9a8", null, "Administrator", "ADMİNİSTRATOR" },
-                    { "6054a5b8-76f8-413f-bab9-d9404e8fc372", null, "User", "USER" }
+                    { "14762114-068d-4f76-9d8f-e647c64496b0", null, "User", "USER" },
+                    { "c920be4f-7763-4238-be66-e1732df08a1d", null, "Administrator", "ADMİNİSTRATOR" }
                 });
 
             migrationBuilder.InsertData(

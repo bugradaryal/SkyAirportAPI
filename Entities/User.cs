@@ -15,8 +15,8 @@ namespace Entities
         public char Gender { get; set; }
         public int Age { get; set; }
         public bool IsSuspended { get; set; }
-        public DateTime Created_at { get; set; }
-        public DateTime Uptaded_at { get; set; }
+        public DateTimeOffset Created_at { get; set; }
+        public DateTimeOffset Uptaded_at { get; set; }
         public string CountryCode { get; set; }
 
         public ICollection<Ticket> ticket { get; set; }

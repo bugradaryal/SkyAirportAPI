@@ -6,6 +6,7 @@ using Business.Features.Generic.Commands.Update;
 using Business.Features.Generic.Queries.GetAll;
 using Business.Features.Generic.Queries.GetById;
 using DTO;
+using DTO.Seat;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -32,7 +33,7 @@ namespace API.Controllers
         [HttpGet("GetAllSeat")]
         public async Task<IActionResult> GetAllSeat()
         {
-            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Seat>());
+            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<List<Seat>>());
             if (getAllRepository.error == true)
                 return BadRequest(getAllRepository.exception);
             return Ok(getAllRepository.data);
@@ -61,11 +62,11 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("AddSeat")]
-        public async Task<IActionResult> AddSeat(SeatDTO seatDTO)
+        public async Task<IActionResult> AddSeat(SeatAddDTO seatDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var seat = _mapper.Map<Seat,SeatDTO>(seatDTO);
+            var seat = _mapper.Map<Seat, SeatAddDTO>(seatDTO);
             var addResponse = await _mediator.Send(new GenericAddRequest<Seat>(seat));
             if (addResponse != null)
                 return BadRequest(addResponse);
@@ -84,12 +85,12 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPut("UpdateSeat")]
-        public async Task<IActionResult> UpdateSeat(SeatDTO seatDTO)
+        public async Task<IActionResult> UpdateSeat(SeatUpdateDTO seatDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<Seat>(seatDTO.id));
-            var seat = _mapper.Map<Seat,SeatDTO>(seatDTO, data.entity);
+            var seat = _mapper.Map<Seat, SeatUpdateDTO>(seatDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<Seat>(seat));
             if (updateResponse != null)
                 return BadRequest(updateResponse);

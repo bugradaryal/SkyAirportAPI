@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace DTO.Aircraft
 {
-    internal class AircraftAddDto
+    public class AircraftAddDto
     {
+        public string Model { get; set; }
+        public DateTimeOffset Last_Maintenance_Date { get; set; }
+        public double Fuel_Capacity { get; set; }
+        public double Max_Altitude { get; set; }
+        public int Engine_Power { get; set; }
+        public double Carry_Capacity { get; set; }
     }
 }

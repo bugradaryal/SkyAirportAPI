@@ -6,6 +6,7 @@ using Business.Features.Generic.Commands.Update;
 using Business.Features.Generic.Queries.GetAll;
 using Business.Features.Generic.Queries.GetById;
 using DTO;
+using DTO.Crew;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -32,7 +33,7 @@ namespace API.Controllers
         [HttpGet("GetAllCrew")]
         public async Task<IActionResult> GetAllCrew()
         {
-            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Crew>());
+            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<List<Crew>>());
             if (getAllRepository.error == true)
                 return BadRequest(getAllRepository.exception);
             return Ok(getAllRepository.data);
@@ -61,21 +62,15 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("AddCrew")]
-        public async Task<IActionResult> AddCrew(CrewDTO crewDTO)
+        public async Task<IActionResult> AddCrew(CrewAddDTO crewDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var crew = _mapper.Map<Crew,CrewDTO>(crewDTO);
+            var crew = _mapper.Map<Crew, CrewAddDTO>(crewDTO);
+            crew.crew_Aircraft = new List<Crew_Aircraft> { new Crew_Aircraft { aircraft_id = crewDTO.aircraft_id } };
             var addResponse = await _mediator.Send(new GenericAddRequest<Crew>(crew));
             if (addResponse != null)
                 return BadRequest(addResponse);
-            var crewAircraftResponse = await _mediator.Send(new GenericAddRequest<Crew_Aircraft>(new Crew_Aircraft
-            {
-                aircraft_id = crewDTO.aircraft_id,
-                crew_id = crewDTO.id
-            }));
-            if (crewAircraftResponse != null)
-                return BadRequest(crewAircraftResponse);
             return Ok(new { message = "Crew added!" });
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
@@ -91,12 +86,12 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPut("UpdateCrew")]
-        public async Task<IActionResult> UpdateCrew(CrewDTO crewDTO)
+        public async Task<IActionResult> UpdateCrew(CrewUpdateDTO crewDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<Crew>(crewDTO.id));
-            var crew = _mapper.Map<Crew,CrewDTO>(crewDTO, data.entity);
+            var crew = _mapper.Map<Crew, CrewUpdateDTO>(crewDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<Crew>(crew));
             if (updateResponse != null)
                 return BadRequest(updateResponse);

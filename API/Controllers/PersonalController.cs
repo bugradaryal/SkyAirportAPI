@@ -6,6 +6,7 @@ using Business.Features.Generic.Queries.GetAll;
 using Business.Features.Generic.Queries.GetById;
 using Business.Features.Personal.Queries;
 using DTO;
+using DTO.Personal;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -32,7 +33,7 @@ namespace API.Controllers
         [HttpGet("GetAllPersonals")]
         public async Task<IActionResult> GetAllPersonals()
         {
-            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Personal>());
+            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<List<Personal>>());
             if (getAllRepository.error == true)
                 return BadRequest(getAllRepository.exception);
             return Ok(getAllRepository.data);
@@ -60,11 +61,11 @@ namespace API.Controllers
         }
 
         [HttpPost("AddPersonal")]
-        public async Task<IActionResult> AddPersonal(PersonalDTO personalDTO)
+        public async Task<IActionResult> AddPersonal(PersonalAddDTO personalDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var personal = _mapper.Map<Personal,PersonalDTO>(personalDTO);
+            var personal = _mapper.Map<Personal, PersonalAddDTO>(personalDTO);
             var addResponse = await _mediator.Send(new GenericAddRequest<Personal>(personal));
             if (addResponse != null)
                 return BadRequest(addResponse);
@@ -83,12 +84,12 @@ namespace API.Controllers
         }
 
         [HttpPut("UpdatePersonal")]
-        public async Task<IActionResult> UpdatePersonal(PersonalDTO personalDTO)
+        public async Task<IActionResult> UpdatePersonal(PersonalUpdateDTO personalDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<Personal>(personalDTO.id));
-            var personal = _mapper.Map<Personal,PersonalDTO>(personalDTO, data.entity);
+            var personal = _mapper.Map<Personal, PersonalUpdateDTO>(personalDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<Personal>(personal));
             return Ok(new { message = "Updated!" });
         }

@@ -5,12 +5,12 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Utilitys.ExceptionHandler;
-using DTO;
 using Entities;
 using Entities.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Utilitys.Mapper;
+using DTO.Account;
 
 namespace Business.Features.Account.Commands.CreateAccount
 {

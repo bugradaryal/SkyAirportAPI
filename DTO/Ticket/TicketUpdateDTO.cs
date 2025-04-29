@@ -4,19 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace DTO.Ticket
 {
-    public class Ticket
+    public class TicketUpdateDTO
     {
         public int id { get; set; }
         public double Price { get; set; }
         public DateTimeOffset Puchase_date { get; set; }
         public double Baggage_weight { get; set; }
-
-
         public int seat_id { get; set; }
-        public string user_id { get; set; }
-        public User user { get; set; }
-        public Seat seat { get; set; }
     }
 }

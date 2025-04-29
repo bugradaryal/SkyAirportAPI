@@ -1,8 +1,13 @@
-namespace DTO
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DTO.Crew
 {
-    public class CrewDTO
+    public class CrewAddDTO
     {
-        public int id { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Role { get; set; }
