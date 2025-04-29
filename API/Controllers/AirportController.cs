@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Business.Abstract;
+﻿using Business.Abstract;
 using Business.Features.Generic.Commands.Add;
 using Business.Features.Generic.Commands.Delete;
 using Business.Features.Generic.Commands.Update;
@@ -11,6 +10,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Utilitys.Mapper;
 
 namespace API.Controllers
 {
@@ -51,7 +51,7 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var airport = _mapper.Map(airportDTO, new Airport());
+            var airport = _mapper.Map<Airport,AirportDTO>(airportDTO);
             var addResponse =  await _mediator.Send(new GenericAddRequest<Airport>(airport));
             if(addResponse != null)
                 return BadRequest(addResponse);
@@ -75,7 +75,7 @@ namespace API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<Airport>(airportDTO.id));
-            var airport = _mapper.Map(airportDTO, data.entity);
+            var airport = _mapper.Map<Airport,AirportDTO>(airportDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<Airport>(airport));
             if (updateResponse != null)
                 return BadRequest(updateResponse);

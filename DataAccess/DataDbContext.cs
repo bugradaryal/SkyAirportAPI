@@ -123,7 +123,7 @@ namespace DataAccess
             modelBuilder.Entity<Aircraft>().Property(x => x.Max_Altitude).HasColumnType("DECIMAL(8,1)").IsRequired();
             modelBuilder.Entity<Aircraft>().Property(x => x.Engine_Power).IsRequired();
             modelBuilder.Entity<Aircraft>().Property(x => x.Carry_Capacity).HasColumnType("DECIMAL(7,2)").IsRequired();
-            modelBuilder.Entity<Aircraft>().Property(x => x.aircraftStatus_id).HasDefaultValue("NotOperational");
+            modelBuilder.Entity<Aircraft>().Property(x => x.aircraftStatus_id).IsRequired();
             ////////////////////////////
             modelBuilder.Entity<LogEntry>().HasKey(x => x.id);
             modelBuilder.Entity<LogEntry>().Property(x => x.Timestamp).HasColumnType("TIMESTAMP").HasDefaultValue(DateTime.Now);
@@ -151,7 +151,7 @@ namespace DataAccess
             modelBuilder.Entity<LogLevel>().HasIndex(x => x.Level).IsUnique();
             ////////////////////////////
             modelBuilder.Entity<AircraftStatus>().HasKey(x => x.id);
-            modelBuilder.Entity<AircraftStatus>().Property(x => x.Status).HasColumnType("text").IsRequired().HasMaxLength(64);
+            modelBuilder.Entity<AircraftStatus>().Property(x => x.Status).HasColumnType("text").HasMaxLength(64).HasDefaultValue("NotOperational");
             modelBuilder.Entity<AircraftStatus>().HasIndex(x => x.Status).IsUnique();
             ////////////////////////////
             modelBuilder.Entity<Ticket>().HasOne<User>(s => s.user).WithMany(g => g.ticket).HasForeignKey(s => s.user_id).OnDelete(DeleteBehavior.Cascade);

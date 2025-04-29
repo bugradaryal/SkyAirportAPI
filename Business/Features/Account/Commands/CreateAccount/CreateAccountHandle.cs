@@ -4,13 +4,13 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
 using Business.ExceptionHandler;
 using DTO;
 using Entities;
 using Entities.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Utilitys.Mapper;
 
 namespace Business.Features.Account.Commands.CreateAccount
 {
@@ -28,7 +28,7 @@ namespace Business.Features.Account.Commands.CreateAccount
         {
             try
             {
-                User user = _mapper.Map<User>(request.createAccountDTO);
+                User user = _mapper.Map<User,CreateAccountDTO>(request.createAccountDTO);
                 string password = request.createAccountDTO.Password;
                 var result = await _userManager.CreateAsync(user, password);
                 if (!result.Succeeded)

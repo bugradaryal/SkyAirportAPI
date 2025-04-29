@@ -1,4 +1,3 @@
-using AutoMapper;
 using Business.Abstract;
 using Business.Features.Crew.Qeeries;
 using Business.Features.Generic.Commands.Add;
@@ -12,6 +11,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Utilitys.Mapper;
 
 namespace API.Controllers
 {
@@ -65,7 +65,7 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var crew = _mapper.Map(crewDTO, new Crew());
+            var crew = _mapper.Map<Crew,CrewDTO>(crewDTO);
             var addResponse = await _mediator.Send(new GenericAddRequest<Crew>(crew));
             if (addResponse != null)
                 return BadRequest(addResponse);
@@ -96,7 +96,7 @@ namespace API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<Crew>(crewDTO.id));
-            var crew = _mapper.Map(crewDTO, data.entity);
+            var crew = _mapper.Map<Crew,CrewDTO>(crewDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<Crew>(crew));
             if (updateResponse != null)
                 return BadRequest(updateResponse);

@@ -1,4 +1,3 @@
-using AutoMapper;
 using Business.Abstract;
 using Business.Features.Generic.Commands.Add;
 using Business.Features.Generic.Commands.Delete;
@@ -11,6 +10,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Utilitys.Mapper;
 
 namespace API.Controllers
 {
@@ -52,7 +52,7 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var aircraftStatus = _mapper.Map(aircraftStatusDTO, new AircraftStatus());
+            var aircraftStatus = _mapper.Map<AircraftStatus,AircraftStatusDTO>(aircraftStatusDTO);
             var addResponse = await _mediator.Send(new GenericAddRequest<AircraftStatus>(aircraftStatus));
             if (addResponse != null)
                 return BadRequest(addResponse);
@@ -76,7 +76,7 @@ namespace API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<AircraftStatus>(aircraftStatusDTO.id));
-            var aircraftStatus = _mapper.Map(aircraftStatusDTO, data.entity);
+            var aircraftStatus = _mapper.Map<AircraftStatus,AircraftStatusDTO>(aircraftStatusDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<AircraftStatus>(aircraftStatus));
             return Ok(new { message = "Updated!" });
         }

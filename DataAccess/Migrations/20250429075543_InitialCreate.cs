@@ -20,7 +20,7 @@ namespace DataAccess.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Status = table.Column<string>(type: "text", maxLength: 64, nullable: false)
+                    Status = table.Column<string>(type: "text", maxLength: 64, nullable: false, defaultValue: "NotOperational")
                 },
                 constraints: table =>
                 {
@@ -69,8 +69,8 @@ namespace DataAccess.Migrations
                     Gender = table.Column<char>(type: "char(1)", nullable: false, defaultValue: 'U'),
                     Age = table.Column<int>(type: "integer", nullable: false),
                     IsSuspended = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    Created_at = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 3, 3, 45, 57, 780, DateTimeKind.Local).AddTicks(6659)),
-                    Uptaded_at = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 3, 3, 45, 57, 780, DateTimeKind.Local).AddTicks(7069)),
+                    Created_at = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(140)),
+                    Uptaded_at = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(284)),
                     CountryCode = table.Column<string>(type: "text", maxLength: 5, nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -182,7 +182,7 @@ namespace DataAccess.Migrations
                     Age = table.Column<int>(type: "integer", nullable: false),
                     Gender = table.Column<char>(type: "char(1)", nullable: false, defaultValue: 'U'),
                     PhoneNumber = table.Column<string>(type: "text", maxLength: 16, nullable: false, defaultValue: "Undefined"),
-                    Start_Date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 3, 3, 45, 57, 781, DateTimeKind.Local).AddTicks(3082)),
+                    Start_Date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(2446)),
                     airport_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -226,7 +226,7 @@ namespace DataAccess.Migrations
                     Operation_type = table.Column<string>(type: "text", nullable: false),
                     Target_table = table.Column<string>(type: "text", maxLength: 64, nullable: false),
                     Target_id = table.Column<int>(type: "integer", nullable: false),
-                    Operation_Date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 3, 3, 45, 57, 782, DateTimeKind.Local).AddTicks(4746)),
+                    Operation_Date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(6575)),
                     user_id = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -330,7 +330,7 @@ namespace DataAccess.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Timestamp = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 3, 3, 45, 57, 782, DateTimeKind.Local).AddTicks(1999)),
+                    Timestamp = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(5506)),
                     Message = table.Column<string>(type: "text", maxLength: 5096, nullable: false),
                     Action_type = table.Column<string>(type: "text", nullable: false),
                     Target_table = table.Column<string>(type: "text", maxLength: 64, nullable: false),
@@ -426,7 +426,7 @@ namespace DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OperationalDelay",
+                name: "OperationalDelays",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
@@ -438,9 +438,9 @@ namespace DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OperationalDelay", x => x.id);
+                    table.PrimaryKey("PK_OperationalDelays", x => x.id);
                     table.ForeignKey(
-                        name: "FK_OperationalDelay_Flights_flight_id",
+                        name: "FK_OperationalDelays_Flights_flight_id",
                         column: x => x.flight_id,
                         principalTable: "Flights",
                         principalColumn: "id",
@@ -477,9 +477,9 @@ namespace DataAccess.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Price = table.Column<double>(type: "numeric(10,2)", nullable: false),
-                    Puchase_date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 3, 3, 45, 57, 780, DateTimeKind.Local).AddTicks(8080)),
+                    Puchase_date = table.Column<DateTime>(type: "TIMESTAMP", nullable: false, defaultValue: new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(657)),
                     Baggage_weight = table.Column<double>(type: "numeric(8,2)", nullable: false, defaultValue: 0.0),
-                    seet_id = table.Column<int>(type: "integer", nullable: false),
+                    seat_id = table.Column<int>(type: "integer", nullable: false),
                     user_id = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -492,8 +492,8 @@ namespace DataAccess.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Tickets_Seats_seet_id",
-                        column: x => x.seet_id,
+                        name: "FK_Tickets_Seats_seat_id",
+                        column: x => x.seat_id,
                         principalTable: "Seats",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -515,8 +515,8 @@ namespace DataAccess.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "8b832739-21d6-4e2a-801f-2b1b322aef8b", null, "Administrator", "ADMİNİSTRATOR" },
-                    { "be6ef88e-e798-493f-846a-97812152d846", null, "User", "USER" }
+                    { "5b009a25-1c1a-4055-84ac-63d80ec2f9a8", null, "Administrator", "ADMİNİSTRATOR" },
+                    { "6054a5b8-76f8-413f-bab9-d9404e8fc372", null, "User", "USER" }
                 });
 
             migrationBuilder.InsertData(
@@ -647,8 +647,8 @@ namespace DataAccess.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_OperationalDelay_flight_id",
-                table: "OperationalDelay",
+                name: "IX_OperationalDelays_flight_id",
+                table: "OperationalDelays",
                 column: "flight_id",
                 unique: true);
 
@@ -669,9 +669,9 @@ namespace DataAccess.Migrations
                 column: "flight_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_seet_id",
+                name: "IX_Tickets_seat_id",
                 table: "Tickets",
-                column: "seet_id",
+                column: "seat_id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -711,7 +711,7 @@ namespace DataAccess.Migrations
                 name: "LogEntrys");
 
             migrationBuilder.DropTable(
-                name: "OperationalDelay");
+                name: "OperationalDelays");
 
             migrationBuilder.DropTable(
                 name: "Personals");

@@ -1,4 +1,3 @@
-using AutoMapper;
 using Business.Abstract;
 using Business.Features.Generic.Commands.Add;
 using Business.Features.Generic.Commands.Delete;
@@ -12,6 +11,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Utilitys.Mapper;
 
 namespace API.Controllers
 {
@@ -64,7 +64,7 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var personal = _mapper.Map(personalDTO, new Personal());
+            var personal = _mapper.Map<Personal,PersonalDTO>(personalDTO);
             var addResponse = await _mediator.Send(new GenericAddRequest<Personal>(personal));
             if (addResponse != null)
                 return BadRequest(addResponse);
@@ -88,7 +88,7 @@ namespace API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<Personal>(personalDTO.id));
-            var personal = _mapper.Map(personalDTO, data.entity);
+            var personal = _mapper.Map<Personal,PersonalDTO>(personalDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<Personal>(personal));
             return Ok(new { message = "Updated!" });
         }

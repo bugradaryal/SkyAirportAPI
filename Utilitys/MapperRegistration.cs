@@ -13,19 +13,7 @@ namespace Utilitys
     {
         public static void AddMapperApplication(this IServiceCollection services)
         {
-            var assembly = Assembly.GetExecutingAssembly();
-
-            services.AddAutoMapper(
-                typeof(UserProfile).Assembly,
-                typeof(ValidateTokenProfile).Assembly,
-                typeof(AirportProfile).Assembly,
-                typeof(PersonalProfile).Assembly,
-                typeof(AirlineProfile).Assembly,
-                typeof(SeatProfile).Assembly,
-                typeof(TicketProfile).Assembly,
-                typeof(AircraftProfile).Assembly,
-                typeof(CrewProfile).Assembly
-            );
+            services.AddSingleton<Utilitys.Mapper.IMapper, Utilitys.Mapper.Mapper>();
         }
     }
 }

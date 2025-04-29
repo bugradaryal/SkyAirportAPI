@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Business.Abstract;
+﻿using Business.Abstract;
 using Business.Concrete;
 using Business.Features.Account.Commands.ChangePassword;
 using Business.Features.Account.Commands.CreateAccount;
@@ -19,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System;
 using Utilitys.MailServices;
+using Utilitys.Mapper;
 
 namespace API.Controllers
 {
@@ -29,12 +29,14 @@ namespace API.Controllers
         private readonly IMapper _mapper;
         private readonly ITokenServices _tokenServices;
         private readonly IMailServices _mailServices;
+        private readonly IPhoneServices _phoneServices;
         public AuthController(UserManager<User> userManager, IMapper mapper, IOptions<JwtBearer> jwt, IMediator mediator, IOptions<EmailSender> mail) 
         {
             _tokenServices = new TokenManager(jwt,userManager);
             _mapper = mapper;
             _mediator = mediator;
             _mailServices = new MailManager(mail,userManager);
+            _phoneServices = new PhoneManager();
         }
 
 
@@ -84,9 +86,8 @@ namespace API.Controllers
                     return BadRequest(roleResponse.exception);
                 }
                 return BadRequest(userResponse.exception);
-
             }
-            return Ok(_mapper.Map(validateTokenDTO, new AuthenticationModel()));         
+            return Ok(_mapper.Map<AuthenticationModel,ValidateTokenDTO>(validateTokenDTO));         
         }
 
         [Authorize(Policy = "IsUserSuspended")]
@@ -121,7 +122,7 @@ namespace API.Controllers
                 return Unauthorized(new { message = "Token not valid!!" });
             else
             {
-                User user = _mapper.Map(updateAccountDTO,validateTokenDTO.user);
+                User user = _mapper.Map<User,UpdateAccountDTO>(updateAccountDTO,validateTokenDTO.user);
                 var updateResponse = await _mediator.Send(new UpdateAccountRequest(user));
                 if(updateResponse != null)
                     return BadRequest(updateResponse);
@@ -160,7 +161,7 @@ namespace API.Controllers
                 if(mailResponse.error == true)
                     return BadRequest(mailResponse.exception);
                 var emailConfUrl = await _tokenServices.CreateTokenEmailConfirm(mailResponse.user);
-                var callback_url = "http://localhost:7257/EmailVerification?userId=" + mailResponse.user.Id + "&emailConfUrl=" + emailConfUrl;
+                var callback_url = "https://localhost:7257/EmailVerification?userId=" + mailResponse.user.Id + "&emailConfUrl=" + emailConfUrl;
 
 
                 await _mailServices.SendingEmail(email, callback_url);
@@ -171,13 +172,13 @@ namespace API.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        [HttpPost("Emailverification")]
+        [HttpGet("EmailVerification")]
         [AllowAnonymous]
-        public async Task<IActionResult> Emailverification([FromBody] EmailVeificationViewModel emailVeificationViewModel)
+        public async Task<IActionResult> EmailVerification([FromQuery] string userId, [FromQuery] string emailConfUrl)
         {
             try
             {
-                await _mailServices.ConfirmEmail(emailVeificationViewModel.userId, emailVeificationViewModel.emailConfUrl);
+                await _mailServices.ConfirmEmail(userId, emailConfUrl);
                 return Ok(new { message = "Your email has been successfully confirmed!" });
             }
             catch (Exception ex)
@@ -186,5 +187,25 @@ namespace API.Controllers
             }
         }
 
+        [HttpPost("ValidateToken")]
+        [Authorize]
+        public async Task<IActionResult> ValidateToken()
+        {
+            try
+            {
+                var result = await _tokenServices.ValidateToken(this.HttpContext);
+                if(result.IsTokenValid)
+                {                
+                    if (result.user.IsSuspended)
+                        return BadRequest(new { message = "User is suspended!!" });
+                    return Ok(result);
+                }
+                return BadRequest(new { message = "Token is not valid!!!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

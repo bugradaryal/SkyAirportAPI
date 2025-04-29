@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DataDbContext))]
-    [Migration("20250403004558_InitialCreate")]
+    [Migration("20250429075543_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -73,8 +73,10 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(64)
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasDefaultValue("NotOperational");
 
                     b.HasKey("id");
 
@@ -339,7 +341,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Operation_Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 4, 3, 3, 45, 57, 782, DateTimeKind.Local).AddTicks(4746));
+                        .HasDefaultValue(new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(6575));
 
                     b.Property<string>("Operation_type")
                         .IsRequired()
@@ -396,7 +398,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Timestamp")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 4, 3, 3, 45, 57, 782, DateTimeKind.Local).AddTicks(1999));
+                        .HasDefaultValue(new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(5506));
 
                     b.Property<int>("loglevel_id")
                         .HasColumnType("integer");
@@ -506,7 +508,7 @@ namespace DataAccess.Migrations
                     b.HasIndex("flight_id")
                         .IsUnique();
 
-                    b.ToTable("OperationalDelay");
+                    b.ToTable("OperationalDelays");
                 });
 
             modelBuilder.Entity("Entities.Personal", b =>
@@ -545,7 +547,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Start_Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 4, 3, 3, 45, 57, 781, DateTimeKind.Local).AddTicks(3082));
+                        .HasDefaultValue(new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(2446));
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -622,9 +624,9 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Puchase_date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 4, 3, 3, 45, 57, 780, DateTimeKind.Local).AddTicks(8080));
+                        .HasDefaultValue(new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(657));
 
-                    b.Property<int>("seet_id")
+                    b.Property<int>("seat_id")
                         .HasColumnType("integer");
 
                     b.Property<string>("user_id")
@@ -633,7 +635,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("seet_id")
+                    b.HasIndex("seat_id")
                         .IsUnique();
 
                     b.HasIndex("user_id");
@@ -664,7 +666,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Created_at")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 4, 3, 3, 45, 57, 780, DateTimeKind.Local).AddTicks(6659));
+                        .HasDefaultValue(new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(140));
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -725,7 +727,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("Uptaded_at")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP")
-                        .HasDefaultValue(new DateTime(2025, 4, 3, 3, 45, 57, 780, DateTimeKind.Local).AddTicks(7069));
+                        .HasDefaultValue(new DateTime(2025, 4, 29, 10, 55, 43, 207, DateTimeKind.Local).AddTicks(284));
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
@@ -771,13 +773,13 @@ namespace DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "8b832739-21d6-4e2a-801f-2b1b322aef8b",
+                            Id = "5b009a25-1c1a-4055-84ac-63d80ec2f9a8",
                             Name = "Administrator",
                             NormalizedName = "ADMİNİSTRATOR"
                         },
                         new
                         {
-                            Id = "be6ef88e-e798-493f-846a-97812152d846",
+                            Id = "6054a5b8-76f8-413f-bab9-d9404e8fc372",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -1027,7 +1029,7 @@ namespace DataAccess.Migrations
                 {
                     b.HasOne("Entities.Seat", "seat")
                         .WithOne("ticket")
-                        .HasForeignKey("Entities.Ticket", "seet_id")
+                        .HasForeignKey("Entities.Ticket", "seat_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

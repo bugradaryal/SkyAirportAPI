@@ -1,4 +1,3 @@
-using AutoMapper;
 using Business.Abstract;
 using Business.Features.Generic.Commands.Add;
 using Business.Features.Generic.Commands.Delete;
@@ -12,6 +11,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Utilitys.Mapper;
 
 namespace API.Controllers
 {
@@ -63,8 +63,8 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var personal = _mapper.Map(operationDelayDTO, new OperationalDelayDTO());
-            var addResponse = await _mediator.Send(new GenericAddRequest<OperationalDelayDTO>(personal));
+            var personal = _mapper.Map<OperationalDelay,OperationalDelayDTO>(operationDelayDTO);
+            var addResponse = await _mediator.Send(new GenericAddRequest<OperationalDelay>(personal));
             if (addResponse != null)
                 return BadRequest(addResponse);
             return Ok(new { message = "Delay added!" });
@@ -86,9 +86,9 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var data = await _mediator.Send(new GenericGetByIdRequest<OperationalDelayDTO>(operationDelayDTO.id));
-            var personal = _mapper.Map(operationDelayDTO, data.entity);
-            var updateResponse = await _mediator.Send(new GenericUpdateRequest<OperationalDelayDTO>(personal));
+            var data = await _mediator.Send(new GenericGetByIdRequest<OperationalDelay>(operationDelayDTO.id));
+            var personal = _mapper.Map<OperationalDelay,OperationalDelayDTO>(operationDelayDTO, data.entity);
+            var updateResponse = await _mediator.Send(new GenericUpdateRequest<OperationalDelay>(personal));
             return Ok(new { message = "Updated!" });
         }
     }

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Business.Features.Airline.Queries;
+﻿using Business.Features.Airline.Queries;
 using Business.Features.Flight.Queries.GetAllFlightByAircraftId;
 using Business.Features.Flight.Queries.GetAllFlightByAirlineId;
 using Business.Features.Generic.Commands.Add;
@@ -13,6 +12,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Utilitys.Mapper;
 
 namespace API.Controllers
 {
@@ -75,7 +75,7 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-            var flight = _mapper.Map(flightDTO, new Flight());
+            var flight = _mapper.Map<Flight,FlightDTO>(flightDTO);
             var addResponse = await _mediator.Send(new GenericAddRequest<Flight>(flight));
             if (addResponse != null)
                 return BadRequest(addResponse);
@@ -105,7 +105,7 @@ namespace API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<Flight>(flightDTO.id));
-            var flight = _mapper.Map(flightDTO, data.entity);
+            var flight = _mapper.Map<Flight,FlightDTO>(flightDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<Flight>(flight));
             if (updateResponse != null)
                 return BadRequest(updateResponse);

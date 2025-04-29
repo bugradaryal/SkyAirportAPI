@@ -53,6 +53,7 @@ namespace API
 
 
             builder.Services.Configure<JwtBearer>(builder.Configuration.GetSection("JwtBearer"));
+            builder.Services.Configure<EmailSender>(builder.Configuration.GetSection("EmailSender"));
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {
