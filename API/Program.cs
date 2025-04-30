@@ -19,6 +19,8 @@ using Utilitys.Mapper;
 using Microsoft.Extensions.DependencyInjection;
 using Business;
 using Utilitys;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace API
 {
@@ -131,6 +133,20 @@ namespace API
                         });
                 });
             });
+            builder.Services.AddControllers()
+                    .AddNewtonsoftJson(options => {
+
+                        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+                        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+
+                        options.SerializerSettings.Formatting = Formatting.Indented;
+
+                        options.SerializerSettings.Error = (sender, args) =>
+                        {
+                            args.ErrorContext.Handled = true;
+                        };
+                    });
 
             builder.Services.AddMediatRApplication();
             builder.Services.AddMapperApplication();

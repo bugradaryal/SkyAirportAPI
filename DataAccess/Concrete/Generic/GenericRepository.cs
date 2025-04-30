@@ -51,5 +51,13 @@ namespace DataAccess.Concrete.Generic
                 await _dbContext.SaveChangesAsync();
             }
         }
+        public async Task<bool> Any(int id)
+        {
+            using (var _dbContext = new DataDbContext())
+            {
+                bool value = await _dbContext.Set<T>().AnyAsync(x => EF.Property<int>(x, "id") == id);
+                return value;
+            }
+        }
     }
 }

@@ -31,7 +31,7 @@ namespace Business.Features.Personal.Queries
             }
             catch (Exception ex)
             {
-                return new GetAllPersonalByAirportIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest) };
+                return new GetAllPersonalByAirportIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
             }
         }
     }

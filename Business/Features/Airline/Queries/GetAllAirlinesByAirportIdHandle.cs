@@ -28,7 +28,7 @@ namespace Business.Features.Airline.Queries
             }
             catch (Exception ex)
             {
-                return new GetAllAirlinesByAirportIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest) };
+                return new GetAllAirlinesByAirportIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
             }
         }
     }

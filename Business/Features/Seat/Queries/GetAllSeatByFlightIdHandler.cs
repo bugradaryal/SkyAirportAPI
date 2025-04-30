@@ -29,7 +29,7 @@ namespace Business.Features.Seat.Queries
             }
             catch (Exception ex)
             {
-                return new GetAllSeatByFlightIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest) };
+                return new GetAllSeatByFlightIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
             }
         }
     }

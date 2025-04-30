@@ -32,7 +32,7 @@ namespace API.Controllers
         [HttpGet("GetAllOperationalDelay")]
         public async Task<IActionResult> GetAllOperationalDelay()
         {
-            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<List<OperationalDelay>>());
+            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<OperationalDelay>());
             if (getAllRepository.error == true)
                 return BadRequest(getAllRepository.exception);
             return Ok(getAllRepository.data);

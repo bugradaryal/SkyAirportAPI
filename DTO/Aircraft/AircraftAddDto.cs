@@ -14,5 +14,6 @@ namespace DTO.Aircraft
         public double Max_Altitude { get; set; }
         public int Engine_Power { get; set; }
         public double Carry_Capacity { get; set; }
+        public int aircraftStatus_id { get; set; }
     }
 }

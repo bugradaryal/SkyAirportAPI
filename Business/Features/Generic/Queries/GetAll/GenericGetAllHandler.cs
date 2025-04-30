@@ -31,7 +31,7 @@ namespace Business.Features.Generic.Queries.GetAll
             }
             catch (Exception ex)
             {
-                return new GenericGetAllResponse<TEntity> { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest) };
+                return new GenericGetAllResponse<TEntity> { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
             }
         }
     }

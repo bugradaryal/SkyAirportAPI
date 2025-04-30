@@ -34,7 +34,7 @@ namespace API.Controllers
         [HttpGet("GetAllFlight")]
         public async Task<IActionResult> GetAllFlight()
         {
-            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<List<Flight>>());
+            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Flight>());
             if (getAllRepository.error == true)
                 return BadRequest(getAllRepository.exception);
             return Ok(getAllRepository.data);

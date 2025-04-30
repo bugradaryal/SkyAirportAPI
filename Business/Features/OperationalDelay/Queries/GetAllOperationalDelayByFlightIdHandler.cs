@@ -29,7 +29,7 @@ namespace Business.Features.OperationalDelay.Queries
             }
             catch (Exception ex)
             {
-                return new GetAllOperationalDelayByFlightIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest) };
+                return new GetAllOperationalDelayByFlightIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
             }
         }
     }

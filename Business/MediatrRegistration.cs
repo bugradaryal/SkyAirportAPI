@@ -26,7 +26,8 @@ namespace Business
 
             var entityTypes = new[] { 
                 typeof(Aircraft), 
-                typeof(AircraftStatus), 
+                typeof(AircraftStatus),
+                typeof(Airline),
                 typeof(Airport),
                 typeof(Crew),
                 typeof(Flight),

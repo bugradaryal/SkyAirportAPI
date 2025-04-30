@@ -30,7 +30,7 @@ namespace Business.Features.Crew.Queries
             }
             catch (Exception ex)
             {
-                return new GetAllCrewByAircraftIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest) };
+                return new GetAllCrewByAircraftIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
             }
         }
     }

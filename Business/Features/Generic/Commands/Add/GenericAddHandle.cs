@@ -29,7 +29,7 @@ namespace Business.Features.Generic.Commands.Add
             }
             catch (Exception ex)
             {
-                return new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+                return new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message);
             }
         }
     }

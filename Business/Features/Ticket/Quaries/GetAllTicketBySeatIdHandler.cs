@@ -29,7 +29,7 @@ namespace Business.Features.Ticket.Quaries
             }
             catch (Exception ex)
             {
-                return new GetAllTicketBySeatIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest) };
+                return new GetAllTicketBySeatIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
             }
         }
     }

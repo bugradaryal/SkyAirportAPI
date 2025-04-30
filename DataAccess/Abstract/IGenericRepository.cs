@@ -13,5 +13,6 @@ namespace DataAccess.Abstract
         Task Add(T generic);
         Task<T> GetValue(int id);
         Task<List<T>> GetAll();
+        Task<bool> Any(int id);
     }
 }

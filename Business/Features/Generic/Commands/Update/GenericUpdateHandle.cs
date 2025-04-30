@@ -24,12 +24,21 @@ namespace Business.Features.Generic.Commands.Update
         {
             try
             {
-                await _genericRepository.Update(request.ToEntity());
-                return null;
+                var entity = request.ToEntity();
+                var entityId = entity.GetType().GetProperty("id").GetValue(entity);
+                if(entityId != null)
+                {
+                    if(await _genericRepository.Any((int)entityId))
+                    {
+                        await _genericRepository.Update(request.ToEntity());
+                        return null;
+                    }
+                }
+                return new CustomException("Id not matched - Update failed!!", (int)HttpStatusCode.NotFound);
             }
             catch (Exception ex) 
             {
-                return new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+                return new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message);
             }
         }
     }

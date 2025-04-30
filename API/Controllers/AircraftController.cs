@@ -50,7 +50,7 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("AddAircraft")]
-        public async Task<IActionResult> AddAircraft(AircraftAddDto aircraftDTO)
+        public async Task<IActionResult> AddAircraft([FromBody]AircraftAddDto aircraftDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
@@ -61,8 +61,8 @@ namespace API.Controllers
             return Ok(new { message = "Aircraft added!" });
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
-        [HttpDelete("DeleteAircraft")]
-        public async Task<IActionResult> DeleteAircraft([FromQuery] int id)
+        [HttpDelete("DeleteAircraft/{id}")]
+        public async Task<IActionResult> DeleteAircraft([FromRoute] int id)
         {
             if (id == null || id == 0)
                 return BadRequest(new { message = "Invalid Id!!" });
@@ -73,7 +73,7 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPut("UpdateAircraft")]
-        public async Task<IActionResult> UpdateAircraft(AircraftUpdateDTO aircraftDTO)
+        public async Task<IActionResult> UpdateAircraft([FromBody]AircraftUpdateDTO aircraftDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });

@@ -32,7 +32,7 @@ namespace API.Controllers
         [HttpGet("GetAllAirlines")]
         public async Task<IActionResult> GetAllAirlines()
         {
-            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<List<Airline>>());
+            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Airline>());
             if(getAllRepository.error == true)
                 return BadRequest(getAllRepository.exception);
             return Ok(getAllRepository.data);
@@ -61,7 +61,7 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("AddAirline")]
-        public async Task<IActionResult> AddAirline(AirlineAddDTO airlineDTO)
+        public async Task<IActionResult> AddAirline([FromBody]AirlineAddDTO airlineDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
@@ -72,8 +72,8 @@ namespace API.Controllers
             return Ok(new { message = "Airline added!" });
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
-        [HttpDelete("DeleteAirline")]
-        public async Task<IActionResult> DeleteAirline([FromQuery] int id)
+        [HttpDelete("DeleteAirline/{id}")]
+        public async Task<IActionResult> DeleteAirline([FromRoute] int id)
         {
             if (id == null || id == 0)
                 return BadRequest(new { message = "Invalid Id!!" });
@@ -84,7 +84,7 @@ namespace API.Controllers
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPut("UpdateAirline")]
-        public async Task<IActionResult> UpdateAirline(AirlineUpdateDTO airlineDTO)
+        public async Task<IActionResult> UpdateAirline([FromBody]AirlineUpdateDTO airlineDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });

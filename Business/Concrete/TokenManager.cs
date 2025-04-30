@@ -93,7 +93,7 @@ namespace Business.Concrete
             }
             catch (Exception ex) 
             {
-                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message);
             }
 
         }
@@ -131,7 +131,7 @@ namespace Business.Concrete
             }
             catch(Exception ex) 
             {
-                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message);
             }
 
         }
@@ -146,7 +146,7 @@ namespace Business.Concrete
             }
             catch (Exception ex) 
             {
-                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message);
             }
         }
 
@@ -163,7 +163,7 @@ namespace Business.Concrete
             }
             catch (Exception ex)
             {
-                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message);
             }
         }
         public async Task SaveRefreshTokenAsync(User user, string refreshToken)
@@ -179,7 +179,7 @@ namespace Business.Concrete
             }
             catch (Exception ex)
             {
-                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+                throw new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message);
             }
         }
     }

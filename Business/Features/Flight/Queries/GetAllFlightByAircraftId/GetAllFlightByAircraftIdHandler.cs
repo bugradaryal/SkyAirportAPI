@@ -29,7 +29,7 @@ namespace Business.Features.Flight.Queries.GetAllFlightByAircraftId
             }
             catch (Exception ex)
             {
-                return new GetAllFlightByAircraftIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest) };
+                return new GetAllFlightByAircraftIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
             }
         }
     }

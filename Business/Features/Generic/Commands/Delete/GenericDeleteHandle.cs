@@ -24,12 +24,20 @@ namespace Business.Features.Generic.Commands.Delete
         {
             try
             {
-                await _genericRepository.Delete(request.objectId);
-                return null;
+                int entityId = request.objectId;
+                if (entityId != null)
+                {
+                    if (await _genericRepository.Any((int)entityId))
+                    {
+                        await _genericRepository.Delete(entityId);
+                        return null;
+                    }
+                }
+                return new CustomException("Id not matched - Deleting failed!", (int)HttpStatusCode.NotFound);
             }
             catch (Exception ex)
             {
-                return new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+                return new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message);
             }
         }
     }

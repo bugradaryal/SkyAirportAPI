@@ -33,7 +33,7 @@ namespace API.Controllers
         [HttpGet("GetAllSeat")]
         public async Task<IActionResult> GetAllSeat()
         {
-            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<List<Seat>>());
+            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Seat>());
             if (getAllRepository.error == true)
                 return BadRequest(getAllRepository.exception);
             return Ok(getAllRepository.data);

@@ -29,15 +29,17 @@ namespace API.Controllers
         }
 
         [HttpGet("GetAllAircraftStatus")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllAircraftStatus()
         {
-            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<List<AircraftStatus>>());
+            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<AircraftStatus>());
             if (getAllRepository.error == true)
                 return BadRequest(getAllRepository.exception);
             return Ok(getAllRepository.data);
         }
 
         [HttpGet("GetAircraftStatusById")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAircraftStatusById([FromQuery] int id)
         {
             if (id == null || id == 0)
@@ -49,6 +51,7 @@ namespace API.Controllers
         }
 
         [HttpPost("AddAircraftStatus")]
+        [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         public async Task<IActionResult> AddAircraftStatus([FromBody]string newStatus)
         {
             if (!ModelState.IsValid)
@@ -60,8 +63,9 @@ namespace API.Controllers
             return Ok(new { message = "AircraftStatus added!" });
         }
 
-        [HttpDelete("DeleteAircraftStatus")]
-        public async Task<IActionResult> DeleteAircraftStatus([FromQuery] int id)
+        [HttpDelete("DeleteAircraftStatus/{id}")]
+        [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
+        public async Task<IActionResult> DeleteAircraftStatus([FromRoute] int id)
         {
             if (id == null || id == 0)
                 return BadRequest(new { message = "Invalid Id!!" });
@@ -72,13 +76,18 @@ namespace API.Controllers
         }
 
         [HttpPut("UpdateAircraftStatus")]
-        public async Task<IActionResult> UpdateAircraftStatus(AircraftStatusUpdateDTO aircraftStatusDTO)
+        [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
+        public async Task<IActionResult> UpdateAircraftStatus([FromBody]AircraftStatusUpdateDTO aircraftStatusDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<AircraftStatus>(aircraftStatusDTO.id));
             var aircraftStatus = _mapper.Map<AircraftStatus, AircraftStatusUpdateDTO>(aircraftStatusDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<AircraftStatus>(aircraftStatus));
+            if(updateResponse != null)
+            {
+                return BadRequest(updateResponse);
+            }
             return Ok(new { message = "Updated!" });
         }
     }

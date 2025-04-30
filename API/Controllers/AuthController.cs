@@ -92,8 +92,8 @@ namespace API.Controllers
         }
 
         [Authorize(Policy = "IsUserSuspended")]
-        [HttpDelete("DeleteAccount")]
-        public async Task<IActionResult> DeleteAccount([FromQuery] string userId)
+        [HttpDelete("DeleteAccount/{userId}")]
+        public async Task<IActionResult> DeleteAccount([FromRoute] string userId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
