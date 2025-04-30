@@ -16,6 +16,7 @@ using Utilitys.Mapper;
 
 namespace API.Controllers
 {
+    [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
     [Route("api/[controller]")]
     [ApiController]
     public class CrewController : ControllerBase
@@ -29,7 +30,6 @@ namespace API.Controllers
             _mediator = mediator;
         }
 
-        [AllowAnonymous]
         [HttpGet("GetAllCrew")]
         public async Task<IActionResult> GetAllCrew()
         {
@@ -39,7 +39,6 @@ namespace API.Controllers
             return Ok(getAllRepository.data);
         }
 
-        [AllowAnonymous]
         [HttpGet("GetAllCrewByAircraftId")]
         public async Task<IActionResult> GetAllCrewByAircraftId([FromQuery] int id)
         {
@@ -49,7 +48,6 @@ namespace API.Controllers
             return Ok(getAllResponse.entity);
         }
 
-        [AllowAnonymous]
         [HttpGet("GetCrewById")]
         public async Task<IActionResult> GetCrewById([FromQuery] int id)
         {
@@ -60,7 +58,7 @@ namespace API.Controllers
                 return BadRequest(getByIdResponse.exception);
             return Ok(getByIdResponse.entity);
         }
-        [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
+
         [HttpPost("AddCrew")]
         public async Task<IActionResult> AddCrew(CrewAddDTO crewDTO)
         {
@@ -73,7 +71,7 @@ namespace API.Controllers
                 return BadRequest(addResponse);
             return Ok(new { message = "Crew added!" });
         }
-        [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
+
         [HttpDelete("DeleteCrew")]
         public async Task<IActionResult> DeleteCrew([FromQuery] int id)
         {
@@ -84,7 +82,7 @@ namespace API.Controllers
                 return BadRequest(deleteResponse);
             return Ok(new { message = "Crew deleted!" });
         }
-        [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
+
         [HttpPut("UpdateCrew")]
         public async Task<IActionResult> UpdateCrew(CrewUpdateDTO crewDTO)
         {

@@ -33,19 +33,19 @@ namespace DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
-                    b.Property<double>("Carry_Capacity")
+                    b.Property<decimal>("Carry_Capacity")
                         .HasColumnType("DECIMAL(7,2)");
 
                     b.Property<int>("Engine_Power")
                         .HasColumnType("integer");
 
-                    b.Property<double>("Fuel_Capacity")
+                    b.Property<decimal>("Fuel_Capacity")
                         .HasColumnType("DECIMAL(7,1)");
 
                     b.Property<DateTimeOffset>("Last_Maintenance_Date")
                         .HasColumnType("TIMESTAMP WITH TIME ZONE");
 
-                    b.Property<double>("Max_Altitude")
+                    b.Property<decimal>("Max_Altitude")
                         .HasColumnType("DECIMAL(8,1)");
 
                     b.Property<string>("Model")
@@ -613,12 +613,12 @@ namespace DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
-                    b.Property<double>("Baggage_weight")
+                    b.Property<decimal>("Baggage_weight")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DECIMAL(8,2)")
                         .HasDefaultValue(0.0);
 
-                    b.Property<double>("Price")
+                    b.Property<decimal>("Price")
                         .HasColumnType("DECIMAL(10,2)");
 
                     b.Property<DateTimeOffset>("Puchase_date")

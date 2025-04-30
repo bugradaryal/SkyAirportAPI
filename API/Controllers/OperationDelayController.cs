@@ -18,18 +18,19 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OperationalDelayDTOController : ControllerBase
+    public class OperationalDelayController : ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-        public OperationalDelayDTOController(IMediator mediator, IMapper mapper)
+        public OperationalDelayController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
             _mapper = mapper;
         }
 
         [HttpGet("GetAllOperationalDelay")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllOperationalDelay()
         {
             var getAllRepository = await _mediator.Send(new GenericGetAllRequest<OperationalDelay>());
@@ -40,6 +41,7 @@ namespace API.Controllers
 
 
         [HttpGet("GetAllOperationalDelayByFlightId")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllOperationalDelayByFlightId([FromQuery] int id)
         {
             var getAllResponse = await _mediator.Send(new GetAllOperationalDelayByFlightIdRequest(id));
@@ -49,6 +51,7 @@ namespace API.Controllers
         }
 
         [HttpGet("GetOperationalDelayById")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetOperationalDelayById([FromQuery] int id)
         {
             if (id == null || id == 0)
@@ -60,6 +63,7 @@ namespace API.Controllers
         }
 
         [HttpPost("AddOperationalDelay")]
+        [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         public async Task<IActionResult> AddOperationalDelay(OperationalDelayAddDTO operationDelayDTO)
         {
             if (!ModelState.IsValid)
@@ -72,6 +76,7 @@ namespace API.Controllers
         }
 
         [HttpDelete("DeleteOperationalDelay")]
+        [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         public async Task<IActionResult> DeleteOperationalDelay([FromQuery] int id)
         {
             if (id == null || id == 0)
@@ -83,6 +88,7 @@ namespace API.Controllers
         }
 
         [HttpPut("UpdateOperationalDelay")]
+        [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         public async Task<IActionResult> UpdateOperationalDelayDTO(OperationalDelayUpdateDTO operationDelayDTO)
         {
             if (!ModelState.IsValid)
@@ -90,6 +96,8 @@ namespace API.Controllers
             var data = await _mediator.Send(new GenericGetByIdRequest<OperationalDelay>(operationDelayDTO.id));
             var personal = _mapper.Map<OperationalDelay, OperationalDelayUpdateDTO>(operationDelayDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<OperationalDelay>(personal));
+            if (updateResponse != null)
+                return BadRequest(updateResponse);
             return Ok(new { message = "Updated!" });
         }
     }

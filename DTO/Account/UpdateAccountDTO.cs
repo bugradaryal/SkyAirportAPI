@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DTO.Account
 {
@@ -17,6 +18,7 @@ namespace DTO.Account
         [StringLength(64, MinimumLength = 2)]
         public string Surname { get; set; }
         [RegularExpression(@"^(E|K|U)$")]
+        [Column(TypeName = "char(1)")]
         public char Gender { get; set; }
         [Range(1, 120)]
         [Required]

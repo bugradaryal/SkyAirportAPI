@@ -91,6 +91,8 @@ namespace API.Controllers
             var data = await _mediator.Send(new GenericGetByIdRequest<Personal>(personalDTO.id));
             var personal = _mapper.Map<Personal, PersonalUpdateDTO>(personalDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<Personal>(personal));
+            if (updateResponse != null)
+                return BadRequest(updateResponse);
             return Ok(new { message = "Updated!" });
         }
     }

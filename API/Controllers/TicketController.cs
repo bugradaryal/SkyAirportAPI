@@ -5,6 +5,10 @@ using Business.Features.Generic.Commands.Delete;
 using Business.Features.Generic.Commands.Update;
 using Business.Features.Generic.Queries.GetAll;
 using Business.Features.Generic.Queries.GetById;
+using Business.Features.Ticket.Commands;
+using Business.Features.Ticket.Commands.AddTicket;
+using Business.Features.Ticket.Commands.DeleteTicket;
+using Business.Features.Ticket.Commands.UpdateTicket;
 using DTO;
 using DTO.Ticket;
 using Entities;
@@ -67,7 +71,7 @@ namespace API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
             var ticket = _mapper.Map<Ticket, TicketAddDTO>(ticketDTO);
-            var addResponse = await _mediator.Send(new GenericAddRequest<Ticket>(ticket));
+            var addResponse = await _mediator.Send(new AddTicketRequest(ticket));
             if (addResponse != null)
                 return BadRequest(addResponse);
             return Ok(new { message = "Ticket added!" });
@@ -78,7 +82,7 @@ namespace API.Controllers
         {
             if (id == null || id == 0)
                 return BadRequest(new { message = "Invalid Id!!" });
-            var deleteResponse = await _mediator.Send(new GenericDeleteRequest<Ticket>(id));
+            var deleteResponse = await _mediator.Send(new DeleteTicketRequest(id));
             if (deleteResponse != null)
                 return BadRequest(deleteResponse);
             return Ok(new { message = "Ticket deleted!" });
@@ -91,7 +95,7 @@ namespace API.Controllers
                 return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<Ticket>(ticketDTO.id));
             var ticket = _mapper.Map<Ticket, TicketUpdateDTO>(ticketDTO, data.entity);
-            var updateResponse = await _mediator.Send(new GenericUpdateRequest<Ticket>(ticket));
+            var updateResponse = await _mediator.Send(new UpdateTicketRequest(ticket));
             if (updateResponse != null)
                 return BadRequest(updateResponse);
             return Ok(new { message = "Updated!" });

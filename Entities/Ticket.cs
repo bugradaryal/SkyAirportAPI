@@ -9,9 +9,9 @@ namespace Entities
     public class Ticket
     {
         public int id { get; set; }
-        public double Price { get; set; }
+        public decimal Price { get; set; }
         public DateTimeOffset Puchase_date { get; set; }
-        public double Baggage_weight { get; set; }
+        public decimal Baggage_weight { get; set; }
 
 
         public int seat_id { get; set; }

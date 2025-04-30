@@ -5,6 +5,7 @@ using Business.Features.Generic.Commands.Delete;
 using Business.Features.Generic.Commands.Update;
 using Business.Features.Generic.Queries.GetAll;
 using Business.Features.Generic.Queries.GetById;
+using Business.Features.Seat.Queries;
 using DTO;
 using DTO.Seat;
 using Entities;
@@ -43,7 +44,7 @@ namespace API.Controllers
         [HttpGet("GetAllSeatByFlightId")]
         public async Task<IActionResult> GetAllSeatByFlightId([FromQuery] int id)
         {
-            var getAllResponse = await _mediator.Send(new GetAllAirlinesByAirportIdRequest(id));
+            var getAllResponse = await _mediator.Send(new GetAllSeatByFlightIdRequest(id));
             if (getAllResponse.error)
                 return BadRequest(getAllResponse.exception);
             return Ok(getAllResponse.entity);

@@ -130,10 +130,10 @@ namespace DataAccess.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Model = table.Column<string>(type: "text", maxLength: 64, nullable: false),
                     Last_Maintenance_Date = table.Column<DateTimeOffset>(type: "TIMESTAMP WITH TIME ZONE", nullable: false),
-                    Fuel_Capacity = table.Column<double>(type: "numeric(7,1)", nullable: false),
-                    Max_Altitude = table.Column<double>(type: "numeric(8,1)", nullable: false),
+                    Fuel_Capacity = table.Column<decimal>(type: "numeric(7,1)", nullable: false),
+                    Max_Altitude = table.Column<decimal>(type: "numeric(8,1)", nullable: false),
                     Engine_Power = table.Column<int>(type: "integer", nullable: false),
-                    Carry_Capacity = table.Column<double>(type: "numeric(7,2)", nullable: false),
+                    Carry_Capacity = table.Column<decimal>(type: "numeric(7,2)", nullable: false),
                     aircraftStatus_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -476,9 +476,9 @@ namespace DataAccess.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Price = table.Column<double>(type: "numeric(10,2)", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
                     Puchase_date = table.Column<DateTimeOffset>(type: "TIMESTAMP WITH TIME ZONE", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    Baggage_weight = table.Column<double>(type: "numeric(8,2)", nullable: false, defaultValue: 0.0),
+                    Baggage_weight = table.Column<decimal>(type: "numeric(8,2)", nullable: false, defaultValue: 0.0),
                     seat_id = table.Column<int>(type: "integer", nullable: false),
                     user_id = table.Column<string>(type: "text", nullable: false)
                 },

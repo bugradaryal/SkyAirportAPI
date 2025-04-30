@@ -1,16 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace DTO.Ticket
 {
     public class TicketAddDTO
     {
-        public double Price { get; set; }
-        public DateTimeOffset Puchase_date { get; set; }
-        public double Baggage_weight { get; set; }
+        [Required]
+        [Range(0, 99999999.99)] 
+        public decimal Price { get; set; }
+
+        [Required]
+        [Range(0, 999999.99)] 
+        public decimal Baggage_weight { get; set; }
+
+        [Required]
         public int seat_id { get; set; }
     }
 }

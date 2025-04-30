@@ -25,6 +25,7 @@ namespace Business.Features.Account.Commands.UpdateAccount
         {
             try
             {
+                request.user.Uptaded_at = DateTimeOffset.UtcNow;
                 var result = await _userManager.UpdateAsync(request.user);
                 if (!result.Succeeded)
                     return new CustomException(result.Errors.FirstOrDefault().ToString(), (int)HttpStatusCode.BadRequest);

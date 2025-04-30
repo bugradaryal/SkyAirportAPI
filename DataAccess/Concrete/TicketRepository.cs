@@ -18,5 +18,13 @@ namespace DataAccess.Concrete
                 return await _dbContext.Tickets.Where(x => x.seat_id == id).ToListAsync();
             }
         }
+
+        public async Task<decimal> GetTicketWeightById(int id)
+        {
+            using (var _dbContext = new DataDbContext())
+            {
+                return await _dbContext.Tickets.Where(t => t.id == id).Select(t => t.Baggage_weight).FirstOrDefaultAsync();
+            }
+        }
     }
 }

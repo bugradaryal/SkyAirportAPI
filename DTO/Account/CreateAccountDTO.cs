@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace DTO.Account
         [StringLength(64, MinimumLength = 2)]
         public string Surname { get; set; }
         [RegularExpression(@"^(E|K|U)$")]
+        [Column(TypeName = "char(1)")]
         public char Gender { get; set; }
         [Range(1,120)]
         [Required]
