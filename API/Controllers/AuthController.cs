@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System;
+using Utilitys.Logger;
 using Utilitys.MailServices;
 using Utilitys.Mapper;
 
@@ -26,18 +27,20 @@ namespace API.Controllers
     [ApiController]
     public class AuthController : Controller
     {
+        private readonly ILoggerServices _logger;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly ITokenServices _tokenServices;
         private readonly IMailServices _mailServices;
         private readonly IPhoneServices _phoneServices;
-        public AuthController(UserManager<User> userManager, IMapper mapper, IOptions<JwtBearer> jwt, IMediator mediator, IOptions<EmailSender> mail) 
+        public AuthController(UserManager<User> userManager, IMapper mapper, IOptions<JwtBearer> jwt, IMediator mediator, IOptions<EmailSender> mail, ILoggerServices logger) 
         {
             _tokenServices = new TokenManager(jwt,userManager);
             _mapper = mapper;
             _mediator = mediator;
             _mailServices = new MailManager(mail,userManager);
             _phoneServices = new PhoneManager();
+            _logger = logger;
         }
 
 
@@ -60,6 +63,8 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
+
+            _logger.Info(loginAccountDTO.Email + "  /  Trying to Login!!");
 
             var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
             if (!validateTokenDTO.IsTokenValid)
