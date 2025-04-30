@@ -21,6 +21,9 @@ using Business;
 using Utilitys;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
+using Utilitys.Logger;
+using Serilog.Sinks.Elasticsearch;
+using Serilog.Exceptions;
 
 namespace API
 {
@@ -41,16 +44,17 @@ namespace API
                     listenOptions.UseHttps(); // HTTPS
                 });
             });
-            /*
-            builder.Services.AddScoped<DatabaseLogSink>(); // DatabaseLogSink'i DI container'a kaydediyoruz.
-            builder.Services.AddLogging(loggingBuilder =>
-            {
-                loggingBuilder.AddSerilog(new LoggerConfiguration()
-                    .WriteTo.Console()  // Konsola log yazma (isteğe bağlı)
-                    .WriteTo.Sink(new DatabaseLogSink(builder.Services.BuildServiceProvider().GetRequiredService<DataDbContext>()))  // Burada lambda kullanmak yerine direkt olarak kullanıyoruz
-                    .CreateLogger());
-            });
-            */
+
+            // Serilog'u ayarlıyoruz
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)
+                .Enrich.FromLogContext()
+                .CreateLogger();
+
+            // 🔹 Uygulama logger'ı olarak tanıt
+            builder.Host.UseSerilog();
+            builder.Services.AddSingleton<ILoggerServices, SerilogLogger>();
+
             builder.Services.AddControllers();
 
 

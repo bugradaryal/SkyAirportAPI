@@ -10,7 +10,7 @@ namespace DTO.Airport
     public class AirportUpdateDTO
     {
         [Required]
-        public int Id { get; set; }
+        public int id { get; set; }
 
         [StringLength(128)]
         public string Name { get; set; }
