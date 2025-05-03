@@ -24,6 +24,8 @@ using Newtonsoft.Json;
 using Utilitys.Logger;
 using Serilog.Sinks.Elasticsearch;
 using Serilog.Exceptions;
+using Business.FluentValidation;
+using FluentValidation.AspNetCore;
 
 namespace API
 {
@@ -55,8 +57,7 @@ namespace API
             builder.Host.UseSerilog();
             builder.Services.AddSingleton<ILoggerServices, SerilogLogger>();
 
-            builder.Services.AddControllers();
-
+            builder.Services.AddValidationApplication();
 
             builder.Services.Configure<JwtBearer>(builder.Configuration.GetSection("JwtBearer"));
             builder.Services.Configure<EmailSender>(builder.Configuration.GetSection("EmailSender"));
@@ -137,6 +138,9 @@ namespace API
                         });
                 });
             });
+            // FluentValidation için gerekli konfigürasyonları ekleyin
+            builder.Services.AddFluentValidationAutoValidation()  // Sunucu tarafı doğrulama
+                .AddFluentValidationClientsideAdapters();
             builder.Services.AddControllers()
                     .AddNewtonsoftJson(options => {
 
