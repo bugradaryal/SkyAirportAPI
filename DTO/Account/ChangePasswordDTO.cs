@@ -10,13 +10,7 @@ namespace DTO.Account
 {
     public class ChangePasswordDTO
     {
-        [Required]
-        [StringLength(16, MinimumLength = 6)]
-        [PasswordPropertyText(true)]
         public string OldPassword { get; set; }
-        [Required]
-        [StringLength(16, MinimumLength = 6)]
-        [PasswordPropertyText(true)]
         public string NewPassword { get; set; }
     }
 }

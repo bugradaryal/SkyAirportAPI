@@ -21,8 +21,4 @@
     <ProjectReference Include="..\Utilitys\Utilitys.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="FluentValidation\Validation\" />
-  </ItemGroup>
-
 </Project>

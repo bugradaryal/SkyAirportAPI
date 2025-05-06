@@ -9,28 +9,16 @@ namespace DTO.Aircraft
 {
     public class AircraftAddDto
     {
-        [Required]
-        [MaxLength(64)]
         public string Model { get; set; }
 
-        [Required]
-        [Range(0, 999999.9)]
         public decimal Fuel_Capacity { get; set; }
 
-        [Required]
-        [Range(0, 9999999.9)]
         public decimal Max_Altitude { get; set; }
 
-        [Required]
-        [Range(0, int.MaxValue)]
         public int Engine_Power { get; set; }
 
-        [Required]
-        [Range(0, 99999.99)]
         public decimal Carry_Capacity { get; set; }
         public DateTimeOffset Last_Maintenance_Date { get; set; }
-
-        [Required]
         public int aircraftStatus_id { get; set; }
     }
 }

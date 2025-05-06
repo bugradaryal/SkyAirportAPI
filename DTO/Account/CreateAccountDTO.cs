@@ -11,36 +11,14 @@ namespace DTO.Account
 {
     public class CreateAccountDTO
     {
-        [Required]
-        [StringLength(64, MinimumLength = 2)]
         public string Name { get; set; }
-        [Required]
-        [StringLength(64, MinimumLength = 2)]
         public string Surname { get; set; }
-        [RegularExpression(@"^(E|K|U)$")]
-        [Column(TypeName = "char(1)")]
         public char Gender { get; set; }
-        [Range(1,120)]
-        [Required]
         public int Age { get; set; }
-        [EmailAddress]
-        [Required]
-        [StringLength(255, MinimumLength = 6)]
         public string Email { get; set; }
-        [Phone]
-        [Required]
-        [StringLength(16, MinimumLength = 10)]
         public string PhoneNumber { get; set; }
-        [Required]
-        [RegularExpression(@"^\+[0-9]{1,4}$", ErrorMessage = "Invalid country code format.")]
-        [StringLength(5, MinimumLength = 2)]
         public string CountryCode { get; set; }
-        [Required]
-        [StringLength(32, MinimumLength = 5)]
         public string UserName { get; set; }
-        [Required]
-        [StringLength(16, MinimumLength = 6)]
-        [PasswordPropertyText(true)]
         public string Password { get; set; }
     }
 }

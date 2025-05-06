@@ -10,28 +10,11 @@ namespace DTO.Crew
 {
     public class CrewAddDTO
     {
-        [Required]
-        [MaxLength(64)]
         public string Name { get; set; }
-
-        [Required]
-        [MaxLength(64)]
         public string Surname { get; set; }
-
-        [Required]
-        [MaxLength(256)]
         public string Role { get; set; }
-
-        [Required]
-        [Range(18, 120)] 
         public int Age { get; set; }
-
-        [Required]
-        [Column(TypeName = "char(1)")]
-        [RegularExpression(@"^(E|K|U)$")]
         public char Gender { get; set; }
-
-        [Required]
         public int aircraft_id { get; set; }
     }
 }

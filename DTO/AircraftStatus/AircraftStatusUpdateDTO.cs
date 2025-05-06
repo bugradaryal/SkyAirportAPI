@@ -9,9 +9,7 @@ namespace DTO.AircraftStatus
 {
     public class AircraftStatusUpdateDTO
     {
-        [Required]
         public int id { get; set; }
-        [MaxLength(64)]
         public string Status { get; set; }
     }
 }
