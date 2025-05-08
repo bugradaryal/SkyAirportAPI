@@ -33,6 +33,11 @@ namespace DataAccess.Migrations
                     b.Property<decimal>("Carry_Capacity")
                         .HasColumnType("DECIMAL(7,2)");
 
+                    b.Property<decimal>("Current_Capacity")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DECIMAL(7,2)")
+                        .HasDefaultValue(0m);
+
                     b.Property<int>("Engine_Power")
                         .HasColumnType("integer");
 
@@ -322,6 +327,8 @@ namespace DataAccess.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("aircraft_id");
+
                     b.HasIndex("flight_id");
 
                     b.ToTable("Flight_Aircrafts");
@@ -384,13 +391,12 @@ namespace DataAccess.Migrations
                         .HasMaxLength(5096)
                         .HasColumnType("text");
 
-                    b.Property<int>("Record_id")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Target_table")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(64)
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasDefaultValue("Unknown");
 
                     b.Property<DateTime>("Timestamp")
                         .ValueGeneratedOnAdd()
@@ -400,6 +406,9 @@ namespace DataAccess.Migrations
                     b.Property<int>("loglevel_id")
                         .HasColumnType("integer");
 
+                    b.Property<string>("userId")
+                        .HasColumnType("text");
+
                     b.Property<string>("user_id")
                         .IsRequired()
                         .HasColumnType("text");
@@ -408,7 +417,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("loglevel_id");
 
-                    b.HasIndex("user_id");
+                    b.HasIndex("userId");
 
                     b.ToTable("LogEntrys");
                 });
@@ -580,7 +589,7 @@ namespace DataAccess.Migrations
                     b.Property<string>("Location")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(512)
+                        .HasMaxLength(64)
                         .HasColumnType("text")
                         .HasDefaultValue("Undefined");
 
@@ -613,7 +622,7 @@ namespace DataAccess.Migrations
                     b.Property<decimal>("Baggage_weight")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DECIMAL(8,2)")
-                        .HasDefaultValue(0.0);
+                        .HasDefaultValue(0m);
 
                     b.Property<decimal>("Price")
                         .HasColumnType("DECIMAL(10,2)");
@@ -770,13 +779,13 @@ namespace DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c920be4f-7763-4238-be66-e1732df08a1d",
+                            Id = "3d722035-e68b-449c-8a00-002b6d1c1a19",
                             Name = "Administrator",
                             NormalizedName = "ADMİNİSTRATOR"
                         },
                         new
                         {
-                            Id = "14762114-068d-4f76-9d8f-e647c64496b0",
+                            Id = "d8c80a9c-2624-4dee-b598-a45e74ac9954",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -915,13 +924,13 @@ namespace DataAccess.Migrations
                     b.HasOne("Entities.Aircraft", "aircraft")
                         .WithMany("crew_Aircraft")
                         .HasForeignKey("aircraft_id")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Entities.Crew", "crew")
                         .WithMany("crew_Aircraft")
                         .HasForeignKey("crew_id")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("aircraft");
@@ -944,14 +953,14 @@ namespace DataAccess.Migrations
                 {
                     b.HasOne("Entities.Aircraft", "aircraft")
                         .WithMany("flight_Aircraft")
-                        .HasForeignKey("flight_id")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("aircraft_id")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Entities.Flight", "flight")
                         .WithMany("flight_Aircraft")
                         .HasForeignKey("flight_id")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("aircraft");
@@ -980,9 +989,7 @@ namespace DataAccess.Migrations
 
                     b.HasOne("Entities.User", "user")
                         .WithMany("logEntry")
-                        .HasForeignKey("user_id")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasForeignKey("userId");
 
                     b.Navigation("logLevel");
 

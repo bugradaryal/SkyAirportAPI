@@ -30,23 +30,23 @@ namespace Business.Features.Account.Queries.Login
                 string password = request.loginAccountDTO.Password;
                 User user = await _userManager.FindByEmailAsync(request.loginAccountDTO.Email);
                 if (user == null)
-                    return new LoginResponse { exception = new CustomException("User not exist!", (int)HttpStatusCode.NotFound) };
+                    return new LoginResponse { response = { Message = "User not exist!" } };
                 if (user.IsSuspended)
-                    return new LoginResponse { exception = new CustomException("User's account suspended!", (int)HttpStatusCode.Unauthorized) };
+                    return new LoginResponse { response = { Message = "User's account suspended!"} };
                 var result = await _signInManager.PasswordSignInAsync(user, request.loginAccountDTO.Password, false, lockoutOnFailure: true);
                 if (result.Succeeded)
                     return new LoginResponse { user = user, error = false };
                 else if (result.IsLockedOut)
-                    return new LoginResponse { exception = new CustomException("Account is locked. Try few minutes later!", (int)HttpStatusCode.BadRequest) };
+                    return new LoginResponse { response = { Message = "Account is locked. Try few minutes later" } };
                 else if (result.IsNotAllowed)
-                    return new LoginResponse { exception = new CustomException("Account in not confirmed!", (int)HttpStatusCode.BadRequest) };
+                    return new LoginResponse { response = { Message = "Account in not confirmed!" } };
                 else
-                    return new LoginResponse { exception = new CustomException("Invalid username or password.", (int)HttpStatusCode.BadRequest) };
+                    return new LoginResponse { response = { Message = "Invalid username or password." } };
 
             }
             catch (Exception ex)
             {
-                return new LoginResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest) };
+                return new LoginResponse { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
             }
         }
     }

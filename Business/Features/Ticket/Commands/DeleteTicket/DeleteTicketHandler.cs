@@ -10,10 +10,11 @@ using DataAccess.Concrete.Generic;
 using DataAccess.Concrete;
 using MediatR;
 using Utilitys.ExceptionHandler;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Ticket.Commands.DeleteTicket
 {
-    public class DeleteTicketHandler : IRequestHandler<DeleteTicketRequest,CustomException>
+    public class DeleteTicketHandler : IRequestHandler<DeleteTicketRequest, ResponseModel>
     {
         private readonly ISeatRepository _seatRepository;
         private readonly IGenericRepository<Entities.Aircraft> _aircraftGenericRepository;
@@ -25,7 +26,7 @@ namespace Business.Features.Ticket.Commands.DeleteTicket
             _ticketGenericRepository = new GenericRepository<Entities.Ticket>();
         }
 
-        public async Task<CustomException> Handle(DeleteTicketRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> Handle(DeleteTicketRequest request, CancellationToken cancellationToken)
         {
             try
             {
@@ -43,7 +44,7 @@ namespace Business.Features.Ticket.Commands.DeleteTicket
             }
             catch (Exception ex)
             {
-                return new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) };
             }
         }
     }

@@ -9,6 +9,7 @@ using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using static Entities.Enums.Default_Authorization_Type;
+using Business.Features.Account.Queries.GetUserByEmail;
 
 namespace Business.Features.Account.Queries.GetUserRole
 {
@@ -30,7 +31,7 @@ namespace Business.Features.Account.Queries.GetUserRole
             }
             catch (Exception ex)
             {
-                return new GetUserRoleResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest) };
+                return new GetUserRoleResponse { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
             }
         }
     }

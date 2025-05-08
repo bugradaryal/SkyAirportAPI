@@ -8,6 +8,7 @@ using Utilitys.ExceptionHandler;
 using DataAccess.Abstract;
 using DataAccess.Concrete;
 using MediatR;
+using Business.Features.Aircraft.Queries.GetAllAircrafts;
 
 namespace Business.Features.Airline.Queries
 {
@@ -28,7 +29,7 @@ namespace Business.Features.Airline.Queries
             }
             catch (Exception ex)
             {
-                return new GetAllAirlinesByAirportIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
+                return new GetAllAirlinesByAirportIdResponse { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
             }
         }
     }

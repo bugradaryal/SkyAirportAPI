@@ -7,8 +7,9 @@ using Utilitys.ExceptionHandler;
 using DTO;
 using Entities;
 using MediatR;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Account.Commands.UpdateAccount
 {
-    public record UpdateAccountRequest(User user) : IRequest<CustomException>;
+    public record UpdateAccountRequest(User user) : IRequest<ResponseModel>;
 }

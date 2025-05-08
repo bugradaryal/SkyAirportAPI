@@ -11,10 +11,12 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Utilitys.Mapper;
 using DTO.Account;
+using Utilitys;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Account.Commands.CreateAccount
 {
-    public class CreateAccountHandle : IRequestHandler<CreateAccountRequest, CustomException>
+    public class CreateAccountHandle : IRequestHandler<CreateAccountRequest, ResponseModel>
     {
         private readonly IMapper _mapper;
         private UserManager<User> _userManager;
@@ -24,7 +26,7 @@ namespace Business.Features.Account.Commands.CreateAccount
             _userManager = userManager;
         }
 
-        public async Task<CustomException> Handle(CreateAccountRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> Handle(CreateAccountRequest request, CancellationToken cancellationToken)
         {
             try
             {
@@ -32,18 +34,18 @@ namespace Business.Features.Account.Commands.CreateAccount
                 string password = request.createAccountDTO.Password;
                 var result = await _userManager.CreateAsync(user, password);
                 if (!result.Succeeded)
-                    return new CustomException(result.Errors.FirstOrDefault().ToString(), (int)HttpStatusCode.BadRequest);
+                    return new ResponseModel { Message = "Cant create account!", Exception = new CustomException(result.Errors.FirstOrDefault().ToString(), 3, (int)HttpStatusCode.BadRequest) };
                 else
                 {
                     var roleResult = await _userManager.AddToRoleAsync(user, Default_Authorization_Type.default_role.ToString());
                     if (!roleResult.Succeeded)
-                        return new CustomException(roleResult.Errors.FirstOrDefault().ToString(), (int)HttpStatusCode.BadRequest);
+                        return new ResponseModel { Message = "Cant set user role to default!", Exception = new CustomException(roleResult.Errors.FirstOrDefault().ToString(), 3, (int)HttpStatusCode.BadRequest) };
                 }
                 return null;
             }
             catch (Exception ex)
             {
-                return new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) };
             }
         }
     }

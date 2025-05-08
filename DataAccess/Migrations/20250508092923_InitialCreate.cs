@@ -134,7 +134,8 @@ namespace DataAccess.Migrations
                     Max_Altitude = table.Column<decimal>(type: "numeric(8,1)", nullable: false),
                     Engine_Power = table.Column<int>(type: "integer", nullable: false),
                     Carry_Capacity = table.Column<decimal>(type: "numeric(7,2)", nullable: false),
-                    aircraftStatus_id = table.Column<int>(type: "integer", nullable: false)
+                    aircraftStatus_id = table.Column<int>(type: "integer", nullable: false),
+                    Current_Capacity = table.Column<decimal>(type: "numeric(7,2)", nullable: false, defaultValue: 0m)
                 },
                 constraints: table =>
                 {
@@ -333,18 +334,18 @@ namespace DataAccess.Migrations
                     Timestamp = table.Column<DateTime>(type: "TIMESTAMP WITH TIME ZONE", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     Message = table.Column<string>(type: "text", maxLength: 5096, nullable: false),
                     Action_type = table.Column<string>(type: "text", nullable: false),
-                    Target_table = table.Column<string>(type: "text", maxLength: 64, nullable: false),
-                    Record_id = table.Column<int>(type: "integer", nullable: false),
+                    Target_table = table.Column<string>(type: "text", maxLength: 64, nullable: false, defaultValue: "Unknown"),
                     AdditionalData = table.Column<string>(type: "jsonb", nullable: false),
                     user_id = table.Column<string>(type: "text", nullable: false),
-                    loglevel_id = table.Column<int>(type: "integer", nullable: false)
+                    loglevel_id = table.Column<int>(type: "integer", nullable: false),
+                    userId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LogEntrys", x => x.id);
                     table.ForeignKey(
-                        name: "FK_LogEntrys_AspNetUsers_user_id",
-                        column: x => x.user_id,
+                        name: "FK_LogEntrys_AspNetUsers_userId",
+                        column: x => x.userId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -370,12 +371,14 @@ namespace DataAccess.Migrations
                         name: "FK_Crew_Aircrafts_Aircrafts_aircraft_id",
                         column: x => x.aircraft_id,
                         principalTable: "Aircrafts",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Crew_Aircrafts_Crews_crew_id",
                         column: x => x.crew_id,
                         principalTable: "Crews",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -414,15 +417,17 @@ namespace DataAccess.Migrations
                 {
                     table.PrimaryKey("PK_Flight_Aircrafts", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Flight_Aircrafts_Aircrafts_flight_id",
-                        column: x => x.flight_id,
+                        name: "FK_Flight_Aircrafts_Aircrafts_aircraft_id",
+                        column: x => x.aircraft_id,
                         principalTable: "Aircrafts",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Flight_Aircrafts_Flights_flight_id",
                         column: x => x.flight_id,
                         principalTable: "Flights",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -455,7 +460,7 @@ namespace DataAccess.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Seat_number = table.Column<int>(type: "integer", nullable: false),
                     Seat_Class = table.Column<string>(type: "text", maxLength: 32, nullable: false),
-                    Location = table.Column<string>(type: "text", maxLength: 512, nullable: false, defaultValue: "Undefined"),
+                    Location = table.Column<string>(type: "text", maxLength: 64, nullable: false, defaultValue: "Undefined"),
                     Is_Available = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
                     flight_id = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -478,7 +483,7 @@ namespace DataAccess.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Price = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
                     Puchase_date = table.Column<DateTimeOffset>(type: "TIMESTAMP WITH TIME ZONE", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    Baggage_weight = table.Column<decimal>(type: "numeric(8,2)", nullable: false, defaultValue: 0.0),
+                    Baggage_weight = table.Column<decimal>(type: "numeric(8,2)", nullable: false, defaultValue: 0m),
                     seat_id = table.Column<int>(type: "integer", nullable: false),
                     user_id = table.Column<string>(type: "text", nullable: false)
                 },
@@ -515,8 +520,8 @@ namespace DataAccess.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "14762114-068d-4f76-9d8f-e647c64496b0", null, "User", "USER" },
-                    { "c920be4f-7763-4238-be66-e1732df08a1d", null, "Administrator", "ADMİNİSTRATOR" }
+                    { "3d722035-e68b-449c-8a00-002b6d1c1a19", null, "Administrator", "ADMİNİSTRATOR" },
+                    { "d8c80a9c-2624-4dee-b598-a45e74ac9954", null, "User", "USER" }
                 });
 
             migrationBuilder.InsertData(
@@ -621,6 +626,11 @@ namespace DataAccess.Migrations
                 column: "crew_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Flight_Aircrafts_aircraft_id",
+                table: "Flight_Aircrafts",
+                column: "aircraft_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Flight_Aircrafts_flight_id",
                 table: "Flight_Aircrafts",
                 column: "flight_id");
@@ -636,9 +646,9 @@ namespace DataAccess.Migrations
                 column: "loglevel_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LogEntrys_user_id",
+                name: "IX_LogEntrys_userId",
                 table: "LogEntrys",
-                column: "user_id");
+                column: "userId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LogLevels_Level",

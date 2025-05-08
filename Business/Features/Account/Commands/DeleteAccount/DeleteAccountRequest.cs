@@ -7,8 +7,9 @@ using Utilitys.ExceptionHandler;
 using DTO;
 using Entities;
 using MediatR;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Account.Commands.DeleteAccount
 {
-    public record DeleteAccountRequest(User user) : IRequest<CustomException>;
+    public record DeleteAccountRequest(User user) : IRequest<ResponseModel>;
 }

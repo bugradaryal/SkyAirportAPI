@@ -8,10 +8,11 @@ using Utilitys.ExceptionHandler;
 using DataAccess.Abstract;
 using DataAccess.Concrete.Generic;
 using MediatR;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Generic.Commands.Update
 {
-    public class GenericUpdateHandle<TEntity> : IRequestHandler<GenericUpdateRequest<TEntity>, CustomException> where TEntity : class
+    public class GenericUpdateHandle<TEntity> : IRequestHandler<GenericUpdateRequest<TEntity>, ResponseModel> where TEntity : class
     {
         private readonly IGenericRepository<TEntity> _genericRepository;
 
@@ -20,7 +21,7 @@ namespace Business.Features.Generic.Commands.Update
             _genericRepository = new GenericRepository<TEntity>();
         }
 
-        public async Task<CustomException> Handle(GenericUpdateRequest<TEntity> request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> Handle(GenericUpdateRequest<TEntity> request, CancellationToken cancellationToken)
         {
             try
             {
@@ -34,11 +35,11 @@ namespace Business.Features.Generic.Commands.Update
                         return null;
                     }
                 }
-                return new CustomException("Id not matched - Update failed!!", (int)HttpStatusCode.NotFound);
+                return new ResponseModel { Message = "Id not matched - Update failed!!" };
             }
             catch (Exception ex) 
             {
-                return new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message);
+                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
             }
         }
     }

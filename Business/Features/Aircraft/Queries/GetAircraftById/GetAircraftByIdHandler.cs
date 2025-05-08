@@ -9,6 +9,7 @@ using Business.Features.Airline.Queries;
 using DataAccess.Abstract;
 using DataAccess.Concrete;
 using MediatR;
+using Business.Features.Account.Queries.Login;
 
 namespace Business.Features.Aircraft.Queries.GetAircraftById
 {
@@ -29,7 +30,7 @@ namespace Business.Features.Aircraft.Queries.GetAircraftById
             }
             catch (Exception ex)
             {
-                return new GetAircraftByIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
+                return new GetAircraftByIdResponse { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
             }
         }
     }

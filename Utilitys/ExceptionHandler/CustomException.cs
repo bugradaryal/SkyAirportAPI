@@ -10,11 +10,12 @@ namespace Utilitys.ExceptionHandler
     {
         public int ErrorCode { get; }
         public string? InnerMessage { get; }
-
-        public CustomException(string message, int errorCode = 400, string? innerMessage = null) : base(message)
+         public int ExceptionLevel { get; }
+        public CustomException(string message, int exceptionLevel, int errorCode = 400, string? innerMessage = null) : base(message)
         {
             ErrorCode = errorCode;
             InnerMessage = innerMessage;
+            ExceptionLevel = exceptionLevel;
         }
     }
 }

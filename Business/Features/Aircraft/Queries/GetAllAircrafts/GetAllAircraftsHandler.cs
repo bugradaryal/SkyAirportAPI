@@ -29,7 +29,7 @@ namespace Business.Features.Aircraft.Queries.GetAllAircrafts
             }
             catch (Exception ex)
             {
-                return new GetAllAircraftsResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
+                return new GetAllAircraftsResponse { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
             }
         }
     }

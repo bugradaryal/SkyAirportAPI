@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DTO;
+using Utilitys.ExceptionHandler;
 
-namespace Utilitys.Logger
+namespace Business.Abstract
 {
     public interface ILoggerServices
     {
-        void Info(string message);
-        void Warn(string message);
-        void Error(string message, Exception ex = null);
+        Task Logger(LogDTO logdto, CustomException? exception = null);
     }
 }

@@ -11,10 +11,11 @@ using Entities.Enums;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Account.Commands.DeleteAccount
 {
-    public class DeleteAccountHandle : IRequestHandler<DeleteAccountRequest, CustomException>
+    public class DeleteAccountHandle : IRequestHandler<DeleteAccountRequest, ResponseModel>
     {
         private UserManager<User> _userManager;
         public DeleteAccountHandle(UserManager<User> userManager)
@@ -22,18 +23,18 @@ namespace Business.Features.Account.Commands.DeleteAccount
             _userManager = userManager;
         }
 
-        public async Task<CustomException> Handle(DeleteAccountRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> Handle(DeleteAccountRequest request, CancellationToken cancellationToken)
         {
             try
             {
                 var result = await _userManager.DeleteAsync(request.user);
                 if (!result.Succeeded)
-                    return new CustomException(result.Errors.FirstOrDefault().ToString(), (int)HttpStatusCode.BadRequest);
+                    return new ResponseModel { Message = "Cant delete account!", Exception = new CustomException(result.Errors.FirstOrDefault().ToString(), 3, (int)HttpStatusCode.BadRequest) };
                 return null;
             }
             catch (Exception ex)
             {
-                return new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) };
             }
         }
     }

@@ -14,10 +14,11 @@ using Utilitys.ExceptionHandler;
 using DataAccess.Abstract;
 using DataAccess.Concrete;
 using DataAccess.Concrete.Generic;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Ticket.Commands.AddTicket
 {
-    public class AddTicketHandler : IRequestHandler<AddTicketRequest,CustomException>
+    public class AddTicketHandler : IRequestHandler<AddTicketRequest,ResponseModel>
     {
         private readonly ISeatRepository _seatRepository;
         private readonly IGenericRepository<Entities.Aircraft> _aircraftGenericRepository;
@@ -29,7 +30,7 @@ namespace Business.Features.Ticket.Commands.AddTicket
             _ticketGenericRepository = new GenericRepository<Entities.Ticket>();
         }
 
-        public async Task<CustomException> Handle(AddTicketRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> Handle(AddTicketRequest request, CancellationToken cancellationToken)
         {
             try
             {
@@ -39,18 +40,18 @@ namespace Business.Features.Ticket.Commands.AddTicket
                     var aircraft = await _seatRepository.GetSeatAndAircraftByTicketId(ticket.id);
                     var sumCapacity = aircraft.Current_Capacity + ticket.Baggage_weight;
                     if (aircraft.Carry_Capacity < sumCapacity)
-                        return new CustomException("Capacity Exceeded!!", (int)HttpStatusCode.BadRequest);
+                        return new ResponseModel { Message = "Capacity Exceeded!" };
                     aircraft.Current_Capacity = sumCapacity;
                     await _aircraftGenericRepository.Update(aircraft);
                     await _ticketGenericRepository.Add(ticket);
                     await _seatRepository.SetSeatAvailable(ticket.seat_id, false);
                     return null;
                 }
-                return new CustomException("Seat allready puchased!!", (int)HttpStatusCode.BadRequest);
+                return new ResponseModel { Message = "Seat allready puchased!!" };
             }
             catch (Exception ex)
             {
-                return new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) };
             }
         }
     }

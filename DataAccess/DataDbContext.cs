@@ -130,15 +130,14 @@ namespace DataAccess
             modelBuilder.Entity<LogEntry>().Property(x => x.Timestamp).HasColumnType("TIMESTAMP WITH TIME ZONE").HasDefaultValueSql("CURRENT_TIMESTAMP");
             modelBuilder.Entity<LogEntry>().Property(x => x.Message).HasColumnType("text").IsRequired().HasMaxLength(5096);
             modelBuilder.Entity<LogEntry>().Property(x => x.Action_type).HasConversion(new EnumToStringConverter<Action_Type>()).IsRequired();
-            modelBuilder.Entity<LogEntry>().Property(x => x.Target_table).HasColumnType("text").HasMaxLength(64);
-            modelBuilder.Entity<LogEntry>().Property(x => x.Record_id).IsRequired();
+            modelBuilder.Entity<LogEntry>().Property(x => x.Target_table).HasColumnType("text").HasMaxLength(64).HasDefaultValue("Unknown");
             modelBuilder.Entity<LogEntry>().Property(e => e.AdditionalData)
                 .HasConversion(
                         v => JsonConvert.SerializeObject(v),  // List<string> → JSON string
                         v => JsonConvert.DeserializeObject<List<string>>(v) ?? new List<string>()) // JSON string → List<string>
                 .HasColumnType("jsonb"); // PostgreSQL JSONB tipi
             modelBuilder.Entity<LogEntry>().Property(x => x.user_id).IsRequired();
-            modelBuilder.Entity<LogEntry>().Property(x => x.loglevel_id).IsRequired();
+            modelBuilder.Entity<LogEntry>().Property(x => x.loglevel_id).IsRequired();                               
             ////////////////////////////
             modelBuilder.Entity<AdminOperation>().HasKey(x => x.id);
             modelBuilder.Entity<AdminOperation>().Property(x => x.Operation_type).HasConversion(new EnumToStringConverter<Operation_Type>()).IsRequired();
@@ -157,7 +156,6 @@ namespace DataAccess
             ////////////////////////////
             modelBuilder.Entity<Ticket>().HasOne<User>(s => s.user).WithMany(g => g.ticket).HasForeignKey(s => s.user_id).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<AdminOperation>().HasOne<User>(s => s.user).WithMany(g => g.adminOperation).HasForeignKey(s => s.user_id).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<LogEntry>().HasOne<User>(s => s.user).WithMany(g => g.logEntry).HasForeignKey(s => s.user_id).OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Seat>().HasOne<Ticket>(s => s.ticket).WithOne(g => g.seat).HasForeignKey<Ticket>(s => s.seat_id).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Seat>().HasOne<Flight>(s => s.flight).WithMany(g => g.seat).HasForeignKey(s => s.flight_id).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Flight_Aircraft>().HasOne<Flight>(s => s.flight).WithMany(g => g.flight_Aircraft).HasForeignKey(s => s.flight_id).OnDelete(DeleteBehavior.Cascade);

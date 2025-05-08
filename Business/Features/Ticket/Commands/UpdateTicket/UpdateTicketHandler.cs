@@ -10,10 +10,11 @@ using DataAccess.Concrete.Generic;
 using DataAccess.Concrete;
 using MediatR;
 using Utilitys.ExceptionHandler;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Ticket.Commands.UpdateTicket
 {
-    public class UpdateTicketHandler : IRequestHandler<UpdateTicketRequest,CustomException>
+    public class UpdateTicketHandler : IRequestHandler<UpdateTicketRequest, ResponseModel>
     {
         private readonly ISeatRepository _seatRepository;
         private readonly ITicketRepository _ticketRepository;
@@ -27,7 +28,7 @@ namespace Business.Features.Ticket.Commands.UpdateTicket
             _ticketRepository = new TicketRepository(); 
         }
 
-        public async Task<CustomException> Handle(UpdateTicketRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> Handle(UpdateTicketRequest request, CancellationToken cancellationToken)
         {
             try
             {
@@ -38,7 +39,7 @@ namespace Business.Features.Ticket.Commands.UpdateTicket
                     var aircraft = await _seatRepository.GetSeatAndAircraftByTicketId(ticket.id);
                     var newCapacity = (aircraft.Current_Capacity - oldWeight) + ticket.Baggage_weight;
                     if (aircraft.Carry_Capacity < newCapacity)
-                        return new CustomException("Capacity Exceeded!!", (int)HttpStatusCode.BadRequest);
+                        return new ResponseModel { Message = "Capacity Exceeded!!" };
                     aircraft.Current_Capacity = newCapacity;
                     await _aircraftGenericRepository.Update(aircraft);
                 }
@@ -47,7 +48,7 @@ namespace Business.Features.Ticket.Commands.UpdateTicket
             }
             catch (Exception ex)
             {
-                return new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) };
             }
         }
     }

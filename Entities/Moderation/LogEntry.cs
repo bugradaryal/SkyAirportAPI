@@ -16,9 +16,7 @@ namespace Entities.Moderation
         public string Message { get; set; }
         public Action_Type Action_type { get; set; }
         public string Target_table { get; set; }
-        public int Record_id { get; set; }
         public List<string> AdditionalData { get; set; } //JSON
-
 
         public string user_id { get; set; }
         public int loglevel_id { get; set; }

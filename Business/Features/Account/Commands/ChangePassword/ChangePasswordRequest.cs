@@ -7,8 +7,9 @@ using Utilitys.ExceptionHandler;
 using Entities;
 using MediatR;
 using DTO.Account;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Account.Commands.ChangePassword
 {
-    public record ChangePasswordRequest(User user, ChangePasswordDTO changePasswordDTO) : IRequest<CustomException>;
+    public record ChangePasswordRequest(User user, ChangePasswordDTO changePasswordDTO) : IRequest<ResponseModel>;
 }

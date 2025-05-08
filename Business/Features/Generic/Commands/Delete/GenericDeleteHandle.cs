@@ -8,10 +8,11 @@ using Utilitys.ExceptionHandler;
 using DataAccess.Abstract;
 using DataAccess.Concrete.Generic;
 using MediatR;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Generic.Commands.Delete
 {
-    public class GenericDeleteHandle<TEntity> : IRequestHandler<GenericDeleteRequest<TEntity>, CustomException> where TEntity : class
+    public class GenericDeleteHandle<TEntity> : IRequestHandler<GenericDeleteRequest<TEntity>, ResponseModel> where TEntity : class
     {
         private readonly IGenericRepository<TEntity> _genericRepository;
 
@@ -20,7 +21,7 @@ namespace Business.Features.Generic.Commands.Delete
             _genericRepository = new GenericRepository<TEntity>();
         }
 
-        public async Task<CustomException> Handle(GenericDeleteRequest<TEntity> request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> Handle(GenericDeleteRequest<TEntity> request, CancellationToken cancellationToken)
         {
             try
             {
@@ -33,11 +34,11 @@ namespace Business.Features.Generic.Commands.Delete
                         return null;
                     }
                 }
-                return new CustomException("Id not matched - Deleting failed!", (int)HttpStatusCode.NotFound);
+                return new ResponseModel { Message = "Id not matched - Deleting failed!" };
             }
             catch (Exception ex)
             {
-                return new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message);
+                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
             }
         }
     }

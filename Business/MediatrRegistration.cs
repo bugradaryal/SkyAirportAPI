@@ -13,6 +13,7 @@ using Business.Features.Generic.Queries.GetById;
 using Entities;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Utilitys.ResponseHandler;
 
 namespace Business
 {
@@ -43,7 +44,7 @@ namespace Business
                 services.AddTransient(
                     typeof(IRequestHandler<,>).MakeGenericType(
                         typeof(GenericAddRequest<>).MakeGenericType(entity),
-                        typeof(CustomException)
+                        typeof(ResponseModel)
                     ),
                     typeof(GenericAddHandle<>).MakeGenericType(entity)
                 );
@@ -52,7 +53,7 @@ namespace Business
                 services.AddTransient(
                     typeof(IRequestHandler<,>).MakeGenericType(
                         typeof(GenericDeleteRequest<>).MakeGenericType(entity),
-                        typeof(CustomException)
+                        typeof(ResponseModel)
                     ),
                     typeof(GenericDeleteHandle<>).MakeGenericType(entity)
                 );
@@ -61,7 +62,7 @@ namespace Business
                 services.AddTransient(
                     typeof(IRequestHandler<,>).MakeGenericType(
                         typeof(GenericUpdateRequest<>).MakeGenericType(entity),
-                        typeof(CustomException)
+                        typeof(ResponseModel)
                     ),
                     typeof(GenericUpdateHandle<>).MakeGenericType(entity)
                 );

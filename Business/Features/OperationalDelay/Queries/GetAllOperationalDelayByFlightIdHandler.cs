@@ -9,6 +9,7 @@ using Business.Features.Personal.Queries;
 using DataAccess.Abstract;
 using DataAccess.Concrete;
 using MediatR;
+using Business.Features.Aircraft.Queries.GetAllAircrafts;
 
 namespace Business.Features.OperationalDelay.Queries
 {
@@ -29,7 +30,7 @@ namespace Business.Features.OperationalDelay.Queries
             }
             catch (Exception ex)
             {
-                return new GetAllOperationalDelayByFlightIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
+                return new GetAllOperationalDelayByFlightIdResponse { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
             }
         }
     }

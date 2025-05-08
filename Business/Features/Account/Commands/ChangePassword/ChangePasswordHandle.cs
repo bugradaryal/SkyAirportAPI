@@ -12,10 +12,11 @@ using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using DTO;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Account.Commands.ChangePassword
 {
-    public class ChangePasswordHandle : IRequestHandler<ChangePasswordRequest, CustomException>
+    public class ChangePasswordHandle : IRequestHandler<ChangePasswordRequest, ResponseModel>
     {
         private UserManager<User> _userManager;
         public ChangePasswordHandle(UserManager<User> userManager)
@@ -23,18 +24,18 @@ namespace Business.Features.Account.Commands.ChangePassword
             _userManager = userManager;
         }
 
-        public async Task<CustomException> Handle(ChangePasswordRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> Handle(ChangePasswordRequest request, CancellationToken cancellationToken)
         {
             try
             {
                 var result = await _userManager.ChangePasswordAsync(request.user, request.changePasswordDTO.OldPassword, request.changePasswordDTO.NewPassword);
                 if (!result.Succeeded)
-                    return new CustomException(result.Errors.FirstOrDefault().ToString(), (int)HttpStatusCode.BadRequest);
+                    return new ResponseModel { Message = "Changing password not succeded!", Exception = new CustomException(result.Errors.FirstOrDefault().ToString(), 3, (int)HttpStatusCode.BadRequest) };
                 return null;
             }
             catch (Exception ex)
             {
-                return new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) };
             }
         }
     }

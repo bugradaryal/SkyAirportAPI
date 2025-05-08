@@ -9,6 +9,7 @@ using Business.Features.Seat.Queries;
 using DataAccess.Abstract;
 using DataAccess.Concrete;
 using MediatR;
+using Business.Features.Aircraft.Queries.GetAllAircrafts;
 
 namespace Business.Features.Ticket.Quaries
 {
@@ -29,7 +30,7 @@ namespace Business.Features.Ticket.Quaries
             }
             catch (Exception ex)
             {
-                return new GetAllTicketBySeatIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
+                return new GetAllTicketBySeatIdResponse { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
             }
         }
     }

@@ -3,25 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DTO;
 using Serilog;
 
 namespace Utilitys.Logger
 {
-    public class SerilogLogger : ILoggerServices
+    public class SerilogLogger : ISerilogServices
     {
-        public void Info(string message)
+        public void Info(LogDTO logDTO)
         {
-            Log.Information(message);
+            Log.Information("{@Log}", logDTO);
         }
 
-        public void Warn(string message)
+        public void Warn(LogDTO logDTO)
         {
-            Log.Warning(message);
+            Log.Warning("{@Log}", logDTO);
         }
 
-        public void Error(string message, Exception ex = null)
+        public void Error(LogDTO logDTO, Exception ex = null)
         {
-            Log.Error(ex, message);
+            Log.Error(ex, "{@Log}", logDTO);
+        }
+
+        public void Fatal(LogDTO logDTO, Exception ex = null)
+        {
+            Log.Fatal(ex, "{@Log}", logDTO);
         }
     }
 }

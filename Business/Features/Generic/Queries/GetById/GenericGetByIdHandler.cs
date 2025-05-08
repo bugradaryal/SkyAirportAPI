@@ -28,7 +28,7 @@ namespace Business.Features.Generic.Queries.GetById
             }
             catch (Exception ex)
             {
-                return new GenericGetByIdResponse<TEntity> { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
+                return new GenericGetByIdResponse<TEntity> { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) } };
             }
         }
     }

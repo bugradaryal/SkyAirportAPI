@@ -8,10 +8,11 @@ using Utilitys.ExceptionHandler;
 using DataAccess.Abstract;
 using DataAccess.Concrete.Generic;
 using MediatR;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Generic.Commands.Add
 {
-    public class GenericAddHandle<TEntity> : IRequestHandler<GenericAddRequest<TEntity>, CustomException> where TEntity : class
+    public class GenericAddHandle<TEntity> : IRequestHandler<GenericAddRequest<TEntity>, ResponseModel> where TEntity : class
     {
         private readonly IGenericRepository<TEntity> _genericRepository;
 
@@ -20,7 +21,7 @@ namespace Business.Features.Generic.Commands.Add
             _genericRepository = new GenericRepository<TEntity>();
         }
 
-        public async Task<CustomException> Handle(GenericAddRequest<TEntity> request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> Handle(GenericAddRequest<TEntity> request, CancellationToken cancellationToken)
         {
             try
             {
@@ -29,7 +30,7 @@ namespace Business.Features.Generic.Commands.Add
             }
             catch (Exception ex)
             {
-                return new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message);
+                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
             }
         }
     }

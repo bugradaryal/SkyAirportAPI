@@ -32,7 +32,7 @@ namespace API.Controllers
         {
             var getAllResponse = await _mediator.Send(new GenericGetAllRequest<Airport>());
             if(getAllResponse.error)
-                return BadRequest(getAllResponse.exception);
+                return BadRequest(getAllResponse.response.Exception);
             return Ok(getAllResponse.data);
         }
         [AllowAnonymous]
@@ -43,7 +43,7 @@ namespace API.Controllers
                 return BadRequest(new { message = "Invalid Id!!" });
             var getByIdResponse = await _mediator.Send(new GenericGetByIdRequest<Airport>(id));
             if(getByIdResponse.error)
-                return BadRequest(getByIdResponse.exception);
+                return BadRequest(getByIdResponse.response.Exception);
             return Ok(getByIdResponse.entity);
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]

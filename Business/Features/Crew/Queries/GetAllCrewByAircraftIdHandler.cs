@@ -10,6 +10,7 @@ using Business.Features.Crew.Qeeries;
 using DataAccess.Abstract;
 using DataAccess.Concrete;
 using MediatR;
+using Business.Features.Aircraft.Queries.GetAllAircrafts;
 
 namespace Business.Features.Crew.Queries
 {
@@ -30,7 +31,7 @@ namespace Business.Features.Crew.Queries
             }
             catch (Exception ex)
             {
-                return new GetAllCrewByAircraftIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
+                return new GetAllCrewByAircraftIdResponse { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
             }
         }
     }

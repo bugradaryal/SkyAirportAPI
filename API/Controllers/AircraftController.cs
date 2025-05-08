@@ -34,7 +34,7 @@ namespace API.Controllers
         {
             var getAllResponse = await _mediator.Send(new GetAllAircraftsRequest());
             if (getAllResponse.error)
-                return BadRequest(getAllResponse.exception);
+                return BadRequest(getAllResponse.response.Exception);
             return Ok(getAllResponse.entity);
         }
         [AllowAnonymous]
@@ -45,7 +45,7 @@ namespace API.Controllers
                 return BadRequest(new { message = "Invalid Id!!" });
             var getByIdResponse = await _mediator.Send(new GetAircraftByIdRequest(id));
             if (getByIdResponse.error)
-                return BadRequest(getByIdResponse.exception);
+                return BadRequest(getByIdResponse.response.Exception);
             return Ok(getByIdResponse.entity);
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]

@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.RateLimiting;
 using Serilog;
 using Serilog.Sinks.PostgreSQL;
-using DataAccess.LogManager;
 using Serilog.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +25,10 @@ using Serilog.Sinks.Elasticsearch;
 using Serilog.Exceptions;
 using Business.FluentValidation;
 using FluentValidation.AspNetCore;
+using System.Diagnostics;
+using Business.Abstract;
+using Business.Concrete;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API
 {
@@ -55,7 +58,8 @@ namespace API
 
             // 🔹 Uygulama logger'ı olarak tanıt
             builder.Host.UseSerilog();
-            builder.Services.AddSingleton<ILoggerServices, SerilogLogger>();
+            builder.Services.AddSingleton<ISerilogServices, SerilogLogger>();
+            builder.Services.AddScoped<ILoggerServices, LoggerManager>();
 
             builder.Services.AddValidationApplication();
 
@@ -188,13 +192,34 @@ namespace API
     });
             });
 
-            var app = builder.Build();
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<ISerilogServices>();
 
+                    // Hata loglama: ModelState hatalarını logla
+                    logger.Info(new DTO.LogDTO { Message = "Validation hatası: " + context.ModelState , Action_type = Entities.Enums.Action_Type.APIResponse, loglevel_id = 3, AdditionalData= context.ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()});
+
+                    // Hata mesajını özelleştirme
+                    var problemDetails = new ValidationProblemDetails(context.ModelState)
+                    {
+                        Status = StatusCodes.Status400BadRequest,
+                        Title = "Geçersiz veri gönderildi", // İstediğiniz başlık
+                    };
+
+                    // Response'u döndür
+                    return new BadRequestObjectResult(problemDetails);
+                };
+            });
+
+            var app = builder.Build();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+                Process.Start(new ProcessStartInfo("http://localhost:5601") { UseShellExecute = true });
             }
 
             app.UseHttpsRedirection();

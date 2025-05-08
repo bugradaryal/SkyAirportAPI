@@ -26,12 +26,12 @@ namespace Business.Features.Account.Queries.GetUserByEmail
             {
                 var result = await _userManager.FindByEmailAsync(request.email);
                 if (result == null)
-                    return new GetUserByEmailResponse { exception = new CustomException("Account doesnt exist!",(int)HttpStatusCode.NotFound) };
+                    return new GetUserByEmailResponse { response = { Message = "Account doesnt exist!!" } };
                 return new GetUserByEmailResponse { user = result, error = false };
             }
             catch (Exception ex)
             {
-                return new GetUserByEmailResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest) };
+                return new GetUserByEmailResponse { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
             }
         }
     }

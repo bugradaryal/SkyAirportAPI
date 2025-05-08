@@ -11,6 +11,7 @@ using DataAccess.Concrete;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Business.Features.Aircraft.Queries.GetAllAircrafts;
 
 namespace Business.Features.Personal.Queries
 {
@@ -31,7 +32,7 @@ namespace Business.Features.Personal.Queries
             }
             catch (Exception ex)
             {
-                return new GetAllPersonalByAirportIdResponse { exception = new CustomException(ex.Message, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
+                return new GetAllPersonalByAirportIdResponse { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
             }
         }
     }

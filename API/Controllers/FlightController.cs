@@ -36,7 +36,7 @@ namespace API.Controllers
         {
             var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Flight>());
             if (getAllRepository.error == true)
-                return BadRequest(getAllRepository.exception);
+                return BadRequest(getAllRepository.response.Exception);
             return Ok(getAllRepository.data);
         }
 
@@ -46,7 +46,7 @@ namespace API.Controllers
         {
             var getAllResponse = await _mediator.Send(new GetAllFlightByAirlineIdRequest(id));
             if (getAllResponse.error)
-                return BadRequest(getAllResponse.exception);
+                return BadRequest(getAllResponse.response.Exception);
             return Ok(getAllResponse.entity);
         }
         [AllowAnonymous]
@@ -55,7 +55,7 @@ namespace API.Controllers
         {
             var getAllResponse = await _mediator.Send(new GetAllFlightByAircraftIdRequest(id));
             if (getAllResponse.error)
-                return BadRequest(getAllResponse.exception);
+                return BadRequest(getAllResponse.response.Exception);
             return Ok(getAllResponse.entity);
         }
 
@@ -67,7 +67,7 @@ namespace API.Controllers
                 return BadRequest(new { message = "Invalid Id!!" });
             var getByIdResponse = await _mediator.Send(new GenericGetByIdRequest<Flight>(id));
             if (getByIdResponse.error)
-                return BadRequest(getByIdResponse.exception);
+                return BadRequest(getByIdResponse.response.Exception);
             return Ok(getByIdResponse.entity);
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]

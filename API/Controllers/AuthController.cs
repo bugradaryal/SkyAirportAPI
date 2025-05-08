@@ -17,7 +17,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.Win32;
 using System;
+using Utilitys.ExceptionHandler;
 using Utilitys.Logger;
 using Utilitys.MailServices;
 using Utilitys.Mapper;
@@ -48,12 +50,33 @@ namespace API.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> CreateAccount([FromBody]CreateAccountDTO createAccountDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
+            await _logger.Logger(new LogDTO{
+                Message = "Register endpoint called.",
+                Action_type = Action_Type.APIRequest,
+                Target_table = "User",
+                loglevel_id = 1,
+            },null);
 
             var createResponse = await _mediator.Send(new CreateAccountRequest(createAccountDTO));
             if(createResponse != null)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = createResponse.Message,
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "User",
+                    loglevel_id = createResponse.Exception.ExceptionLevel
+                }, createResponse.Exception);
                 return BadRequest(createResponse);
+            }
+
+            await _logger.Logger(new LogDTO
+            {
+                Message = "Account Created!",
+                Action_type = Action_Type.Create,
+                Target_table = "User",
+                loglevel_id = 1,
+            }, null);
             return Ok(new { message = "Account Created!" });
         }
 
@@ -63,8 +86,6 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState });
-
-            _logger.Info(loginAccountDTO.Email + "  /  Trying to Login!!");
 
             var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
             if (!validateTokenDTO.IsTokenValid)
@@ -80,7 +101,6 @@ namespace API.Controllers
                     {
                         var refleshtoken = _tokenServices.GenerateRefreshToken();
                         await _tokenServices.SaveRefreshTokenAsync(userResponse.user, refleshtoken);
-                        _logger.Info(loginAccountDTO.Email + "  /  Login Successfull!!");
                         return Ok(new AuthenticationModel
                         {
                             Email = userResponse.user.Email,
@@ -90,13 +110,10 @@ namespace API.Controllers
                             RefreshToken = refleshtoken
                         });
                     }
-                    _logger.Error(loginAccountDTO.Email + "  /  " + roleResponse.exception);
-                    return BadRequest(roleResponse.exception);
+                    return BadRequest(roleResponse.response.Exception);
                 }
-                _logger.Error(loginAccountDTO.Email + "  /  " + userResponse.exception);
-                return BadRequest(userResponse.exception);
+                return BadRequest(userResponse.response.Exception);
             }
-            _logger.Info(loginAccountDTO.Email + "  /  Login Successfull!!");
             return Ok(_mapper.Map<AuthenticationModel,ValidateTokenDTO>(validateTokenDTO));         
         }
 
@@ -169,7 +186,7 @@ namespace API.Controllers
 
                 var mailResponse = await _mediator.Send(new GetUserByEmailRequest(email));
                 if(mailResponse.error == true)
-                    return BadRequest(mailResponse.exception);
+                    return BadRequest(mailResponse.response.Exception);
                 var emailConfUrl = await _tokenServices.CreateTokenEmailConfirm(mailResponse.user);
                 var callback_url = "https://localhost:7257/EmailVerification?userId=" + mailResponse.user.Id + "&emailConfUrl=" + emailConfUrl;
 

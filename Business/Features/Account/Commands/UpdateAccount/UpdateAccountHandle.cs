@@ -10,10 +10,11 @@ using Business.Features.Account.Commands.DeleteAccount;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Account.Commands.UpdateAccount
 {
-    public class UpdateAccountHandle : IRequestHandler<UpdateAccountRequest, CustomException>
+    public class UpdateAccountHandle : IRequestHandler<UpdateAccountRequest, ResponseModel>
     {
         private UserManager<User> _userManager;
         public UpdateAccountHandle(UserManager<User> userManager)
@@ -21,19 +22,19 @@ namespace Business.Features.Account.Commands.UpdateAccount
             _userManager = userManager;
         }
 
-        public async Task<CustomException> Handle(UpdateAccountRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> Handle(UpdateAccountRequest request, CancellationToken cancellationToken)
         {
             try
             {
                 request.user.Uptaded_at = DateTimeOffset.UtcNow;
                 var result = await _userManager.UpdateAsync(request.user);
                 if (!result.Succeeded)
-                    return new CustomException(result.Errors.FirstOrDefault().ToString(), (int)HttpStatusCode.BadRequest);
+                    return new ResponseModel { Message = "Cant update account!", Exception = new CustomException(result.Errors.FirstOrDefault().ToString(), 3, (int)HttpStatusCode.BadRequest) };
                 return null;
             }
             catch (Exception ex)
             {
-                return new CustomException(ex.Message, (int)HttpStatusCode.BadRequest);
+                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) };
             }
         }
     }
