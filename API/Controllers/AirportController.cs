@@ -50,8 +50,6 @@ namespace API.Controllers
         [HttpPost("AddAirport")]
         public async Task<IActionResult> AddAirport([FromBody] AirportAddDTO airportDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
             var airport = _mapper.Map<Airport, AirportAddDTO>(airportDTO);
             var addResponse =  await _mediator.Send(new GenericAddRequest<Airport>(airport));
             if(addResponse != null)
@@ -73,8 +71,6 @@ namespace API.Controllers
         [HttpPut("UpdateAirport")]
         public async Task<IActionResult> UpdateAirport([FromBody] AirportUpdateDTO airportDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<Airport>(airportDTO.id));
             var airport = _mapper.Map<Airport, AirportUpdateDTO>(airportDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<Airport>(airport));

@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Win32;
 using System;
+using System.ComponentModel.DataAnnotations;
 using Utilitys.ExceptionHandler;
 using Utilitys.Logger;
 using Utilitys.MailServices;
@@ -84,9 +85,6 @@ namespace API.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> LoginAccount([FromBody] LoginAccountDTO loginAccountDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
-
             var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
             if (!validateTokenDTO.IsTokenValid)
             {
@@ -121,8 +119,6 @@ namespace API.Controllers
         [HttpDelete("DeleteAccount/{userId}")]
         public async Task<IActionResult> DeleteAccount([FromRoute] string userId)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
             var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
             if (!validateTokenDTO.IsTokenValid)
                 return Unauthorized(new { message = "Token not valid!!" });
@@ -142,8 +138,6 @@ namespace API.Controllers
         [HttpPut("UpdateAccount")]
         public async Task<IActionResult> UpdateAccount([FromBody] UpdateAccountDTO updateAccountDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
             var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
             if (!validateTokenDTO.IsTokenValid)
                 return Unauthorized(new { message = "Token not valid!!" });
@@ -161,8 +155,6 @@ namespace API.Controllers
         [HttpPut("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO changePasswordDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
             var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
             if (!validateTokenDTO.IsTokenValid)
                 return Unauthorized(new { message = "Token not valid!!" });

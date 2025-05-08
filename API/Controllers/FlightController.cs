@@ -74,8 +74,6 @@ namespace API.Controllers
         [HttpPost("AddFlight")]
         public async Task<IActionResult> AddFlight(FlightAddDTO flightDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
             var flight = _mapper.Map<Flight, FlightAddDTO>(flightDTO);
             flight.flight_Aircraft = new List<Flight_Aircraft> { new Flight_Aircraft { aircraft_id = flightDTO.aircraft_id } };
             var addResponse = await _mediator.Send(new GenericAddRequest<Flight>(flight));
@@ -98,8 +96,6 @@ namespace API.Controllers
         [HttpPut("UpdateFlight")]
         public async Task<IActionResult> UpdateFlight(FlightUpdateDTO flightDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<Flight>(flightDTO.id));
             var flight = _mapper.Map<Flight, FlightUpdateDTO>(flightDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<Flight>(flight));

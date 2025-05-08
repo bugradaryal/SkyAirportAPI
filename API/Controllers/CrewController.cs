@@ -62,8 +62,6 @@ namespace API.Controllers
         [HttpPost("AddCrew")]
         public async Task<IActionResult> AddCrew(CrewAddDTO crewDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
             var crew = _mapper.Map<Crew, CrewAddDTO>(crewDTO);
             crew.crew_Aircraft = new List<Crew_Aircraft> { new Crew_Aircraft { aircraft_id = crewDTO.aircraft_id } };
             var addResponse = await _mediator.Send(new GenericAddRequest<Crew>(crew));
@@ -86,8 +84,6 @@ namespace API.Controllers
         [HttpPut("UpdateCrew")]
         public async Task<IActionResult> UpdateCrew(CrewUpdateDTO crewDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<Crew>(crewDTO.id));
             var crew = _mapper.Map<Crew, CrewUpdateDTO>(crewDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<Crew>(crew));

@@ -52,8 +52,6 @@ namespace API.Controllers
         [HttpPost("AddAircraftStatus")]
         public async Task<IActionResult> AddAircraftStatus([FromBody]string newStatus)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
             var aircraftStatus = new AircraftStatus { Status = newStatus };
             var addResponse = await _mediator.Send(new GenericAddRequest<AircraftStatus>(aircraftStatus));
             if (addResponse != null)
@@ -75,8 +73,6 @@ namespace API.Controllers
         [HttpPut("UpdateAircraftStatus")]
         public async Task<IActionResult> UpdateAircraftStatus([FromBody]AircraftStatusUpdateDTO aircraftStatusDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<AircraftStatus>(aircraftStatusDTO.id));
             var aircraftStatus = _mapper.Map<AircraftStatus, AircraftStatusUpdateDTO>(aircraftStatusDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<AircraftStatus>(aircraftStatus));

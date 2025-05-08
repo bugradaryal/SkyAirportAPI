@@ -66,8 +66,6 @@ namespace API.Controllers
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         public async Task<IActionResult> AddOperationalDelay(OperationalDelayAddDTO operationDelayDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
             var personal = _mapper.Map<OperationalDelay, OperationalDelayAddDTO>(operationDelayDTO);
             var addResponse = await _mediator.Send(new GenericAddRequest<OperationalDelay>(personal));
             if (addResponse != null)
@@ -91,8 +89,6 @@ namespace API.Controllers
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         public async Task<IActionResult> UpdateOperationalDelayDTO(OperationalDelayUpdateDTO operationDelayDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<OperationalDelay>(operationDelayDTO.id));
             var personal = _mapper.Map<OperationalDelay, OperationalDelayUpdateDTO>(operationDelayDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<OperationalDelay>(personal));

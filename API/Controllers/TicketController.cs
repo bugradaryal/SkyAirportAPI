@@ -68,8 +68,6 @@ namespace API.Controllers
         [HttpPost("AddTicket")]
         public async Task<IActionResult> AddTicket(TicketAddDTO ticketDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
             var ticket = _mapper.Map<Ticket, TicketAddDTO>(ticketDTO);
             var addResponse = await _mediator.Send(new AddTicketRequest(ticket));
             if (addResponse != null)
@@ -91,8 +89,6 @@ namespace API.Controllers
         [HttpPut("UpdateTicket")]
         public async Task<IActionResult> UpdateTicket(TicketUpdateDTO ticketDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = ModelState });
             var data = await _mediator.Send(new GenericGetByIdRequest<Ticket>(ticketDTO.id));
             var ticket = _mapper.Map<Ticket, TicketUpdateDTO>(ticketDTO, data.entity);
             var updateResponse = await _mediator.Send(new UpdateTicketRequest(ticket));
