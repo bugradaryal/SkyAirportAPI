@@ -1,4 +1,5 @@
 using Business.Abstract;
+using Business.Concrete;
 using Business.Features.Generic.Commands.Add;
 using Business.Features.Generic.Commands.Delete;
 using Business.Features.Generic.Commands.Update;
@@ -6,12 +7,17 @@ using Business.Features.Generic.Queries.GetAll;
 using Business.Features.Generic.Queries.GetById;
 using Business.Features.OperationalDelay.Queries;
 using DTO;
+using DTO.Account;
 using DTO.OperationalDelay;
 using Entities;
+using Entities.Configuration;
+using Entities.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Utilitys.Mapper;
 
 namespace API.Controllers
@@ -20,22 +26,41 @@ namespace API.Controllers
     [ApiController]
     public class OperationalDelayController : ControllerBase
     {
+        private readonly ILoggerServices _logger;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
+        private readonly ITokenServices _tokenServices;
 
-        public OperationalDelayController(IMediator mediator, IMapper mapper)
+        public OperationalDelayController(IMediator mediator, IMapper mapper, ILoggerServices logger, IOptions<JwtBearer> jwt, UserManager<User> userManager)
         {
             _mediator = mediator;
             _mapper = mapper;
+            _logger = logger;
+            _tokenServices = new TokenManager(jwt, userManager);
         }
 
         [HttpGet("GetAllOperationalDelay")]
         [AllowAnonymous]
         public async Task<IActionResult> GetAllOperationalDelay()
         {
+            await _logger.Logger(new LogDTO
+            {
+                Message = "UpdateAircraft endpoint called for {" + aircraftDTO.id ?? null + "}",
+                Action_type = Action_Type.APIRequest,
+                Target_table = "Aircraft",
+                loglevel_id = 1,
+            }, null);
             var getAllRepository = await _mediator.Send(new GenericGetAllRequest<OperationalDelay>());
             if (getAllRepository.error == true)
                 return BadRequest(getAllRepository.response.Exception);
+            await _logger.Logger(new LogDTO
+            {
+                Message = "UpdateAircraftStatus action done!",
+                Action_type = Action_Type.Update,
+                Target_table = "Aircraft",
+                loglevel_id = 1,
+                user_id = validateTokenDTO.user.Id
+            }, null);
             return Ok(getAllRepository.data);
         }
 
@@ -44,9 +69,35 @@ namespace API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetAllOperationalDelayByFlightId([FromQuery] int id)
         {
+            await _logger.Logger(new LogDTO
+            {
+                Message = "UpdateAircraft endpoint called for {" + aircraftDTO.id ?? null + "}",
+                Action_type = Action_Type.APIRequest,
+                Target_table = "Aircraft",
+                loglevel_id = 1,
+            }, null);
+            if (id == null || id == 0)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = "Invalid Id!!",
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "Aircraft",
+                    loglevel_id = 3,
+                }, null);
+                return BadRequest(new { message = "Invalid Id!!" });
+            }
             var getAllResponse = await _mediator.Send(new GetAllOperationalDelayByFlightIdRequest(id));
             if (getAllResponse.error)
                 return BadRequest(getAllResponse.response.Exception);
+            await _logger.Logger(new LogDTO
+            {
+                Message = "UpdateAircraftStatus action done!",
+                Action_type = Action_Type.Update,
+                Target_table = "Aircraft",
+                loglevel_id = 1,
+                user_id = validateTokenDTO.user.Id
+            }, null);
             return Ok(getAllResponse.entity);
         }
 
@@ -54,11 +105,35 @@ namespace API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetOperationalDelayById([FromQuery] int id)
         {
+            await _logger.Logger(new LogDTO
+            {
+                Message = "UpdateAircraft endpoint called for {" + aircraftDTO.id ?? null + "}",
+                Action_type = Action_Type.APIRequest,
+                Target_table = "Aircraft",
+                loglevel_id = 1,
+            }, null);
             if (id == null || id == 0)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = "Invalid Id!!",
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "Aircraft",
+                    loglevel_id = 3,
+                }, null);
                 return BadRequest(new { message = "Invalid Id!!" });
+            }
             var getByIdResponse = await _mediator.Send(new GenericGetByIdRequest<OperationalDelay>(id));
             if (getByIdResponse.error)
                 return BadRequest(getByIdResponse.response.Exception);
+            await _logger.Logger(new LogDTO
+            {
+                Message = "UpdateAircraftStatus action done!",
+                Action_type = Action_Type.Update,
+                Target_table = "Aircraft",
+                loglevel_id = 1,
+                user_id = validateTokenDTO.user.Id
+            }, null);
             return Ok(getByIdResponse.entity);
         }
 
@@ -66,10 +141,25 @@ namespace API.Controllers
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         public async Task<IActionResult> AddOperationalDelay(OperationalDelayAddDTO operationDelayDTO)
         {
+            await _logger.Logger(new LogDTO
+            {
+                Message = "UpdateAircraft endpoint called for {" + aircraftDTO.id ?? null + "}",
+                Action_type = Action_Type.APIRequest,
+                Target_table = "Aircraft",
+                loglevel_id = 1,
+            }, null);
             var personal = _mapper.Map<OperationalDelay, OperationalDelayAddDTO>(operationDelayDTO);
             var addResponse = await _mediator.Send(new GenericAddRequest<OperationalDelay>(personal));
             if (addResponse != null)
                 return BadRequest(addResponse);
+            await _logger.Logger(new LogDTO
+            {
+                Message = "UpdateAircraftStatus action done!",
+                Action_type = Action_Type.Update,
+                Target_table = "Aircraft",
+                loglevel_id = 1,
+                user_id = validateTokenDTO.user.Id
+            }, null);
             return Ok(new { message = "Delay added!" });
         }
 
@@ -77,11 +167,35 @@ namespace API.Controllers
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         public async Task<IActionResult> DeleteOperationalDelay([FromQuery] int id)
         {
+            await _logger.Logger(new LogDTO
+            {
+                Message = "UpdateAircraft endpoint called for {" + aircraftDTO.id ?? null + "}",
+                Action_type = Action_Type.APIRequest,
+                Target_table = "Aircraft",
+                loglevel_id = 1,
+            }, null);
             if (id == null || id == 0)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = "Invalid Id!!",
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "Aircraft",
+                    loglevel_id = 3,
+                }, null);
                 return BadRequest(new { message = "Invalid Id!!" });
+            }
             var deleteResponse = await _mediator.Send(new GenericDeleteRequest<OperationalDelay>(id));
             if (deleteResponse != null)
                 return BadRequest(deleteResponse);
+            await _logger.Logger(new LogDTO
+            {
+                Message = "UpdateAircraftStatus action done!",
+                Action_type = Action_Type.Update,
+                Target_table = "Aircraft",
+                loglevel_id = 1,
+                user_id = validateTokenDTO.user.Id
+            }, null);
             return Ok(new { message = "OperationalDelay deleted!" });
         }
 
@@ -89,11 +203,26 @@ namespace API.Controllers
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         public async Task<IActionResult> UpdateOperationalDelayDTO(OperationalDelayUpdateDTO operationDelayDTO)
         {
+            await _logger.Logger(new LogDTO
+            {
+                Message = "UpdateAircraft endpoint called for {" + aircraftDTO.id ?? null + "}",
+                Action_type = Action_Type.APIRequest,
+                Target_table = "Aircraft",
+                loglevel_id = 1,
+            }, null);
             var data = await _mediator.Send(new GenericGetByIdRequest<OperationalDelay>(operationDelayDTO.id));
             var personal = _mapper.Map<OperationalDelay, OperationalDelayUpdateDTO>(operationDelayDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<OperationalDelay>(personal));
             if (updateResponse != null)
                 return BadRequest(updateResponse);
+            await _logger.Logger(new LogDTO
+            {
+                Message = "UpdateAircraftStatus action done!",
+                Action_type = Action_Type.Update,
+                Target_table = "Aircraft",
+                loglevel_id = 1,
+                user_id = validateTokenDTO.user.Id
+            }, null);
             return Ok(new { message = "Updated!" });
         }
     }
