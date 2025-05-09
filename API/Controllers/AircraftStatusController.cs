@@ -89,7 +89,7 @@ namespace API.Controllers
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "GetAllAircraftStatusById endpoint called.",
+                Message = "GetAllAircraftStatusById endpoint called for {"+id??null+"}",
                 Action_type = Action_Type.APIRequest,
                 Target_table = "AircraftStatus",
                 loglevel_id = 1,
