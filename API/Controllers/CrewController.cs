@@ -352,7 +352,7 @@ namespace API.Controllers
                 loglevel_id = 1,
                 user_id = validateTokenDTO.user.Id
             }, null);
-            return Ok(new { message = "Updated!" });
+            return Ok(new { message = "Crew Updated!" });
         }
     }
 }
