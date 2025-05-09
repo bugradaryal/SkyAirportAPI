@@ -50,16 +50,22 @@ namespace API.Controllers
             var getAllResponse = await _mediator.Send(new GenericGetAllRequest<Airport>());
             if (getAllResponse.error)
             {
-                return BadRequest(getAllResponse.response.Exception);
+                await _logger.Logger(new LogDTO
+                {
+                    Message = getAllResponse.response.Message,
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "Airport",
+                    loglevel_id = getAllResponse.response.Exception.ExceptionLevel
+                }, getAllResponse.response.Exception);
+                return BadRequest(getAllResponse.response);
             }
                 
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAirportStatus action done!",
-                Action_type = Action_Type.Update,
+                Message = "GetAllAirports action done!",
+                Action_type = Action_Type.APIResponse,
                 Target_table = "Airport",
-                loglevel_id = 1,
-                user_id = validateTokenDTO.user.Id
+                loglevel_id = 1
             }, null);
             return Ok(getAllResponse.data);
         }
