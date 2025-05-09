@@ -75,7 +75,7 @@ namespace API.Controllers
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAirport endpoint called for {" + aircraftDTO.id ?? null + "}",
+                Message = "GetAirportById endpoint called for {" + id ?? null + "}",
                 Action_type = Action_Type.APIRequest,
                 Target_table = "Airport",
                 loglevel_id = 1,
@@ -96,20 +96,19 @@ namespace API.Controllers
             {
                 await _logger.Logger(new LogDTO
                 {
-                    Message = getAllRepository.response.Message,
+                    Message = getByIdResponse.response.Message,
                     Action_type = Action_Type.APIRequest,
                     Target_table = "AirportStatus",
-                    loglevel_id = getAllRepository.response.Exception.ExceptionLevel,
-                }, getAllRepository.response.Exception);
-                return BadRequest(getAllRepository.response);
+                    loglevel_id = getByIdResponse.response.Exception.ExceptionLevel,
+                }, getByIdResponse.response.Exception);
+                return BadRequest(getByIdResponse.response);
             }
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAirportStatus action done!",
+                Message = "GetAirportById action done!",
                 Action_type = Action_Type.Update,
                 Target_table = "Airport",
-                loglevel_id = 1,
-                user_id = validateTokenDTO.user.Id
+                loglevel_id = 1
             }, null);
             return Ok(getByIdResponse.entity);
         }
@@ -119,7 +118,7 @@ namespace API.Controllers
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAirport endpoint called for {" + aircraftDTO.id ?? null + "}",
+                Message = "AddAirport endpoint called.",
                 Action_type = Action_Type.APIRequest,
                 Target_table = "Airport",
                 loglevel_id = 1,
@@ -140,11 +139,22 @@ namespace API.Controllers
             var airport = _mapper.Map<Airport, AirportAddDTO>(airportDTO);
             var addResponse =  await _mediator.Send(new GenericAddRequest<Airport>(airport));
             if(addResponse != null)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = addResponse.Message,
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "User",
+                    loglevel_id = addResponse.Exception.ExceptionLevel,
+                    user_id = validateTokenDTO.user.Id
+                }, addResponse.Exception);
                 return BadRequest(addResponse);
+            }
+                
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAirportStatus action done!",
-                Action_type = Action_Type.Update,
+                Message = "Airport added!",
+                Action_type = Action_Type.Create,
                 Target_table = "Airport",
                 loglevel_id = 1,
                 user_id = validateTokenDTO.user.Id
@@ -157,7 +167,7 @@ namespace API.Controllers
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAirport endpoint called for {" + aircraftDTO.id ?? null + "}",
+                Message = "DeleteAirport endpoint called for {" + id ?? null + "}",
                 Action_type = Action_Type.APIRequest,
                 Target_table = "Airport",
                 loglevel_id = 1,
@@ -189,11 +199,22 @@ namespace API.Controllers
             }
             var deleteResponse = await _mediator.Send(new GenericDeleteRequest<Airport>(id));
             if (deleteResponse != null)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = deleteResponse.Message,
+                    Action_type = Action_Type.Delete,
+                    Target_table = "Airport",
+                    loglevel_id = deleteResponse.Exception.ExceptionLevel,
+                    user_id = validateTokenDTO.user.Id
+                }, deleteResponse.Exception);
                 return BadRequest(deleteResponse);
+            }
+                
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAirportStatus action done!",
-                Action_type = Action_Type.Update,
+                Message = "Airport deleted!",
+                Action_type = Action_Type.Delete,
                 Target_table = "Airport",
                 loglevel_id = 1,
                 user_id = validateTokenDTO.user.Id
@@ -206,7 +227,7 @@ namespace API.Controllers
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAirport endpoint called for {" + aircraftDTO.id ?? null + "}",
+                Message = "UpdateAirport endpoint called for {" + airportDTO.id ?? null + "}",
                 Action_type = Action_Type.APIRequest,
                 Target_table = "Airport",
                 loglevel_id = 1,
@@ -228,10 +249,21 @@ namespace API.Controllers
             var airport = _mapper.Map<Airport, AirportUpdateDTO>(airportDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<Airport>(airport));
             if (updateResponse != null)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = updateResponse.Message,
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "Airport",
+                    loglevel_id = updateResponse.Exception.ExceptionLevel,
+                    user_id = validateTokenDTO.user.Id
+                }, updateResponse.Exception);
                 return BadRequest(updateResponse);
+            }
+                
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAirportStatus action done!",
+                Message = "Airport  updated!",
                 Action_type = Action_Type.Update,
                 Target_table = "Airport",
                 loglevel_id = 1,
