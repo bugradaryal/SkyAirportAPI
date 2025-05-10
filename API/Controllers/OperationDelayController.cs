@@ -45,21 +45,30 @@ namespace API.Controllers
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAircraft endpoint called for {" + aircraftDTO.id ?? null + "}",
+                Message = "GetAllOperationalDelay endpoint called.",
                 Action_type = Action_Type.APIRequest,
-                Target_table = "Aircraft",
+                Target_table = "OperationalDelay",
                 loglevel_id = 1,
             }, null);
             var getAllRepository = await _mediator.Send(new GenericGetAllRequest<OperationalDelay>());
             if (getAllRepository.error == true)
-                return BadRequest(getAllRepository.response.Exception);
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = getAllRepository.response.Message,
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "OperationalDelay",
+                    loglevel_id = getAllRepository.response.Exception.ExceptionLevel,
+                }, getAllRepository.response.Exception);
+                return BadRequest(getAllRepository.response);
+            }
+
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAircraftStatus action done!",
-                Action_type = Action_Type.Update,
-                Target_table = "Aircraft",
-                loglevel_id = 1,
-                user_id = validateTokenDTO.user.Id
+                Message = "GetAllOperationalDelay action done!",
+                Action_type = Action_Type.APIResponse,
+                Target_table = "OperationalDelay",
+                loglevel_id = 1
             }, null);
             return Ok(getAllRepository.data);
         }
@@ -71,9 +80,9 @@ namespace API.Controllers
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAircraft endpoint called for {" + aircraftDTO.id ?? null + "}",
+                Message = "GetAllOperationalDelayByFlightId endpoint called for {" + id ?? null + "}",
                 Action_type = Action_Type.APIRequest,
-                Target_table = "Aircraft",
+                Target_table = "OperationalDelay",
                 loglevel_id = 1,
             }, null);
             if (id == null || id == 0)
@@ -82,21 +91,30 @@ namespace API.Controllers
                 {
                     Message = "Invalid Id!!",
                     Action_type = Action_Type.APIResponse,
-                    Target_table = "Aircraft",
-                    loglevel_id = 3,
+                    Target_table = "OperationalDelay",
+                    loglevel_id = 3
                 }, null);
                 return BadRequest(new { message = "Invalid Id!!" });
             }
             var getAllResponse = await _mediator.Send(new GetAllOperationalDelayByFlightIdRequest(id));
             if (getAllResponse.error)
-                return BadRequest(getAllResponse.response.Exception);
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = getAllResponse.response.Message,
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "OperationalDelay",
+                    loglevel_id = getAllResponse.response.Exception.ExceptionLevel,
+                }, getAllResponse.response.Exception);
+                return BadRequest(getAllResponse.response);
+            }
+
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAircraftStatus action done!",
-                Action_type = Action_Type.Update,
-                Target_table = "Aircraft",
-                loglevel_id = 1,
-                user_id = validateTokenDTO.user.Id
+                Message = "GetAllOperationalDelayByFlightId action done!",
+                Action_type = Action_Type.APIResponse,
+                Target_table = "OperationalDelay",
+                loglevel_id = 1
             }, null);
             return Ok(getAllResponse.entity);
         }
@@ -107,9 +125,9 @@ namespace API.Controllers
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAircraft endpoint called for {" + aircraftDTO.id ?? null + "}",
+                Message = "GetOperationalDelayById endpoint called for {" + id ?? null + "}",
                 Action_type = Action_Type.APIRequest,
-                Target_table = "Aircraft",
+                Target_table = "OperationalDelay",
                 loglevel_id = 1,
             }, null);
             if (id == null || id == 0)
@@ -118,21 +136,30 @@ namespace API.Controllers
                 {
                     Message = "Invalid Id!!",
                     Action_type = Action_Type.APIResponse,
-                    Target_table = "Aircraft",
+                    Target_table = "OperationalDelay",
                     loglevel_id = 3,
                 }, null);
                 return BadRequest(new { message = "Invalid Id!!" });
             }
             var getByIdResponse = await _mediator.Send(new GenericGetByIdRequest<OperationalDelay>(id));
             if (getByIdResponse.error)
-                return BadRequest(getByIdResponse.response.Exception);
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = getByIdResponse.response.Message,
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "OperationalDelay",
+                    loglevel_id = getByIdResponse.response.Exception.ExceptionLevel,
+                }, getByIdResponse.response.Exception);
+                return BadRequest(getByIdResponse.response);
+            }
+
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAircraftStatus action done!",
-                Action_type = Action_Type.Update,
-                Target_table = "Aircraft",
-                loglevel_id = 1,
-                user_id = validateTokenDTO.user.Id
+                Message = "GetOperationalDelayById action done!",
+                Action_type = Action_Type.APIResponse,
+                Target_table = "OperationalDelay",
+                loglevel_id = 1
             }, null);
             return Ok(getByIdResponse.entity);
         }
@@ -143,20 +170,44 @@ namespace API.Controllers
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAircraft endpoint called for {" + aircraftDTO.id ?? null + "}",
+                Message = "AddOperationalDelay endpoint called!",
                 Action_type = Action_Type.APIRequest,
-                Target_table = "Aircraft",
+                Target_table = "OperationalDelay",
                 loglevel_id = 1,
             }, null);
+            var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
+            if (!validateTokenDTO.IsTokenValid)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = "Token is not valid!",
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "User",
+                    loglevel_id = 3,
+                    user_id = validateTokenDTO.user.Id ?? null
+                }, null);
+                return Unauthorized(new { message = "Token not valid!!" });
+            }
             var personal = _mapper.Map<OperationalDelay, OperationalDelayAddDTO>(operationDelayDTO);
             var addResponse = await _mediator.Send(new GenericAddRequest<OperationalDelay>(personal));
             if (addResponse != null)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = addResponse.Message,
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "OperationalDelay",
+                    loglevel_id = addResponse.Exception.ExceptionLevel,
+                    user_id = validateTokenDTO.user.Id
+                }, addResponse.Exception);
                 return BadRequest(addResponse);
+            }
+
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAircraftStatus action done!",
-                Action_type = Action_Type.Update,
-                Target_table = "Aircraft",
+                Message = "OperationalDelay added!",
+                Action_type = Action_Type.Create,
+                Target_table = "OperationalDelay",
                 loglevel_id = 1,
                 user_id = validateTokenDTO.user.Id
             }, null);
@@ -169,30 +220,55 @@ namespace API.Controllers
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAircraft endpoint called for {" + aircraftDTO.id ?? null + "}",
+                Message = "UpdateAircraft endpoint called for {" + id ?? null + "}",
                 Action_type = Action_Type.APIRequest,
-                Target_table = "Aircraft",
+                Target_table = "OperationalDelay",
                 loglevel_id = 1,
             }, null);
+
             if (id == null || id == 0)
             {
                 await _logger.Logger(new LogDTO
                 {
                     Message = "Invalid Id!!",
                     Action_type = Action_Type.APIResponse,
-                    Target_table = "Aircraft",
+                    Target_table = "OperationalDelay",
                     loglevel_id = 3,
                 }, null);
                 return BadRequest(new { message = "Invalid Id!!" });
             }
+            var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
+            if (!validateTokenDTO.IsTokenValid)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = "Token is not valid!",
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "User",
+                    loglevel_id = 3,
+                    user_id = validateTokenDTO.user.Id ?? null
+                }, null);
+                return Unauthorized(new { message = "Token not valid!!" });
+            }
             var deleteResponse = await _mediator.Send(new GenericDeleteRequest<OperationalDelay>(id));
             if (deleteResponse != null)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = deleteResponse.Message,
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "OperationalDelay",
+                    loglevel_id = deleteResponse.Exception.ExceptionLevel,
+                    user_id = validateTokenDTO.user.Id
+                }, deleteResponse.Exception);
                 return BadRequest(deleteResponse);
+            }
+
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAircraftStatus action done!",
-                Action_type = Action_Type.Update,
-                Target_table = "Aircraft",
+                Message = "OperationalDelay deleted!",
+                Action_type = Action_Type.Delete,
+                Target_table = "OperationalDelay",
                 loglevel_id = 1,
                 user_id = validateTokenDTO.user.Id
             }, null);
@@ -205,25 +281,48 @@ namespace API.Controllers
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAircraft endpoint called for {" + aircraftDTO.id ?? null + "}",
+                Message = "UpdateAircraft endpoint called for {" + operationDelayDTO.id ?? null + "}",
                 Action_type = Action_Type.APIRequest,
-                Target_table = "Aircraft",
+                Target_table = "OperationalDelay",
                 loglevel_id = 1,
             }, null);
+            var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
+            if (!validateTokenDTO.IsTokenValid)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = "Token is not valid!",
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "User",
+                    loglevel_id = 3,
+                    user_id = validateTokenDTO.user.Id ?? null
+                }, null);
+            }
             var data = await _mediator.Send(new GenericGetByIdRequest<OperationalDelay>(operationDelayDTO.id));
             var personal = _mapper.Map<OperationalDelay, OperationalDelayUpdateDTO>(operationDelayDTO, data.entity);
             var updateResponse = await _mediator.Send(new GenericUpdateRequest<OperationalDelay>(personal));
             if (updateResponse != null)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = updateResponse.Message,
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "OperationalDelay",
+                    loglevel_id = updateResponse.Exception.ExceptionLevel,
+                    user_id = validateTokenDTO.user.Id
+                }, updateResponse.Exception);
                 return BadRequest(updateResponse);
+            }
+
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAircraftStatus action done!",
+                Message = "OperationalDelay updated!",
                 Action_type = Action_Type.Update,
-                Target_table = "Aircraft",
+                Target_table = "OperationalDelay",
                 loglevel_id = 1,
                 user_id = validateTokenDTO.user.Id
             }, null);
-            return Ok(new { message = "Updated!" });
+            return Ok(new { message = "OperationalDelay Updated!" });
         }
     }
 }
