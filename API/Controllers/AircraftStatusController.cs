@@ -70,6 +70,7 @@ namespace API.Controllers
                     Action_type = Action_Type.APIRequest,
                     Target_table = "AircraftStatus",
                     loglevel_id = getAllRepository.response.Exception.ExceptionLevel,
+                    user_id = validateTokenDTO.user.Id
                 }, getAllRepository.response.Exception);
                 return BadRequest(getAllRepository.response);
             }
@@ -94,6 +95,17 @@ namespace API.Controllers
                 Target_table = "AircraftStatus",
                 loglevel_id = 1,
             }, null);
+            if (id == null || id == 0)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = "Invalid Id!!",
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "AircraftStatus",
+                    loglevel_id = 3,
+                }, null);
+                return BadRequest(new { message = "Invalid Id!!" });
+            }
             var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
             if (!validateTokenDTO.IsTokenValid)
             {
@@ -107,17 +119,6 @@ namespace API.Controllers
                 }, null);
                 return Unauthorized(new { message = "Token not valid!!" });
             }
-            if (id == null || id == 0)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = "Invalid Id!!",
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "AircraftStatus",
-                    loglevel_id = 3,
-                }, null);
-                return BadRequest(new { message = "Invalid Id!!" });
-            }
 
             var getByIdResponse = await _mediator.Send(new GenericGetByIdRequest<AircraftStatus>(id));
             if (getByIdResponse.error)
@@ -128,13 +129,14 @@ namespace API.Controllers
                     Action_type = Action_Type.APIRequest,
                     Target_table = "AircraftStatus",
                     loglevel_id = getByIdResponse.response.Exception.ExceptionLevel,
+                    user_id = validateTokenDTO.user.Id
                 }, getByIdResponse.response.Exception);
                 return BadRequest(getByIdResponse.response);
             }
             await _logger.Logger(new LogDTO
             {
-                Message = "GetAllAircraftStatusById action done!",
-                Action_type = Action_Type.Read,
+                Message = "GetAllAircraftStatusById action done for {"+id+"}",
+                Action_type = Action_Type.APIResponse,
                 Target_table = "Aircraft",
                 loglevel_id = 1,
                 user_id = validateTokenDTO.user.Id
@@ -175,6 +177,7 @@ namespace API.Controllers
                     Action_type = Action_Type.APIResponse,
                     Target_table = "AircraftStatus",
                     loglevel_id = addResponse.Exception.ExceptionLevel,
+                    user_id = validateTokenDTO.user.Id
                 }, addResponse.Exception);
                 return BadRequest(addResponse);
             }
@@ -200,6 +203,17 @@ namespace API.Controllers
                 Target_table = "AircraftStatus",
                 loglevel_id = 1,
             }, null);
+            if (id == null || id == 0)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = "Invalid Id!!",
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "AircraftStatus",
+                    loglevel_id = 3,
+                }, null);
+                return BadRequest(new { message = "Invalid Id!!" });
+            }
             var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
             if (!validateTokenDTO.IsTokenValid)
             {
@@ -213,17 +227,6 @@ namespace API.Controllers
                 }, null);
                 return Unauthorized(new { message = "Token not valid!!" });
             }
-            if (id == null || id == 0)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = "Invalid Id!!",
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "AircraftStatus",
-                    loglevel_id = 3,
-                }, null);
-                return BadRequest(new { message = "Invalid Id!!" });
-            }
             var deleteResponse = await _mediator.Send(new GenericDeleteRequest<AircraftStatus>(id));
             if (deleteResponse != null)
             {
@@ -233,12 +236,13 @@ namespace API.Controllers
                     Action_type = Action_Type.APIResponse,
                     Target_table = "AircraftStatus",
                     loglevel_id = deleteResponse.Exception.ExceptionLevel,
+                    user_id = validateTokenDTO.user.Id
                 }, deleteResponse.Exception);
                 return BadRequest(deleteResponse);
             }
             await _logger.Logger(new LogDTO
             {
-                Message = "DeleteAircraftStatus action done!",
+                Message = "DeleteAircraftStatus action done for {"+id+"}",
                 Action_type = Action_Type.Delete,
                 Target_table = "Aircraft",
                 loglevel_id = 1,
@@ -281,19 +285,20 @@ namespace API.Controllers
                     Action_type = Action_Type.APIResponse,
                     Target_table = "AircraftStatus",
                     loglevel_id = updateResponse.Exception.ExceptionLevel,
+                    user_id = validateTokenDTO.user.Id
                 }, updateResponse.Exception);
                 return BadRequest(updateResponse);
             }
                 
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateAircraftStatus action done!",
+                Message = "UpdateAircraftStatus action done for {"+aircraftStatusDTO.id+"}",
                 Action_type = Action_Type.Update,
                 Target_table = "Aircraft",
                 loglevel_id = 1,
                 user_id = validateTokenDTO.user.Id
             }, null);
-            return Ok(new { message = "Updated!" });
+            return Ok(new { message = "AircraftStatus Updated!" });
         }
     }
 }

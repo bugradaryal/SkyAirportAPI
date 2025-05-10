@@ -52,7 +52,7 @@ namespace API.Controllers
         public async Task<IActionResult> CreateAccount([FromBody]CreateAccountDTO createAccountDTO)
         {
             await _logger.Logger(new LogDTO{
-                Message = "Register endpoint called.",
+                Message = "Register endpoint called for {"+createAccountDTO.UserName+"}",
                 Action_type = Action_Type.APIRequest,
                 Target_table = "User",
                 loglevel_id = 1,
@@ -87,7 +87,7 @@ namespace API.Controllers
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "Login endpoint called.",
+                Message = "Login endpoint called for {"+loginAccountDTO.Email+"}",
                 Action_type = Action_Type.APIRequest,
                 Target_table = "User",
                 loglevel_id = 1,
@@ -161,7 +161,7 @@ namespace API.Controllers
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "DeleteAccount endpoint called.",
+                Message = "DeleteAccount endpoint called!",
                 Action_type = Action_Type.APIRequest,
                 Target_table = "User",
                 loglevel_id = 1,
@@ -295,7 +295,7 @@ namespace API.Controllers
                         Action_type = Action_Type.APIResponse,
                         Target_table = "User",
                         loglevel_id = changePasswordResponse.Exception.ExceptionLevel,
-                        user_id = validateTokenDTO.user?.Id,
+                        user_id = validateTokenDTO.user.Id,
                     }, changePasswordResponse.Exception);
                     return BadRequest(changePasswordResponse);
                 }
@@ -322,7 +322,7 @@ namespace API.Controllers
                     Message = "SendingEmail endpoint called but it was canceled because the email content was empty.",
                     Action_type = Action_Type.APIResponse,
                     Target_table = "User",
-                    loglevel_id = 1
+                    loglevel_id = 3
                 }, null);
                 return BadRequest(new { message = "Email content must not empty!" });
             }
@@ -358,7 +358,7 @@ namespace API.Controllers
                 Target_table = "User",
                 loglevel_id = 1,
                 user_id = mailResponse.user.Id
-            }, mailResponse.response.Exception);
+            }, null);
             return Ok(new { message = "Email verification code sended!!!" });
         }
         [HttpGet("EmailVerification")]

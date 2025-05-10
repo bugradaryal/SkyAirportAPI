@@ -98,15 +98,15 @@ namespace API.Controllers
                 {
                     Message = getByIdResponse.response.Message,
                     Action_type = Action_Type.APIRequest,
-                    Target_table = "AirportStatus",
+                    Target_table = "Airport",
                     loglevel_id = getByIdResponse.response.Exception.ExceptionLevel,
                 }, getByIdResponse.response.Exception);
                 return BadRequest(getByIdResponse.response);
             }
             await _logger.Logger(new LogDTO
             {
-                Message = "GetAirportById action done!",
-                Action_type = Action_Type.Update,
+                Message = "GetAirportById action done for {"+id+"}",
+                Action_type = Action_Type.APIResponse,
                 Target_table = "Airport",
                 loglevel_id = 1
             }, null);
@@ -144,7 +144,7 @@ namespace API.Controllers
                 {
                     Message = addResponse.Message,
                     Action_type = Action_Type.APIResponse,
-                    Target_table = "User",
+                    Target_table = "Airport",
                     loglevel_id = addResponse.Exception.ExceptionLevel,
                     user_id = validateTokenDTO.user.Id
                 }, addResponse.Exception);
@@ -172,6 +172,17 @@ namespace API.Controllers
                 Target_table = "Airport",
                 loglevel_id = 1,
             }, null);
+            if (id == null || id == 0)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = "Invalid Id!!",
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "Airport",
+                    loglevel_id = 3,
+                }, null);
+                return BadRequest(new { message = "Invalid Id!!" });
+            }
             var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
             if (!validateTokenDTO.IsTokenValid)
             {
@@ -184,18 +195,6 @@ namespace API.Controllers
                     user_id = validateTokenDTO.user.Id ?? null
                 }, null);
                 return Unauthorized(new { message = "Token not valid!!" });
-            }
-            if (id == null || id == 0)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = "Invalid Id!!",
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "Airport",
-                    loglevel_id = 3,
-                }, null);
-
-                return BadRequest(new { message = "Invalid Id!!" });
             }
             var deleteResponse = await _mediator.Send(new GenericDeleteRequest<Airport>(id));
             if (deleteResponse != null)
@@ -213,7 +212,7 @@ namespace API.Controllers
                 
             await _logger.Logger(new LogDTO
             {
-                Message = "Airport deleted!",
+                Message = "Airport deleted for {"+id+"}",
                 Action_type = Action_Type.Delete,
                 Target_table = "Airport",
                 loglevel_id = 1,
@@ -263,7 +262,7 @@ namespace API.Controllers
                 
             await _logger.Logger(new LogDTO
             {
-                Message = "Airport  updated!",
+                Message = "Airport  updated for {"+airportDTO.id+"}",
                 Action_type = Action_Type.Update,
                 Target_table = "Airport",
                 loglevel_id = 1,

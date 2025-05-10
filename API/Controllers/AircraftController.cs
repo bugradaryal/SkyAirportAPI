@@ -106,7 +106,7 @@ namespace API.Controllers
             }
             await _logger.Logger(new LogDTO
             {
-                Message = "GetByIdAircraft action done!",
+                Message = "GetByIdAircraft action done for {"+id+"}",
                 Action_type = Action_Type.Read,
                 Target_table = "Aircraft",
                 loglevel_id = 1,
@@ -210,7 +210,7 @@ namespace API.Controllers
             }
             await _logger.Logger(new LogDTO
             {
-                Message = "Aircraft deleted!",
+                Message = "Aircraft deleted for {"+id+"}",
                 Action_type = Action_Type.Delete,
                 Target_table = "Aircraft",
                 loglevel_id = 1,
@@ -259,7 +259,7 @@ namespace API.Controllers
             }
             await _logger.Logger(new LogDTO
             {
-                Message = "Aircraft updated!",
+                Message = "Aircraft updated for {"+aircraftDTO.id+"}",
                 Action_type = Action_Type.Update,
                 Target_table = "Aircraft",
                 loglevel_id = 1,
