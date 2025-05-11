@@ -10,8 +10,8 @@ namespace Business.Features.Generic.Queries.GetAll
 {
     public class GenericGetAllResponse<TEntity>
     {
-        public List<TEntity> data { get; set; }
-        public ResponseModel response { get; set; }
+        public List<TEntity>? entity { get; set; }
+        public ResponseModel? response { get; set; }
         public bool error { get; set; } = true;
     }
 }

@@ -85,7 +85,7 @@ namespace API.Controllers
                 loglevel_id = 1,
                 user_id= validateTokenDTO.user.Id
             }, null);
-            return Ok(getAllRepository.data);
+            return Ok(getAllRepository.entity);
         }
 
         [HttpGet("GetAllCrewByAircraftId")]
@@ -130,9 +130,9 @@ namespace API.Controllers
                     Message = getAllResponse.response.Message,
                     Action_type = Action_Type.APIResponse,
                     Target_table = "Crew",
-                    loglevel_id = getAllResponse.response.Exception.ExceptionLevel,
+                    loglevel_id = getAllResponse.response?.Exception?.ExceptionLevel,
                     user_id = validateTokenDTO.user.Id
-                }, getAllResponse.response.Exception);
+                }, getAllResponse.response?.Exception);
                 return BadRequest(getAllResponse.response);
             }
             await _logger.Logger(new LogDTO
@@ -188,9 +188,9 @@ namespace API.Controllers
                     Message = getByIdResponse.response.Message,
                     Action_type = Action_Type.APIResponse,
                     Target_table = "Crew",
-                    loglevel_id = getByIdResponse.response.Exception.ExceptionLevel,
+                    loglevel_id = getByIdResponse.response?.Exception?.ExceptionLevel,
                     user_id = validateTokenDTO.user.Id
-                }, getByIdResponse.response.Exception);
+                }, getByIdResponse.response?.Exception);
                 return BadRequest(getByIdResponse.response);
             }
                 

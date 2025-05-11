@@ -11,8 +11,8 @@ namespace Business.Features.Account.Queries.GetUserRole
 {
     public class GetUserRoleResponse
     {
-        public List<string> UserRoles { get; set; }
-        public ResponseModel response { get; set; }
+        public List<string>? UserRoles { get; set; }
+        public ResponseModel? response { get; set; }
         public bool error { get; set; } = true;
     }
 }

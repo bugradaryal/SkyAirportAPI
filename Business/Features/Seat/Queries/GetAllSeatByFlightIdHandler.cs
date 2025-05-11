@@ -10,6 +10,7 @@ using DataAccess.Abstract;
 using DataAccess.Concrete;
 using MediatR;
 using Business.Features.Aircraft.Queries.GetAllAircrafts;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Seat.Queries
 {
@@ -30,7 +31,7 @@ namespace Business.Features.Seat.Queries
             }
             catch (Exception ex)
             {
-                return new GetAllSeatByFlightIdResponse { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
+                return new GetAllSeatByFlightIdResponse { response = new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
             }
         }
     }

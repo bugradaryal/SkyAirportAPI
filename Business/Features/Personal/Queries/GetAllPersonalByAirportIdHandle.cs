@@ -12,6 +12,7 @@ using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Business.Features.Aircraft.Queries.GetAllAircrafts;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Personal.Queries
 {
@@ -32,7 +33,7 @@ namespace Business.Features.Personal.Queries
             }
             catch (Exception ex)
             {
-                return new GetAllPersonalByAirportIdResponse { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
+                return new GetAllPersonalByAirportIdResponse { response = new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
             }
         }
     }

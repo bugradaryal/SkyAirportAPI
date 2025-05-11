@@ -20,7 +20,6 @@ namespace Entities
         public string CountryCode { get; set; }
 
         public ICollection<Ticket> ticket { get; set; }
-        public ICollection<AdminOperation> adminOperation { get; set; }
         public ICollection<LogEntry> logEntry { get; set; }
     }
 }

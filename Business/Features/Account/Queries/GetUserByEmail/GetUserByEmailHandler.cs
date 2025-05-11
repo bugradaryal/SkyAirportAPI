@@ -9,6 +9,7 @@ using Business.Features.Account.Commands.UpdateAccount;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Account.Queries.GetUserByEmail
 {
@@ -26,12 +27,12 @@ namespace Business.Features.Account.Queries.GetUserByEmail
             {
                 var result = await _userManager.FindByEmailAsync(request.email);
                 if (result == null)
-                    return new GetUserByEmailResponse { response = { Message = "Account doesnt exist!!" } };
+                    return new GetUserByEmailResponse { response = new ResponseModel { Message = "Account doesnt exist!!" } };
                 return new GetUserByEmailResponse { user = result, error = false };
             }
             catch (Exception ex)
             {
-                return new GetUserByEmailResponse { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
+                return new GetUserByEmailResponse { response = new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
             }
         }
     }

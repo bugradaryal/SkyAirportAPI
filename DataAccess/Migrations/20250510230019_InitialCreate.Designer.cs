@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DataDbContext))]
-    [Migration("20250508092923_InitialCreate")]
+    [Migration("20250510230019_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -47,7 +47,7 @@ namespace DataAccess.Migrations
                     b.Property<decimal>("Fuel_Capacity")
                         .HasColumnType("DECIMAL(7,1)");
 
-                    b.Property<DateTimeOffset>("Last_Maintenance_Date")
+                    b.Property<DateTimeOffset?>("Last_Maintenance_Date")
                         .HasColumnType("TIMESTAMP WITH TIME ZONE");
 
                     b.Property<decimal>("Max_Altitude")
@@ -337,42 +337,6 @@ namespace DataAccess.Migrations
                     b.ToTable("Flight_Aircrafts");
                 });
 
-            modelBuilder.Entity("Entities.Moderation.AdminOperation", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
-
-                    b.Property<DateTime>("Operation_Date")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP WITH TIME ZONE")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<string>("Operation_type")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Target_id")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Target_table")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("text");
-
-                    b.Property<string>("user_id")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("user_id");
-
-                    b.ToTable("AdminOperations");
-                });
-
             modelBuilder.Entity("Entities.Moderation.LogEntry", b =>
                 {
                     b.Property<int>("id")
@@ -386,7 +350,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("AdditionalData")
-                        .IsRequired()
                         .HasColumnType("jsonb");
 
                     b.Property<string>("Message")
@@ -407,13 +370,14 @@ namespace DataAccess.Migrations
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("loglevel_id")
-                        .HasColumnType("integer");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
 
                     b.Property<string>("userId")
                         .HasColumnType("text");
 
                     b.Property<string>("user_id")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("id");
@@ -782,13 +746,13 @@ namespace DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "3d722035-e68b-449c-8a00-002b6d1c1a19",
+                            Id = "66d76006-a7fb-402e-a656-d25a58316ad6",
                             Name = "Administrator",
                             NormalizedName = "ADMİNİSTRATOR"
                         },
                         new
                         {
-                            Id = "d8c80a9c-2624-4dee-b598-a45e74ac9954",
+                            Id = "b34fad37-8dde-4371-b18b-d34967e2b0b3",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -971,17 +935,6 @@ namespace DataAccess.Migrations
                     b.Navigation("flight");
                 });
 
-            modelBuilder.Entity("Entities.Moderation.AdminOperation", b =>
-                {
-                    b.HasOne("Entities.User", "user")
-                        .WithMany("adminOperation")
-                        .HasForeignKey("user_id")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("user");
-                });
-
             modelBuilder.Entity("Entities.Moderation.LogEntry", b =>
                 {
                     b.HasOne("Entities.Moderation.LogLevel", "logLevel")
@@ -1154,8 +1107,6 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Entities.User", b =>
                 {
-                    b.Navigation("adminOperation");
-
                     b.Navigation("logEntry");
 
                     b.Navigation("ticket");

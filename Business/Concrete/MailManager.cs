@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
@@ -11,6 +12,8 @@ using MailKit.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using Utilitys.ExceptionHandler;
+using Utilitys.ResponseHandler;
 
 namespace Utilitys.MailServices
 {
@@ -23,8 +26,10 @@ namespace Utilitys.MailServices
             _mail = mail.Value;
             _userManager = userManager;
         }
-        
-        public async Task SendingEmail(string email, string url)    //callback url required
+
+        public async Task<ResponseModel> SendingEmail(string email, string url)    //callback url required
+        {
+            try
             {
                 var message = new MimeMessage();
                 message.From.Add(new MailboxAddress("Email Verification<No-Reply>", _mail.Email));
@@ -36,8 +41,6 @@ namespace Utilitys.MailServices
                     "<br> <p>If link doesn't work : " + url + "</p>";
 
                 message.Body = bodyBuilder.ToMessageBody();
-
-
                 using (var client = new SmtpClient())
                 {
                     client.ServerCertificateValidationCallback = (s, c, h, e) => true;
@@ -46,18 +49,32 @@ namespace Utilitys.MailServices
                     client.Send(message);
                     client.Disconnect(true);
                 }
+                return null;
             }
-
-            public async Task ConfirmEmail(string userid, string token)
+            catch (Exception ex)
+            {
+                return new ResponseModel { Message = "Exception throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest, ex.InnerException.Message) };
+            }
+        }
+        public async Task<ResponseModel> ConfirmEmail(string userid, string token)
+        {
+            try
             {
                 var user = await _userManager.FindByIdAsync(userid);
                 if (user == null)
-                    throw new Exception("User not found!!");
+                    return new ResponseModel { Message = "User not found!!" };
 
                 var result = await _userManager.ConfirmEmailAsync(user, token);
                 if (!result.Succeeded)
-                    throw new Exception("Email confirmation failed!");
+                    return new ResponseModel { Message = "Email confirmation failed!" } ;
+                return null;
             }
+            catch(Exception ex)
+            {
+                return new ResponseModel { Message = "Exception throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest, ex.InnerException.Message) };
+            }
+
+        }
 
     }
 }

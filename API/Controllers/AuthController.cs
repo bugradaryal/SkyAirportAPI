@@ -36,7 +36,8 @@ namespace API.Controllers
         private readonly ITokenServices _tokenServices;
         private readonly IMailServices _mailServices;
         private readonly IPhoneServices _phoneServices;
-        public AuthController(UserManager<User> userManager, IMapper mapper, IOptions<JwtBearer> jwt, IMediator mediator, IOptions<EmailSender> mail, ILoggerServices logger) 
+        private readonly string _callBackURL;
+        public AuthController(UserManager<User> userManager, IMapper mapper, IOptions<JwtBearer> jwt, IMediator mediator, IOptions<EmailSender> mail, ILoggerServices logger, IOptions<CallBackURL> callBackURL) 
         {
             _tokenServices = new TokenManager(jwt,userManager);
             _mapper = mapper;
@@ -44,6 +45,7 @@ namespace API.Controllers
             _mailServices = new MailManager(mail,userManager);
             _phoneServices = new PhoneManager();
             _logger = logger;
+            _callBackURL = callBackURL.Value.URL;
         }
 
 
@@ -106,12 +108,12 @@ namespace API.Controllers
                             Action_type = Action_Type.APIResponse,
                             Target_table = "User",
                             loglevel_id = 3,
-                            user_id = userResponse.user.Id
+                            user_id = userResponse.user?.Id
                         }, null);
                         return BadRequest(new { message = "User is suspended!!" });
                     }
                     var token = await _tokenServices.CreateTokenJWT(userResponse.user);
-                    var roleResponse = await _mediator.Send(new GetUserRoleRequest(userResponse.user.Id));
+                    var roleResponse = await _mediator.Send(new GetUserRoleRequest(userResponse.user?.Id));
                     if (roleResponse.error == false)
                     {
                         var refleshtoken = _tokenServices.GenerateRefreshToken();
@@ -122,7 +124,7 @@ namespace API.Controllers
                             Action_type = Action_Type.Login,
                             Target_table = "User",
                             loglevel_id = 1,
-                            user_id = userResponse.user.Id
+                            user_id = userResponse.user?.Id
                         }, null);
                         return Ok(new AuthenticationModel
                         {
@@ -136,12 +138,12 @@ namespace API.Controllers
                 }
                 await _logger.Logger(new LogDTO
                 {
-                    Message = userResponse.response.Message,
+                    Message = userResponse.response?.Message + " for "+loginAccountDTO.Email,
                     Action_type = Action_Type.APIResponse,
                     Target_table = "User",
-                    loglevel_id = userResponse.response.Exception.ExceptionLevel,
-                    user_id = userResponse.user.Id
-                }, userResponse.response.Exception);
+                    loglevel_id = userResponse.response?.Exception?.ExceptionLevel,
+                    user_id = userResponse.user?.Id
+                }, userResponse.response?.Exception);
                 return BadRequest(userResponse.response);
             }
             await _logger.Logger(new LogDTO
@@ -334,30 +336,42 @@ namespace API.Controllers
                 loglevel_id = 1
             }, null);
 
-            var mailResponse = await _mediator.Send(new GetUserByEmailRequest(email));
-            if (mailResponse.error == true)
+            var userResponse = await _mediator.Send(new GetUserByEmailRequest(email));
+            if (userResponse.error == true)
             {
                 await _logger.Logger(new LogDTO
                 {
-                    Message = mailResponse.response.Message,
+                    Message = userResponse.response.Message,
                     Action_type = Action_Type.APIResponse,
                     Target_table = "User",
-                    loglevel_id = mailResponse.response.Exception.ExceptionLevel,
-                    user_id = mailResponse.user.Id ?? null
-                }, mailResponse.response.Exception);
-                return BadRequest(mailResponse.response);
+                    loglevel_id = userResponse.response?.Exception?.ExceptionLevel,
+                    user_id = userResponse.user?.Id ?? null
+                }, userResponse.response?.Exception);
+                return BadRequest(userResponse.response);
             }
-            var emailConfUrl = await _tokenServices.CreateTokenEmailConfirm(mailResponse.user);
-            var callback_url = "https://localhost:7257/EmailVerification?userId=" + mailResponse.user.Id + "&emailConfUrl=" + emailConfUrl;
+            var emailConfUrl = await _tokenServices.CreateTokenEmailConfirm(userResponse.user);
+            var callback_url = _callBackURL.ToString() + userResponse.user?.Id + "&emailConfUrl=" + emailConfUrl;
 
-            await _mailServices.SendingEmail(email, callback_url);
+            var mailResponse = await _mailServices.SendingEmail(email, callback_url);
+            if(mailResponse != null)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = mailResponse.Message,
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "User",
+                    loglevel_id = mailResponse.Exception.ExceptionLevel,
+                    user_id = userResponse.user?.Id
+                }, mailResponse.Exception);
+                return BadRequest(mailResponse);
+            }
             await _logger.Logger(new LogDTO
             {
                 Message = "Email verification code sended!!!",
                 Action_type = Action_Type.APIResponse,
                 Target_table = "User",
                 loglevel_id = 1,
-                user_id = mailResponse.user.Id
+                user_id = userResponse.user?.Id
             }, null);
             return Ok(new { message = "Email verification code sended!!!" });
         }
@@ -373,7 +387,19 @@ namespace API.Controllers
                 loglevel_id = 1,
                 user_id = userId,
             }, null);
-            await _mailServices.ConfirmEmail(userId, emailConfUrl);
+            var mailResponse = await _mailServices.ConfirmEmail(userId, emailConfUrl);
+            if (mailResponse != null)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = mailResponse.Message,
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "User",
+                    loglevel_id = mailResponse.Exception.ExceptionLevel,
+                    user_id = userId
+                }, mailResponse.Exception);
+                return BadRequest(mailResponse);
+            }
             await _logger.Logger(new LogDTO
             {
                 Message = "Email Verificated!",
@@ -405,7 +431,7 @@ namespace API.Controllers
                     Action_type = Action_Type.APIResponse,
                     Target_table = "User",
                     loglevel_id = 3,
-                    user_id = result.user.Id ?? null
+                    user_id = result.user?.Id
                 }, null);
                 if (result.user.IsSuspended)
                 {
@@ -435,7 +461,7 @@ namespace API.Controllers
                 Action_type = Action_Type.APIResponse,
                 Target_table = "User",
                 loglevel_id = 3,
-                user_id = result.user.Id
+                user_id = result.user?.Id ?? null
             }, null);
             return BadRequest(new { message = "Token is not valid!!!" });
         }

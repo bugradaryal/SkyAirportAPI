@@ -129,7 +129,7 @@ namespace DataAccess.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Model = table.Column<string>(type: "text", maxLength: 64, nullable: false),
-                    Last_Maintenance_Date = table.Column<DateTimeOffset>(type: "TIMESTAMP WITH TIME ZONE", nullable: false),
+                    Last_Maintenance_Date = table.Column<DateTimeOffset>(type: "TIMESTAMP WITH TIME ZONE", nullable: true),
                     Fuel_Capacity = table.Column<decimal>(type: "numeric(7,1)", nullable: false),
                     Max_Altitude = table.Column<decimal>(type: "numeric(8,1)", nullable: false),
                     Engine_Power = table.Column<int>(type: "integer", nullable: false),
@@ -216,28 +216,6 @@ namespace DataAccess.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AdminOperations",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Operation_type = table.Column<string>(type: "text", nullable: false),
-                    Target_table = table.Column<string>(type: "text", maxLength: 64, nullable: false),
-                    Target_id = table.Column<int>(type: "integer", nullable: false),
-                    Operation_Date = table.Column<DateTime>(type: "TIMESTAMP WITH TIME ZONE", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    user_id = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AdminOperations", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_AdminOperations_AspNetUsers_user_id",
-                        column: x => x.user_id,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -335,9 +313,9 @@ namespace DataAccess.Migrations
                     Message = table.Column<string>(type: "text", maxLength: 5096, nullable: false),
                     Action_type = table.Column<string>(type: "text", nullable: false),
                     Target_table = table.Column<string>(type: "text", maxLength: 64, nullable: false, defaultValue: "Unknown"),
-                    AdditionalData = table.Column<string>(type: "jsonb", nullable: false),
-                    user_id = table.Column<string>(type: "text", nullable: false),
-                    loglevel_id = table.Column<int>(type: "integer", nullable: false),
+                    AdditionalData = table.Column<string>(type: "jsonb", nullable: true),
+                    user_id = table.Column<string>(type: "text", nullable: true),
+                    loglevel_id = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
                     userId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -520,8 +498,8 @@ namespace DataAccess.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "3d722035-e68b-449c-8a00-002b6d1c1a19", null, "Administrator", "ADMİNİSTRATOR" },
-                    { "d8c80a9c-2624-4dee-b598-a45e74ac9954", null, "User", "USER" }
+                    { "66d76006-a7fb-402e-a656-d25a58316ad6", null, "Administrator", "ADMİNİSTRATOR" },
+                    { "b34fad37-8dde-4371-b18b-d34967e2b0b3", null, "User", "USER" }
                 });
 
             migrationBuilder.InsertData(
@@ -538,11 +516,6 @@ namespace DataAccess.Migrations
                     { 7, "Alert" },
                     { 8, "Emergency" }
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AdminOperations_user_id",
-                table: "AdminOperations",
-                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Aircrafts_aircraftStatus_id",
@@ -693,9 +666,6 @@ namespace DataAccess.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "AdminOperations");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 

@@ -10,6 +10,7 @@ using DTO;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Account.Queries.Login
 {
@@ -30,23 +31,23 @@ namespace Business.Features.Account.Queries.Login
                 string password = request.loginAccountDTO.Password;
                 User user = await _userManager.FindByEmailAsync(request.loginAccountDTO.Email);
                 if (user == null)
-                    return new LoginResponse { response = { Message = "User not exist!" } };
+                    return new LoginResponse { response = new ResponseModel { Message = "User not exist!" } };
                 if (user.IsSuspended)
-                    return new LoginResponse { response = { Message = "User's account suspended!"} };
+                    return new LoginResponse { response = new ResponseModel { Message = "User's account suspended!"} };
                 var result = await _signInManager.PasswordSignInAsync(user, request.loginAccountDTO.Password, false, lockoutOnFailure: true);
                 if (result.Succeeded)
                     return new LoginResponse { user = user, error = false };
                 else if (result.IsLockedOut)
-                    return new LoginResponse { response = { Message = "Account is locked. Try few minutes later" } };
+                    return new LoginResponse { response = new ResponseModel { Message = "Account is locked. Try few minutes later" } };
                 else if (result.IsNotAllowed)
-                    return new LoginResponse { response = { Message = "Account in not confirmed!" } };
+                    return new LoginResponse { response = new ResponseModel { Message = "Account in not confirmed!" } };
                 else
-                    return new LoginResponse { response = { Message = "Invalid username or password." } };
+                    return new LoginResponse { response = new ResponseModel { Message = "Invalid username or password." } };
 
             }
             catch (Exception ex)
             {
-                return new LoginResponse { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
+                return new LoginResponse { response = new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
             }
         }
     }

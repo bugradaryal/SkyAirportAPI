@@ -70,7 +70,7 @@ namespace API.Controllers
                 Target_table = "OperationalDelay",
                 loglevel_id = 1
             }, null);
-            return Ok(getAllRepository.data);
+            return Ok(getAllRepository.entity);
         }
 
 
@@ -104,14 +104,14 @@ namespace API.Controllers
                     Message = getAllResponse.response.Message,
                     Action_type = Action_Type.APIResponse,
                     Target_table = "OperationalDelay",
-                    loglevel_id = getAllResponse.response.Exception.ExceptionLevel,
-                }, getAllResponse.response.Exception);
+                    loglevel_id = getAllResponse.response?.Exception?.ExceptionLevel,
+                }, getAllResponse.response?.Exception);
                 return BadRequest(getAllResponse.response);
             }
 
             await _logger.Logger(new LogDTO
             {
-                Message = "GetAllOperationalDelayByFlightId action done!",
+                Message = "GetAllOperationalDelayByFlightId action done for {"+id+"}",
                 Action_type = Action_Type.APIResponse,
                 Target_table = "OperationalDelay",
                 loglevel_id = 1
@@ -149,14 +149,14 @@ namespace API.Controllers
                     Message = getByIdResponse.response.Message,
                     Action_type = Action_Type.APIResponse,
                     Target_table = "OperationalDelay",
-                    loglevel_id = getByIdResponse.response.Exception.ExceptionLevel,
-                }, getByIdResponse.response.Exception);
+                    loglevel_id = getByIdResponse.response?.Exception?.ExceptionLevel,
+                }, getByIdResponse.response?.Exception);
                 return BadRequest(getByIdResponse.response);
             }
 
             await _logger.Logger(new LogDTO
             {
-                Message = "GetOperationalDelayById action done!",
+                Message = "GetOperationalDelayById action done {"+id+"}",
                 Action_type = Action_Type.APIResponse,
                 Target_table = "OperationalDelay",
                 loglevel_id = 1
@@ -266,7 +266,7 @@ namespace API.Controllers
 
             await _logger.Logger(new LogDTO
             {
-                Message = "OperationalDelay deleted!",
+                Message = "OperationalDelay deleted for {"+id+"}",
                 Action_type = Action_Type.Delete,
                 Target_table = "OperationalDelay",
                 loglevel_id = 1,
@@ -297,6 +297,7 @@ namespace API.Controllers
                     loglevel_id = 3,
                     user_id = validateTokenDTO.user.Id ?? null
                 }, null);
+                return Unauthorized(new { message = "Token not valid!!" });
             }
             var data = await _mediator.Send(new GenericGetByIdRequest<OperationalDelay>(operationDelayDTO.id));
             var personal = _mapper.Map<OperationalDelay, OperationalDelayUpdateDTO>(operationDelayDTO, data.entity);
@@ -316,7 +317,7 @@ namespace API.Controllers
 
             await _logger.Logger(new LogDTO
             {
-                Message = "OperationalDelay updated!",
+                Message = "OperationalDelay updated for {"+operationDelayDTO.id+"}",
                 Action_type = Action_Type.Update,
                 Target_table = "OperationalDelay",
                 loglevel_id = 1,

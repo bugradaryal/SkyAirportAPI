@@ -9,6 +9,7 @@ using Business.Features.Generic.Queries.GetAll;
 using DataAccess.Abstract;
 using DataAccess.Concrete.Generic;
 using MediatR;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Generic.Queries.GetById
 {
@@ -28,7 +29,7 @@ namespace Business.Features.Generic.Queries.GetById
             }
             catch (Exception ex)
             {
-                return new GenericGetByIdResponse<TEntity> { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) } };
+                return new GenericGetByIdResponse<TEntity> { response = new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) } };
             }
         }
     }

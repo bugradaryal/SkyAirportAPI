@@ -10,7 +10,7 @@ namespace Entities
     {
         public int id { get; set; }
         public string Model { get; set; }
-        public DateTimeOffset Last_Maintenance_Date { get; set; }
+        public DateTimeOffset? Last_Maintenance_Date { get; set; }
         public decimal Fuel_Capacity { get; set; }
         public decimal Max_Altitude { get; set; }
         public int Engine_Power { get; set; }

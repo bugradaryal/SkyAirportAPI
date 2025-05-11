@@ -65,6 +65,7 @@ namespace API
 
             builder.Services.Configure<JwtBearer>(builder.Configuration.GetSection("JwtBearer"));
             builder.Services.Configure<EmailSender>(builder.Configuration.GetSection("EmailSender"));
+            builder.Services.Configure<CallBackURL>(builder.Configuration.GetSection("CallBackURL"));
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {

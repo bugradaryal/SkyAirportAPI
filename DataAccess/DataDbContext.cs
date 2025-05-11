@@ -27,7 +27,6 @@ namespace DataAccess
         public DbSet<Airport> Airports { get; set; }
         public DbSet<Airline> Airlines { get; set; }
         public DbSet<Aircraft> Aircrafts { get; set; }
-        public DbSet<AdminOperation> AdminOperations { get; set; }
         public DbSet<LogEntry> LogEntrys { get; set; }
         public DbSet<LogLevel> LogLevels { get; set; }
         public DbSet<AircraftStatus> AircraftStatuses { get; set; }
@@ -118,7 +117,7 @@ namespace DataAccess
             ////////////////////////////
             modelBuilder.Entity<Aircraft>().HasKey(x => x.id);
             modelBuilder.Entity<Aircraft>().Property(x => x.Model).HasColumnType("text").IsRequired().HasMaxLength(64);
-            modelBuilder.Entity<Aircraft>().Property(x => x.Last_Maintenance_Date).HasColumnType("TIMESTAMP WITH TIME ZONE");
+            modelBuilder.Entity<Aircraft>().Property(x => x.Last_Maintenance_Date).HasColumnType("TIMESTAMP WITH TIME ZONE").IsRequired(false);
             modelBuilder.Entity<Aircraft>().Property(x => x.Fuel_Capacity).HasColumnType("DECIMAL(7,1)").IsRequired();
             modelBuilder.Entity<Aircraft>().Property(x => x.Max_Altitude).HasColumnType("DECIMAL(8,1)").IsRequired();
             modelBuilder.Entity<Aircraft>().Property(x => x.Engine_Power).IsRequired();
@@ -135,16 +134,9 @@ namespace DataAccess
                 .HasConversion(
                         v => JsonConvert.SerializeObject(v),  // List<string> → JSON string
                         v => JsonConvert.DeserializeObject<List<string>>(v) ?? new List<string>()) // JSON string → List<string>
-                .HasColumnType("jsonb"); // PostgreSQL JSONB tipi
-            modelBuilder.Entity<LogEntry>().Property(x => x.user_id).IsRequired();
-            modelBuilder.Entity<LogEntry>().Property(x => x.loglevel_id).IsRequired();                               
-            ////////////////////////////
-            modelBuilder.Entity<AdminOperation>().HasKey(x => x.id);
-            modelBuilder.Entity<AdminOperation>().Property(x => x.Operation_type).HasConversion(new EnumToStringConverter<Operation_Type>()).IsRequired();
-            modelBuilder.Entity<AdminOperation>().Property(x => x.Target_table).HasColumnType("text").IsRequired().HasMaxLength(64);
-            modelBuilder.Entity<AdminOperation>().Property(x => x.Target_id).IsRequired();
-            modelBuilder.Entity<AdminOperation>().Property(x => x.Operation_Date).HasColumnType("TIMESTAMP WITH TIME ZONE").HasDefaultValueSql("CURRENT_TIMESTAMP");
-            modelBuilder.Entity<AdminOperation>().Property(x => x.user_id).IsRequired();
+                .HasColumnType("jsonb").IsRequired(false); // PostgreSQL JSONB tipi
+            modelBuilder.Entity<LogEntry>().Property(x => x.user_id).IsRequired(false);
+            modelBuilder.Entity<LogEntry>().Property(x => x.loglevel_id).HasDefaultValue(1);                               
             ////////////////////////////
             modelBuilder.Entity<LogLevel>().HasKey(x => x.id);
             modelBuilder.Entity<LogLevel>().Property(x => x.Level).HasColumnType("text").IsRequired().HasMaxLength(64);
@@ -155,7 +147,6 @@ namespace DataAccess
             modelBuilder.Entity<AircraftStatus>().HasIndex(x => x.Status).IsUnique();
             ////////////////////////////
             modelBuilder.Entity<Ticket>().HasOne<User>(s => s.user).WithMany(g => g.ticket).HasForeignKey(s => s.user_id).OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<AdminOperation>().HasOne<User>(s => s.user).WithMany(g => g.adminOperation).HasForeignKey(s => s.user_id).OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Seat>().HasOne<Ticket>(s => s.ticket).WithOne(g => g.seat).HasForeignKey<Ticket>(s => s.seat_id).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Seat>().HasOne<Flight>(s => s.flight).WithMany(g => g.seat).HasForeignKey(s => s.flight_id).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Flight_Aircraft>().HasOne<Flight>(s => s.flight).WithMany(g => g.flight_Aircraft).HasForeignKey(s => s.flight_id).OnDelete(DeleteBehavior.Cascade);

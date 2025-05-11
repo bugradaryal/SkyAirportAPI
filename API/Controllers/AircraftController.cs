@@ -56,8 +56,8 @@ namespace API.Controllers
                     Message = getAllResponse.response.Message,
                     Action_type = Action_Type.APIResponse,
                     Target_table = "Aircraft",
-                    loglevel_id = getAllResponse.response.Exception.ExceptionLevel,
-                }, getAllResponse.response.Exception);
+                    loglevel_id = getAllResponse.response?.Exception?.ExceptionLevel,
+                }, getAllResponse.response?.Exception);
                 return BadRequest(getAllResponse.response);
             }
             await _logger.Logger(new LogDTO
@@ -100,8 +100,8 @@ namespace API.Controllers
                     Message = getByIdResponse.response.Message,
                     Action_type = Action_Type.APIResponse,
                     Target_table = "Aircraft",
-                    loglevel_id = getByIdResponse.response.Exception.ExceptionLevel,
-                }, getByIdResponse.response.Exception);
+                    loglevel_id = getByIdResponse.response?.Exception?.ExceptionLevel,
+                }, getByIdResponse.response?.Exception);
                 return BadRequest(getByIdResponse.response);
             }
             await _logger.Logger(new LogDTO

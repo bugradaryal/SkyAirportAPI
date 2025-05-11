@@ -10,8 +10,8 @@ namespace Business.Features.Aircraft.Queries.GetAircraftById
 {
     public class GetAircraftByIdResponse
     {
-        public List<Entities.Aircraft> entity { get; set; }
-        public ResponseModel response { get; set; }
+        public List<Entities.Aircraft>? entity { get; set; }
+        public ResponseModel? response { get; set; }
         public bool error { get; set; } = true;
     }
 }

@@ -60,6 +60,7 @@ namespace API.Controllers
                     loglevel_id = 3,
                     user_id = validateTokenDTO.user.Id ?? null
                 }, null);
+                return Unauthorized(new { message = "Token not valid!!" });
             }
             var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Personal>());
             if (getAllRepository.error == true)
@@ -83,7 +84,7 @@ namespace API.Controllers
                 loglevel_id = 1,
                 user_id = validateTokenDTO.user.Id
             }, null);
-            return Ok(getAllRepository.data);
+            return Ok(getAllRepository.entity);
         }
 
 
@@ -108,6 +109,7 @@ namespace API.Controllers
                     loglevel_id = 3,
                     user_id = validateTokenDTO.user.Id ?? null
                 }, null);
+                return Unauthorized(new { message = "Token not valid!!" });
             }
             var getAllResponse = await _mediator.Send(new GetAllPersonalByAirportIdRequest(id));
             if (getAllResponse.error)
@@ -117,15 +119,15 @@ namespace API.Controllers
                     Message = getAllResponse.response.Message,
                     Action_type = Action_Type.APIResponse,
                     Target_table = "Personal",
-                    loglevel_id = getAllResponse.response.Exception.ExceptionLevel,
-                    user_id = validateTokenDTO.user.Id ?? null
-                }, getAllResponse.response.Exception);
-                return BadRequest(getAllResponse.response.Exception);
+                    loglevel_id = getAllResponse.response?.Exception?.ExceptionLevel,
+                    user_id = validateTokenDTO.user.Id
+                }, getAllResponse.response?.Exception);
+                return BadRequest(getAllResponse.response);
             }
 
             await _logger.Logger(new LogDTO
             {
-                Message = "GetAllPersonalsByAirportId action done!",
+                Message = "GetAllPersonalsByAirportId action done for {"+id+"}",
                 Action_type = Action_Type.Update,
                 Target_table = "Personal",
                 loglevel_id = 1,
@@ -144,6 +146,17 @@ namespace API.Controllers
                 Target_table = "Personal",
                 loglevel_id = 1,
             }, null);
+            if (id == null || id == 0)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = "Invalid Id!!",
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "Personal",
+                    loglevel_id = 3
+                }, null);
+                return BadRequest(new { message = "Invalid Id!!" });
+            }
             var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
             if (!validateTokenDTO.IsTokenValid)
             {
@@ -155,18 +168,7 @@ namespace API.Controllers
                     loglevel_id = 3,
                     user_id = validateTokenDTO.user.Id ?? null
                 }, null);
-            }
-            if (id == null || id == 0)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = "Invalid Id!!",
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "Personal",
-                    loglevel_id = 3,
-                    user_id = validateTokenDTO.user.Id
-                }, null);
-                return BadRequest(new { message = "Invalid Id!!" });
+                return Unauthorized(new { message = "Token not valid!!" });
             }
             var getByIdResponse = await _mediator.Send(new GenericGetByIdRequest<Personal>(id));
             if (getByIdResponse.error)
@@ -176,15 +178,15 @@ namespace API.Controllers
                     Message = getByIdResponse.response.Message,
                     Action_type = Action_Type.APIResponse,
                     Target_table = "Personal",
-                    loglevel_id = getByIdResponse.response.Exception.ExceptionLevel,
+                    loglevel_id = getByIdResponse.response?.Exception?.ExceptionLevel,
                     user_id = validateTokenDTO.user.Id
-                }, getByIdResponse.response.Exception);
+                }, getByIdResponse.response?.Exception);
                 return BadRequest(getByIdResponse.response);
             }
 
             await _logger.Logger(new LogDTO
             {
-                Message = "GetPersonalById action done!",
+                Message = "GetPersonalById action done for {"+id+"}",
                 Action_type = Action_Type.APIResponse,
                 Target_table = "Personal",
                 loglevel_id = 1,
@@ -214,6 +216,7 @@ namespace API.Controllers
                     loglevel_id = 3,
                     user_id = validateTokenDTO.user.Id ?? null
                 }, null);
+                return Unauthorized(new { message = "Token not valid!!" });
             }
             var personal = _mapper.Map<Personal, PersonalAddDTO>(personalDTO);
             var addResponse = await _mediator.Send(new GenericAddRequest<Personal>(personal));
@@ -251,6 +254,17 @@ namespace API.Controllers
                 Target_table = "Personal",
                 loglevel_id = 1,
             }, null);
+            if (id == null || id == 0)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = "Invalid Id!!",
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "Personal",
+                    loglevel_id = 3
+                }, null);
+                return BadRequest(new { message = "Invalid Id!!" });
+            }
             var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
             if (!validateTokenDTO.IsTokenValid)
             {
@@ -262,18 +276,7 @@ namespace API.Controllers
                     loglevel_id = 3,
                     user_id = validateTokenDTO.user.Id ?? null
                 }, null);
-            }
-            if (id == null || id == 0)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = "Invalid Id!!",
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "Personal",
-                    loglevel_id = 3,
-                    user_id= validateTokenDTO.user.Id
-                }, null);
-                return BadRequest(new { message = "Invalid Id!!" });
+                return Unauthorized(new { message = "Token not valid!!" });
             }
             var deleteResponse = await _mediator.Send(new GenericDeleteRequest<Personal>(id));
             if (deleteResponse != null)
@@ -291,7 +294,7 @@ namespace API.Controllers
 
             await _logger.Logger(new LogDTO
             {
-                Message = "Personal deleted!",
+                Message = "Personal deleted for {"+id+"}",
                 Action_type = Action_Type.Delete,
                 Target_table = "Personal",
                 loglevel_id = 1,
@@ -340,7 +343,7 @@ namespace API.Controllers
 
             await _logger.Logger(new LogDTO
             {
-                Message = "Personal Updated!",
+                Message = "Personal Updated for {"+ personalDTO.id+"}",
                 Action_type = Action_Type.Update,
                 Target_table = "Personal",
                 loglevel_id = 1,

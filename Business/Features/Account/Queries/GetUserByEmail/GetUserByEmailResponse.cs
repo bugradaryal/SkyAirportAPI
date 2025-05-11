@@ -11,8 +11,8 @@ namespace Business.Features.Account.Queries.GetUserByEmail
 {
     public class GetUserByEmailResponse
     {
-        public User user { get; set; }
-        public ResponseModel response { get; set; }
+        public User? user { get; set; }
+        public ResponseModel? response { get; set; }
         public bool error { get; set; } = true;
     }
 }

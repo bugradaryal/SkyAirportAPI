@@ -12,6 +12,7 @@ using DataAccess.Concrete.Generic;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Utilitys.ResponseHandler;
 
 namespace Business.Features.Generic.Queries.GetAll
 {
@@ -27,11 +28,11 @@ namespace Business.Features.Generic.Queries.GetAll
         {
             try
             {
-                return new GenericGetAllResponse<TEntity> { data = await _repository.GetAll(), error = false };
+                return new GenericGetAllResponse<TEntity> { entity = await _repository.GetAll(), error = false };
             }
             catch (Exception ex)
             {
-                return new GenericGetAllResponse<TEntity> { response = { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) } };
+                return new GenericGetAllResponse<TEntity> { response = new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) } };
             }
         }
     }

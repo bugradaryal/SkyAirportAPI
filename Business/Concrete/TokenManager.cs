@@ -87,7 +87,7 @@ namespace Business.Concrete
                             return new ValidateTokenDTO { user = claimuser2, roles = userRole2.ToList(), IsTokenValid = true };
                         }
                     }
-                    throw new CustomException("Reflesh token corrupted!!",(int)HttpStatusCode.BadRequest);
+                    throw new CustomException("Reflesh token corrupted!!",3,(int)HttpStatusCode.BadRequest);
                 }
                 return new ValidateTokenDTO { user = null, roles = null, IsTokenValid = false };
             }
@@ -174,7 +174,7 @@ namespace Business.Concrete
                 var result = await _userManager.SetAuthenticationTokenAsync(user, "Default", "RefreshToken", refreshToken);
                 if (!result.Succeeded)
                 {
-                    throw new CustomException("Refresh token save failed.", (int)HttpStatusCode.BadRequest);
+                    throw new CustomException("Refresh token save failed.", 4, (int)HttpStatusCode.BadRequest);
                 }
             }
             catch (Exception ex)

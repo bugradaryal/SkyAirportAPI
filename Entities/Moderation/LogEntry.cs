@@ -18,7 +18,7 @@ namespace Entities.Moderation
         public string Target_table { get; set; }
         public List<string> AdditionalData { get; set; } //JSON
 
-        public string user_id { get; set; }
+        public string? user_id { get; set; }
         public int loglevel_id { get; set; }
         public User user { get; set; }
         public LogLevel logLevel { get; set; }
