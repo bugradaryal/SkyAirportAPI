@@ -15,6 +15,7 @@ namespace DataAccess.SeedData
         {
             entity.HasData(
                 new IdentityRole { Name = "Administrator", NormalizedName = "Administrator".ToUpper() },
+                new IdentityRole { Name = "Support", NormalizedName = "Support".ToUpper() },
                 new IdentityRole { Name = "User", NormalizedName = "User".ToUpper() }
             );
         }

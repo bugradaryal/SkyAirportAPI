@@ -29,6 +29,7 @@ using System.Diagnostics;
 using Business.Abstract;
 using Business.Concrete;
 using Microsoft.AspNetCore.Mvc;
+using Bussines.Hubs;
 
 namespace API
 {
@@ -213,7 +214,7 @@ namespace API
                     return new BadRequestObjectResult(problemDetails);
                 };
             });
-
+            builder.Services.AddSignalR();
             var app = builder.Build();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -237,7 +238,7 @@ namespace API
                        .WithExposedHeaders("Authorization", "RefreshToken"));
 
             app.MapControllers();
-
+            app.MapHub<SignalRHub>("/signalrhub");
             app.Run();
         }
     }

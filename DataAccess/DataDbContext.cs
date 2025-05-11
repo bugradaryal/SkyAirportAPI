@@ -30,6 +30,7 @@ namespace DataAccess
         public DbSet<LogEntry> LogEntrys { get; set; }
         public DbSet<LogLevel> LogLevels { get; set; }
         public DbSet<AircraftStatus> AircraftStatuses { get; set; }
+        public DbSet<SupportTicket> SupportTickets { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
