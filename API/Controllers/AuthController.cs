@@ -4,11 +4,16 @@ using Business.Features.Account.Commands.ChangePassword;
 using Business.Features.Account.Commands.CreateAccount;
 using Business.Features.Account.Commands.DeleteAccount;
 using Business.Features.Account.Commands.UpdateAccount;
+using Business.Features.Account.Commands.AddRoleToUser;
+using Business.Features.Account.Commands.RemoveRoleFromUser;
 using Business.Features.Account.Queries.GetUserByEmail;
 using Business.Features.Account.Queries.GetUserRole;
 using Business.Features.Account.Queries.Login;
+using Business.Features.Generic.Commands.Update;
+using Business.Features.Generic.Queries.GetById;
 using DTO;
 using DTO.Account;
+using DTO.Airport;
 using Entities;
 using Entities.Configuration;
 using Entities.Enums;
@@ -24,6 +29,7 @@ using Utilitys.ExceptionHandler;
 using Utilitys.Logger;
 using Utilitys.MailServices;
 using Utilitys.Mapper;
+using Business.Features.Account.Commands.SuspendUser;
 
 namespace API.Controllers
 {
@@ -192,7 +198,7 @@ namespace API.Controllers
                         Message = deleteResponse.Message,
                         Action_type = Action_Type.APIResponse,
                         Target_table = "User",
-                        loglevel_id = deleteResponse.Exception.ExceptionLevel,
+                        loglevel_id = deleteResponse.Exception?.ExceptionLevel,
                         user_id = userId
                     }, deleteResponse.Exception);
                     return BadRequest(deleteResponse);
@@ -245,7 +251,7 @@ namespace API.Controllers
                         Message = updateResponse.Message,
                         Action_type = Action_Type.APIResponse,
                         Target_table = "User",
-                        loglevel_id = updateResponse.Exception.ExceptionLevel,
+                        loglevel_id = updateResponse.Exception?.ExceptionLevel,
                         user_id=user.Id
                     }, updateResponse.Exception);
                     return BadRequest(updateResponse);
@@ -412,7 +418,7 @@ namespace API.Controllers
         }
 
         [HttpPost("ValidateToken")]
-        [Authorize]
+        [Authorize(Policy = "IsUserSuspended")]
         public async Task<IActionResult> ValidateToken()
         {
             await _logger.Logger(new LogDTO
@@ -464,6 +470,154 @@ namespace API.Controllers
                 user_id = result.user?.Id ?? null
             }, null);
             return BadRequest(new { message = "Token is not valid!!!" });
+        }
+
+
+        [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
+        [HttpPost("AddRoleToUser")]
+        public async Task<IActionResult> AddRoleToUser([FromBody] RoleManagerDTO roleDTO)
+        {
+            await _logger.Logger(new LogDTO
+            {
+                Message = "AddRoleToUser endpoint called for {" + roleDTO.userId ?? null +"}",
+                Action_type = Action_Type.APIRequest,
+                Target_table = "User",
+                loglevel_id = 1,
+            }, null);
+            var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
+            if (!validateTokenDTO.IsTokenValid)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = "Token is not valid!",
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "User",
+                    loglevel_id = 3,
+                    user_id = validateTokenDTO.user.Id ?? null
+                }, null);
+                return Unauthorized(new { message = "Token not valid!!" });
+            }
+            var roleResponse = await _mediator.Send(new AddRoleToUserRequest(roleDTO));
+            if (roleResponse != null)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = roleResponse.Message,
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "User",
+                    loglevel_id = roleResponse.Exception?.ExceptionLevel,
+                    user_id = validateTokenDTO.user?.Id
+                }, roleResponse.Exception);
+                return BadRequest(roleResponse);
+            }
+
+            await _logger.Logger(new LogDTO
+            {
+                Message = "Role added to user",
+                Action_type = Action_Type.APIResponse,
+                Target_table = "User",
+                loglevel_id = 1,
+                user_id = validateTokenDTO.user.Id
+            }, null);
+            return Ok(new { message = "Role added to user" });
+        }
+
+        [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
+        [HttpPost("RemoveRolFromUser")]
+        public async Task<IActionResult> RemoveRolFromUser([FromBody] RoleManagerDTO roleDTO)
+        {
+            await _logger.Logger(new LogDTO
+            {
+                Message = "RemoveRolFromUser endpoint called for {" + roleDTO.userId ?? null + "}",
+                Action_type = Action_Type.APIRequest,
+                Target_table = "User",
+                loglevel_id = 1,
+            }, null);
+            var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
+            if (!validateTokenDTO.IsTokenValid)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = "Token is not valid!",
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "User",
+                    loglevel_id = 3,
+                    user_id = validateTokenDTO.user.Id ?? null
+                }, null);
+                return Unauthorized(new { message = "Token not valid!!" });
+            }
+            var roleResponse = await _mediator.Send(new RemoveRoleFromUserRequest(roleDTO));
+            if (roleResponse != null)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = roleResponse.Message,
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "User",
+                    loglevel_id = roleResponse.Exception?.ExceptionLevel,
+                    user_id = validateTokenDTO.user?.Id
+                }, roleResponse.Exception);
+                return BadRequest(roleResponse);
+            }
+
+            await _logger.Logger(new LogDTO
+            {
+                Message = "Role removed from user",
+                Action_type = Action_Type.APIResponse,
+                Target_table = "User",
+                loglevel_id = 1,
+                user_id = validateTokenDTO.user.Id
+            }, null);
+            return Ok(new { message = "Role removed from user" });
+        }
+
+        [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
+        [HttpPost("SuspendUser")]
+        public async Task<IActionResult> SuspendUser([FromQuery] string userId)
+        {
+            await _logger.Logger(new LogDTO
+            {
+                Message = "SuspendUser endpoint called for {" + userId ?? null + "}",
+                Action_type = Action_Type.APIRequest,
+                Target_table = "User",
+                loglevel_id = 1,
+            }, null);
+            var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
+            if (!validateTokenDTO.IsTokenValid)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = "Token is not valid!",
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "User",
+                    loglevel_id = 3,
+                    user_id = validateTokenDTO.user.Id ?? null
+                }, null);
+                return Unauthorized(new { message = "Token not valid!!" });
+            }
+            var suspenResponse = await _mediator.Send(new SuspendUserRequest(userId));
+            if (suspenResponse != null)
+            {
+                await _logger.Logger(new LogDTO
+                {
+                    Message = suspenResponse.Message,
+                    Action_type = Action_Type.APIResponse,
+                    Target_table = "User",
+                    loglevel_id = suspenResponse.Exception?.ExceptionLevel,
+                    user_id = validateTokenDTO.user?.Id
+                }, suspenResponse.Exception);
+                return BadRequest(suspenResponse);
+            }
+
+            await _logger.Logger(new LogDTO
+            {
+                Message = "SuspendUser action done!",
+                Action_type = Action_Type.APIResponse,
+                Target_table = "User",
+                loglevel_id = 1,
+                user_id = validateTokenDTO.user.Id
+            }, null);
+            return Ok(new { message = "SuspendUser action done!" });
         }
     }
 }

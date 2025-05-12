@@ -24,7 +24,7 @@ namespace DataAccess.Concrete
             using (var _dbContext = new DataDbContext())
             {
                 var result = await (
-                    from ticket in _dbContext.Tickets
+                    from ticket in _dbContext.OwnedTickets
                     join seat in _dbContext.Seats on ticket.seat_id equals seat.id
                     join flightAircraft in _dbContext.Flight_Aircrafts on seat.flight_id equals flightAircraft.flight_id
                     join aircraft in _dbContext.Aircrafts on flightAircraft.aircraft_id equals aircraft.id

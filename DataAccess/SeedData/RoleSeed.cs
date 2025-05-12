@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Entities.Enums;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -14,9 +15,9 @@ namespace DataAccess.SeedData
         public void Configure(EntityTypeBuilder<IdentityRole> entity)
         {
             entity.HasData(
-                new IdentityRole { Name = "Administrator", NormalizedName = "Administrator".ToUpper() },
-                new IdentityRole { Name = "Support", NormalizedName = "Support".ToUpper() },
-                new IdentityRole { Name = "User", NormalizedName = "User".ToUpper() }
+                new IdentityRole { Name = Roles.Administrator.ToString(), NormalizedName = Roles.Administrator.ToString().ToUpper() },
+                new IdentityRole { Name = Roles.Support.ToString(), NormalizedName = Roles.Support.ToString().ToUpper() },
+                new IdentityRole { Name = Roles.User.ToString(), NormalizedName = Roles.User.ToString().ToUpper() }
             );
         }
     }

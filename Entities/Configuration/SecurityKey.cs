@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Entities.Configuration
 {
-    public class Ticket
+    public class SecurityKey
     {
+        public string ApiKey { get; set; }
     }
 }

@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Entities.Enums
 {
-    public class Ticket
+    public enum Roles
     {
+        User,
+        Support,
+        Administrator
     }
 }

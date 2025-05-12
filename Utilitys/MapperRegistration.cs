@@ -5,15 +5,14 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Utilitys.Mapper;
 
-namespace Utilitys
+namespace Utilitys.Mapper
 {
     public static class MapperRegistration
     {
         public static void AddMapperApplication(this IServiceCollection services)
         {
-            services.AddSingleton<Utilitys.Mapper.IMapper, Utilitys.Mapper.Mapper>();
+            services.AddSingleton<IMapper, Mapper>();
         }
     }
 }

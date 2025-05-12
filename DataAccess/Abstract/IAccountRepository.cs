@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace DataAccess.Abstract
 {
-    public class Ticket
+    public interface IAccountRepository
     {
+        Task SuspendUser(string userId);
     }
 }

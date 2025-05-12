@@ -7,5 +7,5 @@ using MediatR;
 
 namespace Business.Features.Seat.Queries
 {
-    public record GetAllSeatByFlightIdRequest(int id) : IRequest<GetAllSeatByFlightIdResponse>;
+    public record GetAllSupportTicketRequest(int id) : IRequest<GetAllSupportTicketResponse>;
 }

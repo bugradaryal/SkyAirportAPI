@@ -14,10 +14,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Entities.Configuration;
-using Utilitys.Mapper;
 using Microsoft.Extensions.DependencyInjection;
 using Business;
-using Utilitys;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
 using Utilitys.Logger;
@@ -29,7 +27,8 @@ using System.Diagnostics;
 using Business.Abstract;
 using Business.Concrete;
 using Microsoft.AspNetCore.Mvc;
-using Bussines.Hubs;
+using Utilitys;
+using Utilitys.Mapper;
 
 namespace API
 {
@@ -67,6 +66,7 @@ namespace API
             builder.Services.Configure<JwtBearer>(builder.Configuration.GetSection("JwtBearer"));
             builder.Services.Configure<EmailSender>(builder.Configuration.GetSection("EmailSender"));
             builder.Services.Configure<CallBackURL>(builder.Configuration.GetSection("CallBackURL"));
+            builder.Services.Configure<Entities.Configuration.SecurityKey>(builder.Configuration.GetSection("SecurityKey"));
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {
@@ -214,7 +214,7 @@ namespace API
                     return new BadRequestObjectResult(problemDetails);
                 };
             });
-            builder.Services.AddSignalR();
+            //builder.Services.AddSignalR();
             var app = builder.Build();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -229,7 +229,10 @@ namespace API
             app.UseRouting(); 
             app.UseAuthentication();  
             app.UseAuthorization();
-
+            app.UseWhen(context => context.Request.Path.StartsWithSegments("/api"), appBuilder =>
+            {
+                appBuilder.UseMiddleware<ApiKeyMiddleware>();
+            });
             var allowedOrigins = builder.Configuration["CORS:Origin"].ToString();
             app.UseCors(builder =>
                 builder.WithOrigins(allowedOrigins)
@@ -238,7 +241,7 @@ namespace API
                        .WithExposedHeaders("Authorization", "RefreshToken"));
 
             app.MapControllers();
-            app.MapHub<SignalRHub>("/signalrhub");
+            //app.MapHub<SignalRHub>("/signalrhub");
             app.Run();
         }
     }

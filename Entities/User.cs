@@ -19,7 +19,7 @@ namespace Entities
         public DateTimeOffset Uptaded_at { get; set; }
         public string CountryCode { get; set; }
 
-        public ICollection<Ticket> ticket { get; set; }
+        public ICollection<OwnedTicket> ticket { get; set; }
         public ICollection<LogEntry> logEntry { get; set; }
     }
 }

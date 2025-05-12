@@ -14,7 +14,7 @@ using Utilitys.ResponseHandler;
 
 namespace Business.Features.Seat.Queries
 {
-    public class GetAllSeatByFlightIdHandler : IRequestHandler<GetAllSeatByFlightIdRequest,GetAllSeatByFlightIdResponse>
+    public class GetAllSeatByFlightIdHandler : IRequestHandler<GetAllSupportTicketRequest,GetAllSupportTicketResponse>
     {
         private readonly ISeatRepository _seatRepository;
         public GetAllSeatByFlightIdHandler()
@@ -22,16 +22,16 @@ namespace Business.Features.Seat.Queries
             _seatRepository = new SeatRepository();
         }
 
-        public async Task<GetAllSeatByFlightIdResponse> Handle(GetAllSeatByFlightIdRequest request, CancellationToken cancellationToken)
+        public async Task<GetAllSupportTicketResponse> Handle(GetAllSupportTicketRequest request, CancellationToken cancellationToken)
         {
             try
             {
                 var seats = await _seatRepository.GetAllByFlightId(request.id);
-                return new GetAllSeatByFlightIdResponse { entity = seats, error = false };
+                return new GetAllSupportTicketResponse { entity = seats, error = false };
             }
             catch (Exception ex)
             {
-                return new GetAllSeatByFlightIdResponse { response = new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
+                return new GetAllSupportTicketResponse { response = new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
             }
         }
     }

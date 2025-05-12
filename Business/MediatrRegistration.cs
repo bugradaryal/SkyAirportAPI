@@ -14,6 +14,7 @@ using Entities;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Utilitys.ResponseHandler;
+using Entities.Moderation;
 
 namespace Business
 {
@@ -35,7 +36,7 @@ namespace Business
                 typeof(OperationalDelay),
                 typeof(Personal),
                 typeof(Seat),
-                typeof(Ticket)
+                typeof(OwnedTicket)
             };
 
             foreach(var entity in entityTypes)
