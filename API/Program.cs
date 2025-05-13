@@ -231,8 +231,6 @@ namespace API
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-                Process.Start(new ProcessStartInfo("http://localhost:5601") { UseShellExecute = true });
-                Process.Start(new ProcessStartInfo("https://localhost:7257/hangfire") { UseShellExecute = true });
             }
 
             app.UseHttpsRedirection();

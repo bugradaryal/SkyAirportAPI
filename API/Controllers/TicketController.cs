@@ -1,3 +1,4 @@
+using System.Globalization;
 using Business.Abstract;
 using Business.Concrete;
 using Business.Features.Airline.Queries;
@@ -10,6 +11,7 @@ using Business.Features.OwnedTicket.Commands;
 using Business.Features.OwnedTicket.Commands.AddOwnedTicket;
 using Business.Features.OwnedTicket.Commands.DeleteOwnedTicket;
 using Business.Features.OwnedTicket.Commands.UpdateOwnedTicket;
+using Business.Redis;
 using DTO;
 using DTO.Account;
 using DTO.OwnedTicket;
@@ -35,18 +37,20 @@ namespace API.Controllers
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly ITokenServices _tokenServices;
+        private readonly IRedisServices _redisServices;
 
-        public TicketController(IMediator mediator, IMapper mapper, ILoggerServices logger, IOptions<JwtBearer> jwt, UserManager<User> userManager)
+        public TicketController(IMediator mediator, IMapper mapper, ILoggerServices logger, IOptions<JwtBearer> jwt, UserManager<User> userManager, IRedisServices redisServices)
         {
             _mapper = mapper;
             _mediator = mediator;
             _logger = logger;
             _tokenServices = new TokenManager(jwt, userManager);
+            _redisServices = redisServices;
         }
 
         [AllowAnonymous]
         [HttpGet("GetAllTicket")]
-        public async Task<IActionResult> GetAllTicket()
+        public async Task<IActionResult> GetAllTicket([FromQuery]string type = "TRY")
         {
             await _logger.Logger(new LogDTO
             {
@@ -75,12 +79,19 @@ namespace API.Controllers
                 Target_table = "T",
                 loglevel_id = 1
             }, null);
+            if(type != "TRY")
+            {
+                foreach(var item in getAllRepository.entity)
+                {
+                    item.Price = item.Price * decimal.Parse(await _redisServices.GetAsync("forex"),CultureInfo.InvariantCulture);
+                }
+            }
             return Ok(getAllRepository.entity);
         }
 
         [AllowAnonymous]
         [HttpGet("GetTicketById")]
-        public async Task<IActionResult> GetTicketById([FromQuery] int id)
+        public async Task<IActionResult> GetTicketById([FromQuery] int id, [FromQuery] string type)
         {
             await _logger.Logger(new LogDTO
             {

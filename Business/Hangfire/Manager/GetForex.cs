@@ -21,14 +21,19 @@ namespace Business.Hangfire.Manager
         }
         public async Task Run()
         {
-            var list = ForexManager.CurrencyGetter();
+            try{            
+                var list = await ForexManager.CurrencyGetter();
 
-            string redisKey = "forex";
-            var json = JsonConvert.SerializeObject(list, new JsonSerializerSettings
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            });
-            await _redisService.SetAsync(redisKey, json);
+                string redisKey = "forex";
+
+                var json = JsonConvert.SerializeObject(list, new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
+                await _redisService.SetAsync(redisKey, json);
+            }
+            catch(Exception ex) { }
+
         }
     }
 }
