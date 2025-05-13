@@ -59,17 +59,17 @@ namespace API.Controllers
                 Target_table = "Ticket",
                 loglevel_id = 1,
             }, null);
-            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Ticket>());
-            if (getAllRepository.error == true)
+            var getAllResponse = await _mediator.Send(new GenericGetAllRequest<Ticket>());
+            if (getAllResponse.error == true)
             {
                 await _logger.Logger(new LogDTO
                 {
-                    Message = getAllRepository.response.Message,
+                    Message = getAllResponse.response.Message,
                     Action_type = Action_Type.APIRequest,
                     Target_table = "Ticket",
-                    loglevel_id = getAllRepository.response.Exception.ExceptionLevel,
-                }, getAllRepository.response.Exception);
-                return BadRequest(getAllRepository.response);
+                    loglevel_id = getAllResponse.response.Exception.ExceptionLevel,
+                }, getAllResponse.response.Exception);
+                return BadRequest(getAllResponse.response);
             }
 
             await _logger.Logger(new LogDTO
@@ -81,17 +81,17 @@ namespace API.Controllers
             }, null);
             if(type != "TRY")
             {
-                foreach(var item in getAllRepository.entity)
+                foreach(var item in getAllResponse.entity)
                 {
                     item.Price = item.Price * decimal.Parse(await _redisServices.GetAsync("forex"),CultureInfo.InvariantCulture);
                 }
             }
-            return Ok(getAllRepository.entity);
+            return Ok(getAllResponse.entity);
         }
 
         [AllowAnonymous]
         [HttpGet("GetTicketById")]
-        public async Task<IActionResult> GetTicketById([FromQuery] int id, [FromQuery] string type)
+        public async Task<IActionResult> GetTicketById([FromQuery] int id, [FromQuery] string type = "TRY")
         {
             await _logger.Logger(new LogDTO
             {
@@ -123,7 +123,9 @@ namespace API.Controllers
                 }, getAllResponse.response?.Exception);
                 return BadRequest(getAllResponse.response);
             }
-
+            if (type != "TRY")
+                getAllResponse.entity.Price = getAllResponse.entity.Price * decimal.Parse(await _redisServices.GetAsync("forex"), CultureInfo.InvariantCulture);
+  
             await _logger.Logger(new LogDTO
             {
                 Message = "GetTicketById action done for {" + id+"}",

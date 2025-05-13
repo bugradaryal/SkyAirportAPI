@@ -460,26 +460,44 @@ namespace DataAccess.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Price = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
-                    Puchase_date = table.Column<DateTimeOffset>(type: "TIMESTAMP WITH TIME ZONE", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    Baggage_weight = table.Column<decimal>(type: "numeric(8,2)", nullable: false, defaultValue: 0m),
-                    seat_id = table.Column<int>(type: "integer", nullable: false),
-                    user_id = table.Column<string>(type: "text", nullable: false)
+                    seat_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tickets", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Tickets_AspNetUsers_user_id",
+                        name: "FK_Tickets_Seats_seat_id",
+                        column: x => x.seat_id,
+                        principalTable: "Seats",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OwnedTickets",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Puchase_date = table.Column<DateTimeOffset>(type: "TIMESTAMP WITH TIME ZONE", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    Baggage_weight = table.Column<decimal>(type: "numeric(8,2)", nullable: false, defaultValue: 0m),
+                    user_id = table.Column<string>(type: "text", nullable: false),
+                    ticket_id = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OwnedTickets", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_OwnedTickets_AspNetUsers_user_id",
                         column: x => x.user_id,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Tickets_Seats_seat_id",
-                        column: x => x.seat_id,
-                        principalTable: "Seats",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_OwnedTickets_Tickets_ticket_id",
+                        column: x => x.ticket_id,
+                        principalTable: "Tickets",
+                        principalColumn: "id");
                 });
 
             migrationBuilder.InsertData(
@@ -498,8 +516,9 @@ namespace DataAccess.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "66d76006-a7fb-402e-a656-d25a58316ad6", null, "Administrator", "ADMİNİSTRATOR" },
-                    { "b34fad37-8dde-4371-b18b-d34967e2b0b3", null, "User", "USER" }
+                    { "88c09c19-1368-439a-a14e-9d8ef5d939d8", null, "Administrator", "ADMİNİSTRATOR" },
+                    { "b0043bfb-988e-4494-9e9f-7bcc7a4e04ca", null, "User", "USER" },
+                    { "bb51480d-ee83-40fc-860d-224d8c1171a0", null, "Support", "SUPPORT" }
                 });
 
             migrationBuilder.InsertData(
@@ -636,6 +655,17 @@ namespace DataAccess.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_OwnedTickets_ticket_id",
+                table: "OwnedTickets",
+                column: "ticket_id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OwnedTickets_user_id",
+                table: "OwnedTickets",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Personals_airport_id",
                 table: "Personals",
                 column: "airport_id");
@@ -656,11 +686,6 @@ namespace DataAccess.Migrations
                 table: "Tickets",
                 column: "seat_id",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tickets_user_id",
-                table: "Tickets",
-                column: "user_id");
         }
 
         /// <inheritdoc />
@@ -694,10 +719,10 @@ namespace DataAccess.Migrations
                 name: "OperationalDelays");
 
             migrationBuilder.DropTable(
-                name: "Personals");
+                name: "OwnedTickets");
 
             migrationBuilder.DropTable(
-                name: "Tickets");
+                name: "Personals");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -715,10 +740,13 @@ namespace DataAccess.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Seats");
+                name: "Tickets");
 
             migrationBuilder.DropTable(
                 name: "AircraftStatuses");
+
+            migrationBuilder.DropTable(
+                name: "Seats");
 
             migrationBuilder.DropTable(
                 name: "Flights");

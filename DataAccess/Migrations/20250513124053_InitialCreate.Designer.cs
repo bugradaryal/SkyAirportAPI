@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DataDbContext))]
-    [Migration("20250510230019_InitialCreate")]
+    [Migration("20250513124053_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -484,6 +484,41 @@ namespace DataAccess.Migrations
                     b.ToTable("OperationalDelays");
                 });
 
+            modelBuilder.Entity("Entities.OwnedTicket", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+
+                    b.Property<decimal>("Baggage_weight")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DECIMAL(8,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<DateTimeOffset>("Puchase_date")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TIMESTAMP WITH TIME ZONE")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<int>("ticket_id")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("user_id")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("ticket_id")
+                        .IsUnique();
+
+                    b.HasIndex("user_id");
+
+                    b.ToTable("OwnedTickets");
+                });
+
             modelBuilder.Entity("Entities.Personal", b =>
                 {
                     b.Property<int>("id")
@@ -586,32 +621,16 @@ namespace DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
-                    b.Property<decimal>("Baggage_weight")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("DECIMAL(8,2)")
-                        .HasDefaultValue(0m);
-
                     b.Property<decimal>("Price")
                         .HasColumnType("DECIMAL(10,2)");
 
-                    b.Property<DateTimeOffset>("Puchase_date")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP WITH TIME ZONE")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
                     b.Property<int>("seat_id")
                         .HasColumnType("integer");
-
-                    b.Property<string>("user_id")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("id");
 
                     b.HasIndex("seat_id")
                         .IsUnique();
-
-                    b.HasIndex("user_id");
 
                     b.ToTable("Tickets");
                 });
@@ -746,13 +765,19 @@ namespace DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "66d76006-a7fb-402e-a656-d25a58316ad6",
+                            Id = "88c09c19-1368-439a-a14e-9d8ef5d939d8",
                             Name = "Administrator",
                             NormalizedName = "ADMİNİSTRATOR"
                         },
                         new
                         {
-                            Id = "b34fad37-8dde-4371-b18b-d34967e2b0b3",
+                            Id = "bb51480d-ee83-40fc-860d-224d8c1171a0",
+                            Name = "Support",
+                            NormalizedName = "SUPPORT"
+                        },
+                        new
+                        {
+                            Id = "b0043bfb-988e-4494-9e9f-7bcc7a4e04ca",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -963,6 +988,25 @@ namespace DataAccess.Migrations
                     b.Navigation("flight");
                 });
 
+            modelBuilder.Entity("Entities.OwnedTicket", b =>
+                {
+                    b.HasOne("Entities.Ticket", "ticket")
+                        .WithOne("ownedTicket")
+                        .HasForeignKey("Entities.OwnedTicket", "ticket_id")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Entities.User", "user")
+                        .WithMany("ownedTickets")
+                        .HasForeignKey("user_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ticket");
+
+                    b.Navigation("user");
+                });
+
             modelBuilder.Entity("Entities.Personal", b =>
                 {
                     b.HasOne("Entities.Airport", "airport")
@@ -990,18 +1034,10 @@ namespace DataAccess.Migrations
                     b.HasOne("Entities.Seat", "seat")
                         .WithOne("ticket")
                         .HasForeignKey("Entities.Ticket", "seat_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Entities.User", "user")
-                        .WithMany("ticket")
-                        .HasForeignKey("user_id")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("seat");
-
-                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1105,11 +1141,17 @@ namespace DataAccess.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Entities.Ticket", b =>
+                {
+                    b.Navigation("ownedTicket")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Entities.User", b =>
                 {
                     b.Navigation("logEntry");
 
-                    b.Navigation("ticket");
+                    b.Navigation("ownedTickets");
                 });
 #pragma warning restore 612, 618
         }
