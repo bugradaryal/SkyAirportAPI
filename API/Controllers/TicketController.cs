@@ -29,14 +29,14 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OwnedTicketController : ControllerBase
+    public class TicketController : ControllerBase
     {
         private readonly ILoggerServices _logger;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly ITokenServices _tokenServices;
 
-        public OwnedTicketController(IMediator mediator, IMapper mapper, ILoggerServices logger, IOptions<JwtBearer> jwt, UserManager<User> userManager)
+        public TicketController(IMediator mediator, IMapper mapper, ILoggerServices logger, IOptions<JwtBearer> jwt, UserManager<User> userManager)
         {
             _mapper = mapper;
             _mediator = mediator;
@@ -45,24 +45,24 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("GetAllOwnedTicket")]
-        public async Task<IActionResult> GetAllOwnedTicket()
+        [HttpGet("GetAllTicket")]
+        public async Task<IActionResult> GetAllTicket()
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "GetAllOwnedTicket endpoint called!",
+                Message = "GetAllTicket endpoint called!",
                 Action_type = Action_Type.APIRequest,
-                Target_table = "OwnedTicket",
+                Target_table = "Ticket",
                 loglevel_id = 1,
             }, null);
-            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<OwnedTicket>());
+            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Ticket>());
             if (getAllRepository.error == true)
             {
                 await _logger.Logger(new LogDTO
                 {
                     Message = getAllRepository.response.Message,
                     Action_type = Action_Type.APIRequest,
-                    Target_table = "OwnedTicket",
+                    Target_table = "Ticket",
                     loglevel_id = getAllRepository.response.Exception.ExceptionLevel,
                 }, getAllRepository.response.Exception);
                 return BadRequest(getAllRepository.response);
@@ -70,23 +70,23 @@ namespace API.Controllers
 
             await _logger.Logger(new LogDTO
             {
-                Message = "GetAllOwnedTicket action done!",
+                Message = "GetAllTicket action done!",
                 Action_type = Action_Type.APIResponse,
-                Target_table = "OwnedTicket",
+                Target_table = "T",
                 loglevel_id = 1
             }, null);
             return Ok(getAllRepository.entity);
         }
 
         [AllowAnonymous]
-        [HttpGet("GetAllOwnedTicketBySeatId")]
-        public async Task<IActionResult> GetAllOwnedTicketBySeatId([FromQuery] int id)
+        [HttpGet("GetTicketById")]
+        public async Task<IActionResult> GetTicketById([FromQuery] int id)
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "GetAllOwnedTicketBySeatId endpoint called for {" + id ?? null + "}",
+                Message = "GetTicketById endpoint called for {" + id ?? null + "}",
                 Action_type = Action_Type.APIRequest,
-                Target_table = "OwnedTicket",
+                Target_table = "Ticket",
                 loglevel_id = 1,
             }, null);
             if (id == null || id == 0)
@@ -95,19 +95,19 @@ namespace API.Controllers
                 {
                     Message = "Invalid Id!!",
                     Action_type = Action_Type.APIResponse,
-                    Target_table = "OwnedTicket",
+                    Target_table = "Ticket",
                     loglevel_id = 3,
                 }, null);
                 return BadRequest(new { message = "Invalid Id!!" });
             }
-            var getAllResponse = await _mediator.Send(new GetAllAirlinesByAirportIdRequest(id));
+            var getAllResponse = await _mediator.Send(new GenericGetByIdRequest<Ticket>(id));
             if (getAllResponse.error)
             {
                 await _logger.Logger(new LogDTO
                 {
                     Message = getAllResponse.response.Message,
                     Action_type = Action_Type.APIResponse,
-                    Target_table = "OwnedTicket",
+                    Target_table = "Ticket",
                     loglevel_id = getAllResponse.response?.Exception?.ExceptionLevel,
                 }, getAllResponse.response?.Exception);
                 return BadRequest(getAllResponse.response);
@@ -115,67 +115,23 @@ namespace API.Controllers
 
             await _logger.Logger(new LogDTO
             {
-                Message = "GetAllOwnedTicketBySeatId action done for {"+id+"}",
+                Message = "GetTicketById action done for {" + id+"}",
                 Action_type = Action_Type.APIResponse,
-                Target_table = "OwnedTicket",
+                Target_table = "Ticket",
                 loglevel_id = 1
             }, null);
             return Ok(getAllResponse.entity);
         }
 
-        [AllowAnonymous]
-        [HttpGet("GetOwnedTicketById")]
-        public async Task<IActionResult> GetOwnedTicketById([FromQuery] int id)
-        {
-            await _logger.Logger(new LogDTO
-            {
-                Message = "GetOwnedTicketById endpoint called for {" + id ?? null + "}",
-                Action_type = Action_Type.APIRequest,
-                Target_table = "OwnedTicket",
-                loglevel_id = 1,
-            }, null);
-            if (id == null || id == 0)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = "Invalid Id!!",
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "OwnedTicket",
-                    loglevel_id = 3,
-                }, null);
-                return BadRequest(new { message = "Invalid Id!!" });
-            }
-            var getByIdResponse = await _mediator.Send(new GenericGetByIdRequest<OwnedTicket>(id));
-            if (getByIdResponse.error)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = getByIdResponse.response.Message,
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "OwnedTicket",
-                    loglevel_id = getByIdResponse.response?.Exception?.ExceptionLevel,
-                }, getByIdResponse.response?.Exception);
-                return BadRequest(getByIdResponse.response);
-            }
-
-            await _logger.Logger(new LogDTO
-            {
-                Message = "GetOwnedTicketById action done for {"+id+"}",
-                Action_type = Action_Type.APIResponse,
-                Target_table = "OwnedTicket",
-                loglevel_id = 1
-            }, null);
-            return Ok(getByIdResponse.entity);
-        }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
-        [HttpPost("AddOwnedTicket")]
-        public async Task<IActionResult> AddOwnedTicket(OwnedTicketAddDTO OwnedTicketDTO)
+        [HttpPost("AddTicket")]
+        public async Task<IActionResult> AddTicket([FromBody]TicketAddDTO ticketAddDTO)
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "AddOwnedTicket endpoint called!",
+                Message = "AddTicket endpoint called!",
                 Action_type = Action_Type.APIRequest,
-                Target_table = "OwnedTicket",
+                Target_table = "Ticket",
                 loglevel_id = 1,
             }, null);
             var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
@@ -191,15 +147,15 @@ namespace API.Controllers
                 }, null);
                 return Unauthorized(new { message = "Token not valid!!" });
             }
-            var OwnedTicket = _mapper.Map<OwnedTicket, OwnedTicketAddDTO>(OwnedTicketDTO);
-            var addResponse = await _mediator.Send(new AddOwnedTicketRequest(OwnedTicket));
+            var ticket = _mapper.Map<Ticket, TicketAddDTO>(ticketAddDTO);
+            var addResponse = await _mediator.Send(new GenericAddRequest<Ticket>(ticket));
             if (addResponse != null)
             {
                 await _logger.Logger(new LogDTO
                 {
                     Message = addResponse.Message,
                     Action_type = Action_Type.APIResponse,
-                    Target_table = "OwnedTicket",
+                    Target_table = "Ticket",
                     loglevel_id = addResponse.Exception.ExceptionLevel,
                     user_id = validateTokenDTO.user.Id
                 }, addResponse.Exception);
@@ -208,23 +164,24 @@ namespace API.Controllers
 
             await _logger.Logger(new LogDTO
             {
-                Message = "OwnedTicket added!",
+                Message = "Ticket added!",
                 Action_type = Action_Type.Create,
-                Target_table = "OwnedTicket",
+                Target_table = "Ticket",
                 loglevel_id = 1,
                 user_id = validateTokenDTO.user.Id
             }, null);
-            return Ok(new { message = "OwnedTicket added!" });
+            return Ok(new { message = "Ticket added!" });
         }
+
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
-        [HttpDelete("DeleteOwnedTicket")]
-        public async Task<IActionResult> DeleteOwnedTicket([FromQuery] int id)
+        [HttpDelete("DeleteTicket")]
+        public async Task<IActionResult> DeleteTicket([FromQuery] int id)
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "DeleteOwnedTicket endpoint called for {" + id ?? null + "}",
+                Message = "DeleteTicket endpoint called for {" + id ?? null + "}",
                 Action_type = Action_Type.APIRequest,
-                Target_table = "OwnedTicket",
+                Target_table = "Ticket",
                 loglevel_id = 1,
             }, null);
             if (id == null || id == 0)
@@ -233,7 +190,7 @@ namespace API.Controllers
                 {
                     Message = "Invalid Id!!",
                     Action_type = Action_Type.APIResponse,
-                    Target_table = "OwnedTicket",
+                    Target_table = "Ticket",
                     loglevel_id = 3
                 }, null);
                 return BadRequest(new { message = "Invalid Id!!" });
@@ -251,14 +208,14 @@ namespace API.Controllers
                 }, null);
                 return Unauthorized(new { message = "Token not valid!!" });
             }
-            var deleteResponse = await _mediator.Send(new DeleteOwnedTicketRequest(id));
+            var deleteResponse = await _mediator.Send(new GenericDeleteRequest<Ticket>(id));
             if (deleteResponse != null)
             {
                 await _logger.Logger(new LogDTO
                 {
                     Message = deleteResponse.Message,
                     Action_type = Action_Type.APIResponse,
-                    Target_table = "OwnedTicket",
+                    Target_table = "Ticket",
                     loglevel_id = deleteResponse.Exception.ExceptionLevel,
                     user_id = validateTokenDTO.user.Id
                 }, deleteResponse.Exception);
@@ -266,23 +223,23 @@ namespace API.Controllers
             }
             await _logger.Logger(new LogDTO
             {
-                Message = "OwnedTicket deleted for {"+id+"}",
+                Message = "Ticket deleted for {"+id+"}",
                 Action_type = Action_Type.Delete,
-                Target_table = "OwnedTicket",
+                Target_table = "Ticket",
                 loglevel_id = 1,
                 user_id = validateTokenDTO.user.Id
             }, null);
-            return Ok(new { message = "OwnedTicket deleted!" });
+            return Ok(new { message = "Ticket deleted!" });
         }
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
-        [HttpPut("UpdateOwnedTicket")]
-        public async Task<IActionResult> UpdateOwnedTicket(OwnedTicketUpdateDTO OwnedTicketDTO)
+        [HttpPut("UpdateTicket")]
+        public async Task<IActionResult> UpdateTicket([FromBody]TicketUpdateDTO ticketUpdateDTO)
         {
             await _logger.Logger(new LogDTO
             {
-                Message = "UpdateOwnedTicket endpoint called for {" + OwnedTicketDTO.id ?? null + "}",
+                Message = "UpdateTicket endpoint called for {" + ticketUpdateDTO.id ?? null + "}",
                 Action_type = Action_Type.APIRequest,
-                Target_table = "OwnedTicket",
+                Target_table = "Ticket",
                 loglevel_id = 1,
             }, null);
             var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
@@ -298,16 +255,16 @@ namespace API.Controllers
                 }, null);
                 return Unauthorized(new { message = "Token not valid!!" });
             }
-            var data = await _mediator.Send(new GenericGetByIdRequest<OwnedTicket>(OwnedTicketDTO.id));
-            var OwnedTicket = _mapper.Map<OwnedTicket, OwnedTicketUpdateDTO>(OwnedTicketDTO, data.entity);
-            var updateResponse = await _mediator.Send(new UpdateOwnedTicketRequest(OwnedTicket));
+            var data = await _mediator.Send(new GenericGetByIdRequest<Ticket>(ticketUpdateDTO.id));
+            var ticket = _mapper.Map<Ticket, TicketUpdateDTO>(ticketUpdateDTO, data.entity);
+            var updateResponse = await _mediator.Send(new GenericUpdateRequest<Ticket>(ticket));
             if (updateResponse != null)
             {
                 await _logger.Logger(new LogDTO
                 {
                     Message = updateResponse.Message,
                     Action_type = Action_Type.APIResponse,
-                    Target_table = "OwnedTicket",
+                    Target_table = "Ticket",
                     loglevel_id = updateResponse.Exception.ExceptionLevel,
                     user_id = validateTokenDTO.user.Id
                 }, updateResponse.Exception);
@@ -315,13 +272,13 @@ namespace API.Controllers
             }
             await _logger.Logger(new LogDTO
             {
-                Message = "OwnedTicket Updated for {"+OwnedTicketDTO.id+"}",
+                Message = "Ticket Updated for {"+ticketUpdateDTO.id+"}",
                 Action_type = Action_Type.Update,
-                Target_table = "OwnedTicket",
+                Target_table = "Ticket",
                 loglevel_id = 1,
                 user_id = validateTokenDTO.user.Id
             }, null);
-            return Ok(new { message = "OwnedTicket Updated!" });
+            return Ok(new { message = "Ticket Updated!" });
         }
     }
 }

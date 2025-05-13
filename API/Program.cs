@@ -29,6 +29,11 @@ using Business.Concrete;
 using Microsoft.AspNetCore.Mvc;
 using Utilitys;
 using Utilitys.Mapper;
+using Hangfire;
+using Business.Hangfire;
+using Business.Hangfire.Manager;
+using Business.Hangfire.Jobs;
+using Business.Redis;
 
 namespace API
 {
@@ -161,10 +166,14 @@ namespace API
                             args.ErrorContext.Handled = true;
                         };
                     });
-
+            string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            HangfireRegistration.AddHangfireApplication(builder.Services, connectionString);
+            builder.Services.AddTransient<GetForex>();
+            builder.Services.AddScoped<BackGroundSchedule>();
             builder.Services.AddMediatRApplication();
             builder.Services.AddMapperApplication();
             builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSingleton<IRedisServices, RedisServices>();
             builder.Services.AddSwaggerGen(opt =>
             {
                 opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
@@ -214,6 +223,7 @@ namespace API
                     return new BadRequestObjectResult(problemDetails);
                 };
             });
+
             //builder.Services.AddSignalR();
             var app = builder.Build();
             // Configure the HTTP request pipeline.
@@ -222,6 +232,7 @@ namespace API
                 app.UseSwagger();
                 app.UseSwaggerUI();
                 Process.Start(new ProcessStartInfo("http://localhost:5601") { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo("https://localhost:7257/hangfire") { UseShellExecute = true });
             }
 
             app.UseHttpsRedirection();
@@ -240,6 +251,19 @@ namespace API
                        .AllowAnyHeader()
                        .WithExposedHeaders("Authorization", "RefreshToken"));
 
+            app.UseHangfireDashboard("/hangfire");  // Dashboard '/hangfire' üzerinden erişilebilir olacak
+
+            // Hangfire server'ı başlatıyoruz
+            app.UseHangfireServer();
+            using (var scope = app.Services.CreateScope())
+            {
+                var jobs = scope.ServiceProvider.GetRequiredService<BackGroundSchedule>();
+                jobs.ScheduleRecurringJobs();
+
+                // İlk çalıştırmak için:
+                var backgroundJobClient = scope.ServiceProvider.GetRequiredService<IBackgroundJobClient>();
+                backgroundJobClient.Enqueue<GetForex>(job => job.Run());
+            }
             app.MapControllers();
             //app.MapHub<SignalRHub>("/signalrhub");
             app.Run();

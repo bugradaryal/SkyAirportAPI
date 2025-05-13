@@ -36,7 +36,8 @@ namespace Business
                 typeof(OperationalDelay),
                 typeof(Personal),
                 typeof(Seat),
-                typeof(OwnedTicket)
+                typeof(OwnedTicket),
+                typeof(Ticket),
             };
 
             foreach(var entity in entityTypes)

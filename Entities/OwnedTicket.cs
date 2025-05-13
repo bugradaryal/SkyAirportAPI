@@ -9,12 +9,12 @@ namespace Entities
     public class OwnedTicket
     {
         public int id { get; set; }
-        public decimal Price { get; set; }
         public DateTimeOffset Puchase_date { get; set; }
         public decimal Baggage_weight { get; set; }
-        public int seat_id { get; set; }
+
         public string user_id { get; set; }
+        public int ticket_id { get; set; }
         public User user { get; set; }
-        public Seat seat { get; set; }
+        public Ticket ticket { get; set; }
     }
 }

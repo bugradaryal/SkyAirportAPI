@@ -38,7 +38,7 @@ namespace Business.Features.OwnedTicket.Commands.DeleteOwnedTicket
                 aircraft.Current_Capacity = sumCapacity;
                 await _aircraftGenericRepository.Update(aircraft);
                 await _ticketGenericRepository.Delete(ticket.id);
-                await _seatRepository.SetSeatAvailable(ticket.seat_id, true);
+                await _seatRepository.SetSeatAvailable(ticket.ticket_id, true);
                 return null;
             }
             catch (Exception ex)

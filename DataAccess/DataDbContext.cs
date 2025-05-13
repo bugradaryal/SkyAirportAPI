@@ -17,6 +17,7 @@ namespace DataAccess
         }
         public DbSet<User> Users { get; set; }
         public DbSet<OwnedTicket> OwnedTickets { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
         public DbSet<OperationalDelay> OperationalDelays { get; set; }
         public DbSet<Seat> Seats { get; set; }
         public DbSet<Personal> Personals { get; set; }
@@ -43,11 +44,14 @@ namespace DataAccess
             modelBuilder.Entity<User>().Property(x => x.Uptaded_at).HasColumnType("TIMESTAMP WITH TIME ZONE").HasDefaultValueSql("CURRENT_TIMESTAMP");
             ////////////////////////////
             modelBuilder.Entity<OwnedTicket>().HasKey(x => x.id);
-            modelBuilder.Entity<OwnedTicket>().Property(x => x.Price).HasColumnType("DECIMAL(10,2)").IsRequired();
             modelBuilder.Entity<OwnedTicket>().Property(x => x.Puchase_date).HasColumnType("TIMESTAMP WITH TIME ZONE").HasDefaultValueSql("CURRENT_TIMESTAMP");
             modelBuilder.Entity<OwnedTicket>().Property(x => x.Baggage_weight).HasColumnType("DECIMAL(8,2)").HasDefaultValue(0);
-            modelBuilder.Entity<OwnedTicket>().Property(x => x.seat_id).IsRequired();
             modelBuilder.Entity<OwnedTicket>().Property(x => x.user_id).IsRequired();
+            modelBuilder.Entity<OwnedTicket>().Property(x => x.ticket_id).IsRequired();
+            ////////////////////////////
+            modelBuilder.Entity<Ticket>().HasKey(x => x.id);
+            modelBuilder.Entity<Ticket>().Property(x => x.Price).HasColumnType("DECIMAL(10,2)").IsRequired();
+            modelBuilder.Entity<Ticket>().Property(x => x.seat_id).IsRequired();
             ////////////////////////////
             modelBuilder.Entity<Seat>().HasKey(x => x.id);
             modelBuilder.Entity<Seat>().Property(x => x.Seat_number).IsRequired();
@@ -146,8 +150,9 @@ namespace DataAccess
             modelBuilder.Entity<AircraftStatus>().Property(x => x.Status).HasColumnType("text").HasMaxLength(64).HasDefaultValue("NotOperational");
             modelBuilder.Entity<AircraftStatus>().HasIndex(x => x.Status).IsUnique();
             ////////////////////////////
-            modelBuilder.Entity<OwnedTicket>().HasOne<User>(s => s.user).WithMany(g => g.ticket).HasForeignKey(s => s.user_id).OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Seat>().HasOne<OwnedTicket>(s => s.ticket).WithOne(g => g.seat).HasForeignKey<OwnedTicket>(s => s.seat_id).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<OwnedTicket>().HasOne<User>(s => s.user).WithMany(g => g.ownedTickets).HasForeignKey(s => s.user_id).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Seat>().HasOne<Ticket>(s => s.ticket).WithOne(g => g.seat).HasForeignKey<Ticket>(s => s.seat_id).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Ticket>().HasOne<OwnedTicket>(s => s.ownedTicket).WithOne(g => g.ticket).HasForeignKey<OwnedTicket>(s => s.ticket_id).OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Seat>().HasOne<Flight>(s => s.flight).WithMany(g => g.seat).HasForeignKey(s => s.flight_id).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Flight_Aircraft>().HasOne<Flight>(s => s.flight).WithMany(g => g.flight_Aircraft).HasForeignKey(s => s.flight_id).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Flight_Aircraft>().HasOne<Aircraft>(s => s.aircraft).WithMany(g => g.flight_Aircraft).HasForeignKey(s => s.aircraft_id).OnDelete(DeleteBehavior.Cascade);

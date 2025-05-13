@@ -44,7 +44,7 @@ namespace Business.Features.OwnedTicket.Commands.AddOwnedTicket
                     aircraft.Current_Capacity = sumCapacity;
                     await _aircraftGenericRepository.Update(aircraft);
                     await _ticketGenericRepository.Add(ticket);
-                    await _seatRepository.SetSeatAvailable(ticket.seat_id, false);
+                    await _seatRepository.SetSeatAvailable(ticket.ticket_id, false);
                     return null;
                 }
                 return new ResponseModel { Message = "Seat allready puchased!!" };

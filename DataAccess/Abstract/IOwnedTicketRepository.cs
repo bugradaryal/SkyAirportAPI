@@ -9,7 +9,6 @@ namespace DataAccess.Abstract
 {
     public interface IOwnedTicketRepository
     {
-        Task<List<OwnedTicket>> GetAllBySeatId(int id);
         Task<decimal> GetTicketWeightById(int id);
     }
 }

@@ -17,6 +17,6 @@ namespace Entities
 
         public int flight_id { get; set; }
         public Flight flight { get;set; }
-        public OwnedTicket ticket { get; set; }
+        public Ticket ticket { get; set; }
     }
 }

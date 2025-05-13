@@ -5,8 +5,8 @@ namespace DTO.OwnedTicket
 {
     public class OwnedTicketAddDTO
     {
-        public decimal Price { get; set; }
         public decimal Baggage_weight { get; set; }
-        public int seat_id { get; set; }
+        public int ticket_id { get; set; }
+        public string user_id { get; set; }
     }
 }

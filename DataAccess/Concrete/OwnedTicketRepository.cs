@@ -11,13 +11,6 @@ namespace DataAccess.Concrete
 {
     public class OwnedTicketRepository : IOwnedTicketRepository
     {
-        public async Task<List<OwnedTicket>> GetAllBySeatId(int id)
-        {
-            using (var _dbContext = new DataDbContext())
-            {
-                return await _dbContext.OwnedTickets.Where(x => x.seat_id == id).ToListAsync();
-            }
-        }
 
         public async Task<decimal> GetTicketWeightById(int id)
         {

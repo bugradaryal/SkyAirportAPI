@@ -10,9 +10,8 @@ namespace DTO.OwnedTicket
     public class OwnedTicketUpdateDTO
     {
         public int id { get; set; }
-        public decimal Price { get; set; }
         public decimal Baggage_weight { get; set; }
-        public int seat_id { get; set; }
-        public DateTimeOffset Puchase_date { get; set; }
+        public string user_id { get; set; }
+        public int ticket_id { get; set; }
     }
 }
