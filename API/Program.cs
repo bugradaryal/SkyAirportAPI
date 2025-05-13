@@ -177,6 +177,8 @@ namespace API
             builder.Services.AddSwaggerGen(opt =>
             {
                 opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
+
+                // JWT Bearer Authentication
                 opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
@@ -187,21 +189,46 @@ namespace API
                     Scheme = "bearer"
                 });
 
-                opt.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
+                // API Key Authentication
+                opt.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
                 {
-                    Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
-                }
-            },
-            new string[]{}
-        }
-    });
+                    In = ParameterLocation.Header,
+                    Description = "API Key needed to access the endpoints. Example: 'X-API-KEY: your_api_key'",
+                    Name = "X-API-KEY",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "ApiKeyScheme"
+                });
+
+                // Security Requirements - JWT ve API Key birlikte
+                opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            In = ParameterLocation.Header
+                        },
+                        new string[] {}
+                    },
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "ApiKey"
+                            },
+                            In = ParameterLocation.Header
+                        },
+                        new string[] {}
+                    }
+                });
             });
+
 
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
