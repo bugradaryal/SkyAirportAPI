@@ -173,7 +173,7 @@ namespace API
             builder.Services.AddMediatRApplication();
             builder.Services.AddMapperApplication();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSingleton<IRedisServices, RedisServices>();
+            builder.Services.AddScoped<IRedisServices, RedisServices>();
             builder.Services.AddSwaggerGen(opt =>
             {
                 opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });

@@ -33,7 +33,7 @@ namespace Business.Hangfire.Manager
                 {
                     Message = "BackgroundJob starting!",
                     Action_type = Action_Type.APIRequest,
-                    Target_table = "User",
+                    Target_table = "Hangfire",
                     loglevel_id = 1,
                 }, null);
                 var list = await ForexManager.CurrencyGetter();
@@ -50,7 +50,7 @@ namespace Business.Hangfire.Manager
                 {
                     Message = "Current forex:    "+ json,
                     Action_type = Action_Type.APIResponse,
-                    Target_table = "User",
+                    Target_table = "Hangfire",
                     loglevel_id = 1,
                 }, null);
             }
@@ -59,9 +59,9 @@ namespace Business.Hangfire.Manager
                 await _loggerServices.Logger(new LogDTO
                 {
                     Message =  "Exception throw!",
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "User",
-                    loglevel_id = 4,
+                    Action_type = Action_Type.SystemError,
+                    Target_table = "Hangfire",
+                    loglevel_id = 5,
                 }, new CustomException(ex.Message,4,(int)HttpStatusCode.BadRequest,ex.InnerException?.Message));
             }
 

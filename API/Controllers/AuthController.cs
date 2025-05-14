@@ -34,6 +34,7 @@ using Business.Features.Account.Commands.SuspendUser;
 namespace API.Controllers
 {
     [ApiController]
+    [Route("api/[controller]")]
     public class AuthController : Controller
     {
         private readonly ILoggerServices _logger;
@@ -160,7 +161,7 @@ namespace API.Controllers
                 loglevel_id = 1,
                 user_id = validateTokenDTO.user.Id
             }, null);
-            return Ok(_mapper.Map<AuthenticationModel,ValidateTokenDTO>(validateTokenDTO));         
+            return Ok(new AuthenticationModel { Email = validateTokenDTO.user.Email, UserName = validateTokenDTO.user.UserName, Roles = validateTokenDTO.roles});         
         }
 
         [Authorize(Policy = "IsUserSuspended")]

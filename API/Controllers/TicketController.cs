@@ -79,7 +79,7 @@ namespace API.Controllers
                 Target_table = "T",
                 loglevel_id = 1
             }, null);
-            if(type != "TRY")
+            if(type != "TRY" && string.IsNullOrEmpty(await _redisServices.GetAsync("forex")) != true)
             {
                 foreach(var item in getAllResponse.entity)
                 {

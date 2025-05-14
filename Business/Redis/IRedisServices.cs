@@ -9,7 +9,6 @@ namespace Business.Redis
 {
     public interface IRedisServices
     {
-        IDatabase GetDb();
         Task SetAsync(string key, string value);
         Task<string> GetAsync(string key);
     }
