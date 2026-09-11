@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Entities;
-
-
-namespace Business.Features.Account.Queries.GetUserRole
+﻿namespace Business.Features.Account.Queries.GetUserRole
 {
     public class GetUserRoleResponse
     {

@@ -1,6 +1,5 @@
-using FluentValidation;
-using DTO.OwnedTicket;
 using DTO.Ticket;
+using FluentValidation;
 
 namespace TicketValidator
 {

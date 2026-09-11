@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DataAccess.Abstract;
-using DataAccess.Concrete;
+﻿using DataAccess.Abstract;
 using DTO;
-using DTO.Account;
-using Entities;
 using Entities.Enums;
 using Entities.Moderation;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Serilog.Events;
 using Utilitys.Logging.ExceptionHandler;
 using Utilitys.Logging.Serilog;
 using Utilitys.Mapper;
@@ -40,7 +30,7 @@ namespace Utilitys.Logging
                     _logger.Info(logData);
                     await _logRepository.AddLog(logData);
                 }
-                else if(logData.loglevel_id == 2)
+                else if (logData.loglevel_id == 2)
                 {
                     _logger.Warn(logData);
                     await _logRepository.AddLog(logData);
@@ -52,11 +42,12 @@ namespace Utilitys.Logging
                     await _logRepository.AddLog(logData);
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 _logger.Fatal(logData, ex);
-                await _logRepository.AddLog(new LogEntry {  
-                    Action_type = Action_Type.SystemError, 
+                await _logRepository.AddLog(new LogEntry
+                {
+                    Action_type = Action_Type.SystemError,
                     loglevel_id = 4,
                     Message = "Critical Fatal Error!!       /       " + JsonConvert.SerializeObject(ex),
                     Target_table = logData.Target_table,

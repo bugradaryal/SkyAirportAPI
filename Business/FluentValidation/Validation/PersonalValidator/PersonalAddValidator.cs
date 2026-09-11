@@ -1,5 +1,5 @@
-using FluentValidation;
 using DTO.Personal;
+using FluentValidation;
 
 namespace PersonalValidator
 {

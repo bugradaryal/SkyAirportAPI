@@ -1,22 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Business.Abstract;
+﻿using Business.Abstract;
 using Entities;
 using Entities.Configuration;
-using MailKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using MimeKit;
+using System.Net;
 using Utilitys.Logging.ExceptionHandler;
-
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Utilitys.MailServices
 {
@@ -24,7 +15,7 @@ namespace Utilitys.MailServices
     {
         private readonly EmailSender _mail;
         private readonly UserManager<User> _userManager;
-        public MailManager(IOptions<EmailSender> mail, UserManager<User> userManager) 
+        public MailManager(IOptions<EmailSender> mail, UserManager<User> userManager)
         {
             _mail = mail.Value;
             _userManager = userManager;
@@ -53,7 +44,7 @@ namespace Utilitys.MailServices
         }
         public async Task ConfirmEmail(string userid, string token)
         {
-            if(string.IsNullOrEmpty(userid) || string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(userid) || string.IsNullOrEmpty(token))
                 throw new CustomException("Id or Token is empty!!", (int)HttpStatusCode.BadRequest);
             var user = await _userManager.FindByIdAsync(userid);
             if (user == null)

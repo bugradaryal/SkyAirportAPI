@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using DataAccess.Abstract;
-using DataAccess.Concrete.Generic;
-using DataAccess.Concrete;
+﻿using DataAccess.Abstract;
 using MediatR;
-
+using System.Net;
 using Utilitys.Logging.ExceptionHandler;
 
 namespace Business.Features.OwnedTicket.Commands.UpdateOwnedTicket
@@ -19,8 +11,8 @@ namespace Business.Features.OwnedTicket.Commands.UpdateOwnedTicket
         private readonly IOwnedTicketRepository _ticketRepository;
         private readonly IGenericRepository<Entities.Aircraft> _aircraftGenericRepository;
         private readonly IGenericRepository<Entities.OwnedTicket> _ticketGenericRepository;
-        public UpdateOwnedTicketHandler(ISeatRepository seatRepository, 
-            IGenericRepository<Entities.Aircraft> genericAircraftRepository, IGenericRepository<Entities.OwnedTicket>genericOwnedTicketRepository,
+        public UpdateOwnedTicketHandler(ISeatRepository seatRepository,
+            IGenericRepository<Entities.Aircraft> genericAircraftRepository, IGenericRepository<Entities.OwnedTicket> genericOwnedTicketRepository,
             IOwnedTicketRepository ownedTicketRepository)
         {
             _seatRepository = seatRepository;

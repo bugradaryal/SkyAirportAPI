@@ -1,5 +1,5 @@
-using FluentValidation;
 using DTO.OwnedTicket;
+using FluentValidation;
 
 namespace OwnedTicketValidator
 {
@@ -17,7 +17,7 @@ namespace OwnedTicketValidator
                  .NotEmpty().WithMessage("UserID is required.");
             RuleFor(x => x.ticket_id)
                  .NotEmpty().WithMessage("TicketID is required.");
-        
+
         }
     }
 }

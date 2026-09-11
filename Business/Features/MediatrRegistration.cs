@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Business.Features.Generic.Commands.Add;
+﻿using Business.Features.Generic.Commands.Add;
 using Business.Features.Generic.Commands.Delete;
 using Business.Features.Generic.Commands.Update;
 using Business.Features.Generic.Queries.GetAll;
 using Business.Features.Generic.Queries.GetById;
-using Entities;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Entities.Moderation;
+using System.Reflection;
 
 namespace Business.Features
 {
@@ -24,8 +17,8 @@ namespace Business.Features
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
 
-            var entityTypes = new[] { 
-                typeof(Entities.Aircraft), 
+            var entityTypes = new[] {
+                typeof(Entities.Aircraft),
                 typeof(Entities.AircraftStatus),
                 typeof(Entities.Airline),
                 typeof(Entities.Airport),
@@ -38,11 +31,11 @@ namespace Business.Features
                 typeof(Entities.Ticket),
             };
             //generic için
-            foreach(var entity in entityTypes)
-{
+            foreach (var entity in entityTypes)
+            {
                 // Add
                 services.AddTransient(
-                    typeof(IRequestHandler<>).MakeGenericType(     
+                    typeof(IRequestHandler<>).MakeGenericType(
                         typeof(GenericAddRequest<>).MakeGenericType(entity)
                     ),
                     typeof(GenericAddHandle<>).MakeGenericType(entity)

@@ -1,8 +1,8 @@
-﻿using Utilitys.Logging.ExceptionHandler;
-using DTO;
+﻿using DTO;
 using Entities.Enums;
-using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Utilitys.Logging.ExceptionHandler;
 
 namespace Utilitys.Logging
 {

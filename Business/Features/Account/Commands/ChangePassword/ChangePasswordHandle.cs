@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
-using Business.Features.Account.Commands.CreateAccount;
-using Entities.Enums;
-using Entities;
+﻿using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using DTO;
-
+using System.Net;
 using Utilitys.Logging.ExceptionHandler;
 
 namespace Business.Features.Account.Commands.ChangePassword
@@ -28,7 +18,7 @@ namespace Business.Features.Account.Commands.ChangePassword
         {
             var result = await _userManager.ChangePasswordAsync(request.user, request.changePasswordDTO.OldPassword, request.changePasswordDTO.NewPassword);
             if (!result.Succeeded)
-                throw new CustomException ("Changing password not succeded!", (int)HttpStatusCode.BadRequest, result.Errors?.FirstOrDefault()?.ToString());
+                throw new CustomException("Changing password not succeded!", (int)HttpStatusCode.BadRequest, result.Errors?.FirstOrDefault()?.ToString());
         }
     }
 }

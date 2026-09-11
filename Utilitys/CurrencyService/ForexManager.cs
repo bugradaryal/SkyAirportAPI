@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DTO;
 using System.Xml.Linq;
-using DTO;
 
 namespace Utilitys.CurrencyService
 {
@@ -15,7 +10,7 @@ namespace Utilitys.CurrencyService
             try
             {
                 // TCMB döviz kuru verilerini çekeceğimiz URL
-                  string url = "https://www.tcmb.gov.tr/kurlar/today.xml";
+                string url = "https://www.tcmb.gov.tr/kurlar/today.xml";
                 List<ForexDTO> list = new List<ForexDTO>();
                 using (HttpClient client = new HttpClient())
                 {
@@ -25,7 +20,7 @@ namespace Utilitys.CurrencyService
                     // XML verisini XDocument ile parse etme
                     XDocument xDoc = XDocument.Parse(xmlData);
                     List<string> types = ["USD", "EUR"];
-                    foreach(string type in types)
+                    foreach (string type in types)
                     {
                         var currency = xDoc.Descendants("Currency")
                               .Where(x => (string)x.Attribute("CurrencyCode") == type)
@@ -41,7 +36,7 @@ namespace Utilitys.CurrencyService
                     return list;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return null;
             }

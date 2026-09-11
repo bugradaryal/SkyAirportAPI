@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace DTO.Airline
+﻿namespace DTO.Airline
 {
     public class AirlineUpdateDTO
     {

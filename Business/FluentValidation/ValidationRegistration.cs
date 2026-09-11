@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Identity;
+﻿using FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace Business.FluentValidation
 {

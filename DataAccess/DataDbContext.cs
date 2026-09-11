@@ -2,15 +2,14 @@
 using Entities.Enums;
 using Entities.Moderation;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
 namespace DataAccess
 {
     public class DataDbContext : IdentityDbContext<User>
     {
-        public DataDbContext(DbContextOptions<DataDbContext> options): base(options)
+        public DataDbContext(DbContextOptions<DataDbContext> options) : base(options)
         {
         }
 
@@ -139,7 +138,7 @@ namespace DataAccess
                         v => JsonConvert.DeserializeObject<List<string>>(v) ?? new List<string>()) // JSON string → List<string>
                 .HasColumnType("jsonb").IsRequired(false); // PostgreSQL JSONB tipi
             modelBuilder.Entity<LogEntry>().Property(x => x.user_id).IsRequired(false);
-            modelBuilder.Entity<LogEntry>().Property(x => x.loglevel_id).HasDefaultValue(1);                               
+            modelBuilder.Entity<LogEntry>().Property(x => x.loglevel_id).HasDefaultValue(1);
             ////////////////////////////
             modelBuilder.Entity<LogLevel>().HasKey(x => x.id);
             modelBuilder.Entity<LogLevel>().Property(x => x.Level).HasColumnType("text").IsRequired().HasMaxLength(64);

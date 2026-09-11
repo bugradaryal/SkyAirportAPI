@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Business.Abstract;
-using Business.Redis;
+﻿using Business.Redis;
 using DTO;
 using Entities.Enums;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Net;
 using Utilitys.CurrencyService;
 using Utilitys.Logging;
 using Utilitys.Logging.ExceptionHandler;
@@ -29,7 +21,8 @@ namespace Business.Hangfire.Manager
         }
         public async Task Run()
         {
-            try{
+            try
+            {
                 await _loggerServices.Logger(new LogDTO
                 {
                     Message = "BackgroundJob starting!",
@@ -49,21 +42,21 @@ namespace Business.Hangfire.Manager
 
                 await _loggerServices.Logger(new LogDTO
                 {
-                    Message = "Current forex:    "+ json,
+                    Message = "Current forex:    " + json,
                     Action_type = Action_Type.APIResponse,
                     Target_table = "Hangfire",
                     loglevel_id = 1
                 });
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 await _loggerServices.Logger(new LogDTO
                 {
-                    Message =  "Exception throw!",
+                    Message = "Exception throw!",
                     Action_type = Action_Type.SystemError,
                     Target_table = "Hangfire",
                     loglevel_id = 3
-                }, new CustomException(ex.Message,(int)HttpStatusCode.InternalServerError, ex.InnerException?.Message));
+                }, new CustomException(ex.Message, (int)HttpStatusCode.InternalServerError, ex.InnerException?.Message));
             }
 
         }

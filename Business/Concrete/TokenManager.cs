@@ -1,24 +1,16 @@
-﻿using Entities.Configuration;
+﻿using Business.Abstract;
+using DataAccess.Abstract;
 using Entities;
+using Entities.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Business.Abstract;
-using Newtonsoft.Json.Linq;
-using System.Web;
-using System.Security.Cryptography;
-using DataAccess.Abstract;
-using DataAccess.Concrete;
 using System.Net;
-using DTO.Account;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+using System.Web;
 using Utilitys.Logging.ExceptionHandler;
 
 namespace Business.Concrete
@@ -76,7 +68,7 @@ namespace Business.Concrete
 
         public string GenerateRefreshToken()
         {
-            var randomBytes = RandomNumberGenerator.GetBytes(32);  
+            var randomBytes = RandomNumberGenerator.GetBytes(32);
             return Convert.ToBase64String(randomBytes);
         }
 
@@ -91,12 +83,12 @@ namespace Business.Concrete
         public async Task<User> ValidateRefleshToken(string refreshToken)
         {
             var userToken = await _tokenRepository.GetUserTokenByRefreshTokenAsync(refreshToken);
-            if(userToken != null)
+            if (userToken != null)
             {
                 var user = await _userManager.FindByIdAsync(userToken.UserId);
                 return user;
             }
-            throw new CustomException("Reflesh Token corrupted",(int)HttpStatusCode.BadRequest);
+            throw new CustomException("Reflesh Token corrupted", (int)HttpStatusCode.BadRequest);
         }
     }
 }

@@ -1,10 +1,8 @@
-﻿using StackExchange.Redis;
-using Microsoft.Extensions.Configuration;
-using Business.Abstract;
-using DTO;
+﻿using DTO;
 using Entities.Enums;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 using System.Net;
-using Newtonsoft.Json.Linq;
 using Utilitys.Logging;
 using Utilitys.Logging.ExceptionHandler;
 
@@ -41,7 +39,7 @@ namespace Business.Redis
                     Message = "Redis Exception Throw",
                     Action_type = Action_Type.SystemError,
                     Target_table = "Redis",
-                    loglevel_id=3
+                    loglevel_id = 3
                 }, new CustomException(ex.Message, (int)HttpStatusCode.InternalServerError, ex.InnerException?.Message));
             }
 
@@ -60,7 +58,7 @@ namespace Business.Redis
                     Message = "Redis Exception Throw",
                     Action_type = Action_Type.SystemError,
                     Target_table = "Redis",
-                    loglevel_id=3
+                    loglevel_id = 3
                 }, new CustomException(ex.Message, (int)HttpStatusCode.InternalServerError, ex.InnerException?.Message));
                 return null;
             }

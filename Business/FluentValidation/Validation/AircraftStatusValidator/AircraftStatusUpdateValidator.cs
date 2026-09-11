@@ -1,5 +1,5 @@
-using FluentValidation;
 using DTO.AircraftStatus;
+using FluentValidation;
 
 namespace AircraftStatusValidator
 {

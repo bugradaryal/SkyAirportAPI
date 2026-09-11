@@ -1,38 +1,23 @@
-﻿using DataAccess;
+﻿using Business.FluentValidation;
+using Business.Hangfire;
+using Business.Hangfire.Jobs;
+using Business.Hangfire.Manager;
+using DataAccess;
 using Entities;
-using Entities.Moderation;
+using Entities.Configuration;
+using FluentValidation.AspNetCore;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using Serilog;
 using System.Text;
 using System.Threading.RateLimiting;
-using Serilog;
-using Serilog.Sinks.PostgreSQL;
-using Serilog.Core;
-using Microsoft.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection;
-using Entities.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Business;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json;
-using Serilog.Sinks.Elasticsearch;
-using Serilog.Exceptions;
-using Business.FluentValidation;
-using FluentValidation.AspNetCore;
-using System.Diagnostics;
-using Business.Abstract;
-using Business.Concrete;
-using Microsoft.AspNetCore.Mvc;
-using Utilitys;
-using Hangfire;
-using Business.Hangfire;
-using Business.Hangfire.Manager;
-using Business.Hangfire.Jobs;
-using Business.Redis;
-using Utilitys.Logging.Serilog;
 using Utilitys.Logging;
 
 namespace API
@@ -104,10 +89,10 @@ namespace API
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);  // Hesap 5 dakika kilitlensin
                 options.Lockout.MaxFailedAccessAttempts = 5;  // Başarısız giriş denemesi sayısı
                 options.Lockout.AllowedForNewUsers = true;  // Yeni kullanıcılar için kilitleme uygulansın
-                
+
                 // Kullanıcı adı ayarları
                 options.User.RequireUniqueEmail = true;  // Her kullanıcı adı benzersiz olmalı
-                options.User.AllowedUserNameCharacters ="abcdefghýijklmnoöpqrsþtuüvwxyzABCDEFGHIÝJKLMNOÖPQRSTUÜVWXYZ0123456789-_";
+                options.User.AllowedUserNameCharacters = "abcdefghýijklmnoöpqrsþtuüvwxyzABCDEFGHIÝJKLMNOÖPQRSTUÜVWXYZ0123456789-_";
             }).AddEntityFrameworkStores<DataDbContext>().AddDefaultTokenProviders();
 
             builder.Services.AddAuthentication(options =>
@@ -167,7 +152,8 @@ namespace API
             builder.Services.AddFluentValidationAutoValidation()  // Sunucu tharafı doğrulama
                 .AddFluentValidationClientsideAdapters();
             builder.Services.AddControllers()
-                    .AddNewtonsoftJson(options => {
+                    .AddNewtonsoftJson(options =>
+                    {
 
                         options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 

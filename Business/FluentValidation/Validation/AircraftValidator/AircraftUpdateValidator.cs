@@ -1,5 +1,5 @@
-using FluentValidation;
 using DTO.Aircraft;
+using FluentValidation;
 
 namespace AircraftValidator
 {

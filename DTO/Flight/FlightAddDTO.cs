@@ -1,8 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-
-namespace DTO.Flight
+﻿namespace DTO.Flight
 {
     public class FlightAddDTO
     {

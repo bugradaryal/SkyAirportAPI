@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DTO.Account;
 using Entities;
 using Entities.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Utilitys.Mapper;
-using DTO.Account;
-using Utilitys;
-
+using System.Net;
 using Utilitys.Logging.ExceptionHandler;
+using Utilitys.Mapper;
 
 namespace Business.Features.Account.Commands.CreateAccount
 {

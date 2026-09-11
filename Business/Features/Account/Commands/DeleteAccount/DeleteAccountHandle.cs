@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
-using Business.Features.Account.Commands.CreateAccount;
-using Entities.Enums;
-using Entities;
+﻿using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-
+using System.Net;
 using Utilitys.Logging.ExceptionHandler;
 
 namespace Business.Features.Account.Commands.DeleteAccount

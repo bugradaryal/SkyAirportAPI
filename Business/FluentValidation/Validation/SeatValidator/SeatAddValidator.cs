@@ -1,5 +1,5 @@
-using FluentValidation;
 using DTO.Seat;
+using FluentValidation;
 
 namespace SeatValidator
 {

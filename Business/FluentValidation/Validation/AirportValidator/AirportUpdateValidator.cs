@@ -1,5 +1,5 @@
-using FluentValidation;
 using DTO.Airport;
+using FluentValidation;
 
 namespace AirportValidator
 {

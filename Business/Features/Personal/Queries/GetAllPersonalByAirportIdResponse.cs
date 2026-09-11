@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-
-namespace Business.Features.Personal.Queries
+﻿namespace Business.Features.Personal.Queries
 {
     public class GetAllPersonalByAirportIdResponse
     {
-        public List<Entities.Personal>? entity {  get; set; }
+        public List<Entities.Personal>? entity { get; set; }
 
     }
 }

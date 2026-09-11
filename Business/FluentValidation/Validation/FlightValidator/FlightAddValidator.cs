@@ -1,5 +1,5 @@
-using FluentValidation;
 using DTO.Flight;
+using FluentValidation;
 
 namespace FlightValidator
 {

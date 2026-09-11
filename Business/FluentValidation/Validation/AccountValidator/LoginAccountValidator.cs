@@ -1,5 +1,5 @@
-using FluentValidation;
 using DTO.Account;
+using FluentValidation;
 
 namespace AccountValidator
 {

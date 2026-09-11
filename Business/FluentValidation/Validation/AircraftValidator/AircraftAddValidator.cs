@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DTO.Aircraft;
+﻿using DTO.Aircraft;
 using FluentValidation;
 
 namespace Business.FluentValidation.Validation.AircraftValidator
 {
-    public class AircraftAddValidator :AbstractValidator<AircraftAddDto>
+    public class AircraftAddValidator : AbstractValidator<AircraftAddDto>
     {
-        public AircraftAddValidator() 
+        public AircraftAddValidator()
         {
             RuleFor(x => x.Model)
                 .NotEmpty().WithMessage("Model is required.")

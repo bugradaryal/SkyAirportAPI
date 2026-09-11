@@ -1,15 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Business.Hangfire.Manager;
-using DTO;
-using Entities;
-using Entities.Enums;
+﻿using Business.Hangfire.Manager;
 using Hangfire;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Utilitys.Logging;
 
 namespace Business.Hangfire.Jobs
 {

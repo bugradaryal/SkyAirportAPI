@@ -1,5 +1,5 @@
-using FluentValidation;
 using DTO.Airline;
+using FluentValidation;
 
 namespace AirlineValidator
 {

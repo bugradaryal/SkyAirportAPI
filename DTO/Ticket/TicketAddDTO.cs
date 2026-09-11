@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-
-namespace DTO.Ticket
+﻿namespace DTO.Ticket
 {
     public class TicketAddDTO
     {

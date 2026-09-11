@@ -1,22 +1,15 @@
 using Business.Abstract;
-using Business.Concrete;
-using Business.Features.Aircraft.Queries.GetAircraftById;
 using Business.Features.Generic.Commands.Add;
 using Business.Features.Generic.Commands.Delete;
 using Business.Features.Generic.Commands.Update;
 using Business.Features.Generic.Queries.GetAll;
 using Business.Features.Generic.Queries.GetById;
-using DTO;
 using DTO.AircraftStatus;
 using Entities;
-using Entities.Configuration;
 using Entities.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Utilitys.Logging;
 using Utilitys.Mapper;
 

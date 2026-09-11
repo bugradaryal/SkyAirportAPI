@@ -1,5 +1,5 @@
-using FluentValidation;
 using DTO.OperationalDelay;
+using FluentValidation;
 
 namespace OperationalDelayValidator
 {

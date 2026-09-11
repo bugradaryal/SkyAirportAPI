@@ -1,5 +1,5 @@
-using FluentValidation;
 using DTO.Crew;
+using FluentValidation;
 
 namespace CrewValidator
 {

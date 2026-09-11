@@ -1,6 +1,4 @@
-﻿using Business.Abstract;
-using Business.Concrete;
-using Business.Features;
+﻿using Business.Features;
 using Business.Hangfire.Jobs;
 using Business.Hangfire.Manager;
 using Business.Redis;
