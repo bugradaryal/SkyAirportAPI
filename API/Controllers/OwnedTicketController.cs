@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Utilitys.Logging;
 using Utilitys.Mapper;
 
 namespace API.Controllers
@@ -42,6 +43,7 @@ namespace API.Controllers
             _tokenServices = tokenServices;
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetAllOwnedTicket")]
         public async Task<IActionResult> GetAllOwnedTicket()
@@ -50,6 +52,7 @@ namespace API.Controllers
             return Ok(getAllRepository.entity);
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetAllOwnedTicketBySeatId")]
         public async Task<IActionResult> GetAllOwnedTicketBySeatId([FromQuery] int id)
@@ -60,6 +63,7 @@ namespace API.Controllers
             return Ok(getAllResponse.entity);
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetOwnedTicketById")]
         public async Task<IActionResult> GetOwnedTicketById([FromQuery] int id)
@@ -70,6 +74,7 @@ namespace API.Controllers
             return Ok(getByIdResponse.entity);
         }
 
+        [LogAction(Action_Type.Create)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("AddOwnedTicket")]
         public async Task<IActionResult> AddOwnedTicket([FromBody] OwnedTicketAddDTO OwnedTicketDTO)
@@ -84,6 +89,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Delete)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpDelete("DeleteOwnedTicket")]
         public async Task<IActionResult> DeleteOwnedTicket([FromQuery] int id)
@@ -99,6 +105,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Update)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPut("UpdateOwnedTicket")]
         public async Task<IActionResult> UpdateOwnedTicket([FromBody] OwnedTicketUpdateDTO OwnedTicketDTO)

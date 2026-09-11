@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Utilitys.Logging;
 using Utilitys.Mapper;
 
 namespace API.Controllers
@@ -36,6 +37,7 @@ namespace API.Controllers
             _tokenServices = tokenServices;
         }
 
+        [LogAction(Action_Type.Read)]
         [HttpGet("GetAllOperationalDelay")]
         [AllowAnonymous]
         public async Task<IActionResult> GetAllOperationalDelay()
@@ -44,6 +46,7 @@ namespace API.Controllers
             return Ok(getAllRepository.entity);
         }
 
+        [LogAction(Action_Type.Read)]
         [HttpGet("GetAllOperationalDelayByFlightId")]
         [AllowAnonymous]
         public async Task<IActionResult> GetAllOperationalDelayByFlightId([FromQuery] int id)
@@ -54,6 +57,7 @@ namespace API.Controllers
             return Ok(getAllResponse.entity);
         }
 
+        [LogAction(Action_Type.Read)]
         [HttpGet("GetOperationalDelayById")]
         [AllowAnonymous]
         public async Task<IActionResult> GetOperationalDelayById([FromQuery] int id)
@@ -64,9 +68,10 @@ namespace API.Controllers
             return Ok(getByIdResponse.entity);
         }
 
+        [LogAction(Action_Type.Create)]
         [HttpPost("AddOperationalDelay")]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
-        public async Task<IActionResult> AddOperationalDelay([FromBody]OperationalDelayAddDTO operationDelayDTO)
+        public async Task<IActionResult> AddOperationalDelay([FromBody] OperationalDelayAddDTO operationDelayDTO)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))
@@ -78,6 +83,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Delete)]
         [HttpDelete("DeleteOperationalDelay")]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         public async Task<IActionResult> DeleteOperationalDelay([FromQuery] int id)
@@ -93,6 +99,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Update)]
         [HttpPut("UpdateOperationalDelay")]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         public async Task<IActionResult> UpdateOperationalDelayDTO([FromBody] OperationalDelayUpdateDTO operationDelayDTO)

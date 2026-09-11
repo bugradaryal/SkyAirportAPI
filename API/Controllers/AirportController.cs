@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Utilitys.Logging;
 using Utilitys.Mapper;
 
 namespace API.Controllers
@@ -34,6 +35,7 @@ namespace API.Controllers
             _tokenServices = tokenServices;
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetAllAirports")]
         public async Task<IActionResult> GetAllAirports()
@@ -42,6 +44,7 @@ namespace API.Controllers
             return Ok(getAllResponse.entity);
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetAirportById")]
         public async Task<IActionResult> GetAirportById([FromQuery] int id)
@@ -52,6 +55,7 @@ namespace API.Controllers
             return Ok(getByIdResponse.entity);
         }
 
+        [LogAction(Action_Type.Create)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("AddAirport")]
         public async Task<IActionResult> AddAirport([FromBody] AirportAddDTO airportDTO)
@@ -66,6 +70,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Delete)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpDelete("DeleteAirport/{id}")]
         public async Task<IActionResult> DeleteAirport([FromRoute] int id)
@@ -81,6 +86,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Update)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPut("UpdateAirport")]
         public async Task<IActionResult> UpdateAirport([FromBody] AirportUpdateDTO airportDTO)

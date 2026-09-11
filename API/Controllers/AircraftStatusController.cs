@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Utilitys.Logging;
 using Utilitys.Mapper;
 
 namespace API.Controllers
@@ -37,6 +38,7 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
+        [LogAction(Action_Type.Read)]
         [HttpGet("GetAllAircraftStatus")]
         public async Task<IActionResult> GetAllAircraftStatus()
         {
@@ -49,6 +51,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Read)]
         [HttpGet("GetAircraftStatusById")]
         public async Task<IActionResult> GetAircraftStatusById([FromQuery] int id)
         {
@@ -64,8 +67,9 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Create)]
         [HttpPost("AddAircraftStatus")]
-        public async Task<IActionResult> AddAircraftStatus([FromBody]string newStatus)
+        public async Task<IActionResult> AddAircraftStatus([FromBody] string newStatus)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))
@@ -76,6 +80,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Delete)]
         [HttpDelete("DeleteAircraftStatus/{id}")]
         public async Task<IActionResult> DeleteAircraftStatus([FromRoute] int id)
         {
@@ -91,8 +96,9 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Update)]
         [HttpPut("UpdateAircraftStatus")]
-        public async Task<IActionResult> UpdateAircraftStatus([FromBody]AircraftStatusUpdateDTO aircraftStatusDTO)
+        public async Task<IActionResult> UpdateAircraftStatus([FromBody] AircraftStatusUpdateDTO aircraftStatusDTO)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))

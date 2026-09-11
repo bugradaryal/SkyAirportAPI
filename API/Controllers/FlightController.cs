@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Utilitys.Logging;
 using Utilitys.Mapper;
 using Business.Features.Flight.Queries.GetAllFlightByAircraftId;
 
@@ -37,6 +38,7 @@ namespace API.Controllers
             _tokenServices = tokenServices;
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetAllFlight")]
         public async Task<IActionResult> GetAllFlight()
@@ -45,6 +47,7 @@ namespace API.Controllers
             return Ok(getAllRepository.entity);
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetAllFlightByAirlineId")]
         public async Task<IActionResult> GetAllFlightByAirlineId([FromQuery] int id)
@@ -55,6 +58,7 @@ namespace API.Controllers
             return Ok(getAllResponse.entity);
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetAllFlightByAircraftId")]
         public async Task<IActionResult> GetAllFlightByAircraftId([FromQuery] int id)
@@ -65,6 +69,7 @@ namespace API.Controllers
             return Ok(getAllResponse.entity);
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetFlightById")]
         public async Task<IActionResult> GetFlightById([FromQuery] int id)
@@ -75,6 +80,7 @@ namespace API.Controllers
             return Ok(getByIdResponse.entity);
         }
 
+        [LogAction(Action_Type.Create)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("AddFlight")]
         public async Task<IActionResult> AddFlight([FromBody] FlightAddDTO flightDTO)
@@ -90,6 +96,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Delete)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpDelete("DeleteFlight")]
         public async Task<IActionResult> DeleteFlight([FromQuery] int id)
@@ -105,6 +112,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Update)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPut("UpdateFlight")]
         public async Task<IActionResult> UpdateFlight([FromBody] FlightUpdateDTO flightDTO)

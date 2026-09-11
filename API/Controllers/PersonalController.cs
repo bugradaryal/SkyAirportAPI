@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Utilitys.Logging;
 using Utilitys.Mapper;
 
 namespace API.Controllers
@@ -36,6 +37,7 @@ namespace API.Controllers
             _tokenServices = tokenServices;
         }
 
+        [LogAction(Action_Type.Read)]
         [HttpGet("GetAllPersonals")]
         public async Task<IActionResult> GetAllPersonals()
         {
@@ -48,6 +50,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Read)]
         [HttpGet("GetAllPersonalsByAirportId")]
         public async Task<IActionResult> GetAllPersonalsByAirportId([FromQuery] int id)
         {
@@ -62,6 +65,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Read)]
         [HttpGet("GetPersonalById")]
         public async Task<IActionResult> GetPersonalById([FromQuery] int id)
         {
@@ -76,6 +80,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Create)]
         [HttpPost("AddPersonal")]
         public async Task<IActionResult> AddPersonal([FromBody] PersonalAddDTO personalDTO)
         {
@@ -89,6 +94,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Delete)]
         [HttpDelete("DeletePersonal")]
         public async Task<IActionResult> DeletePersonal([FromQuery] int id)
         {
@@ -103,6 +109,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Update)]
         [HttpPut("UpdatePersonal")]
         public async Task<IActionResult> UpdatePersonal([FromBody] PersonalUpdateDTO personalDTO)
         {

@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Utilitys.Logging;
 using Utilitys.Mapper;
 
 namespace API.Controllers
@@ -37,6 +38,7 @@ namespace API.Controllers
             _tokenServices = tokenServices;
         }
 
+        [LogAction(Action_Type.Read)]
         [HttpGet("GetAllCrew")]
         public async Task<IActionResult> GetAllCrew()
         {
@@ -49,6 +51,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Read)]
         [HttpGet("GetAllCrewByAircraftId")]
         public async Task<IActionResult> GetAllCrewByAircraftId([FromQuery] int id)
         {
@@ -63,6 +66,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Read)]
         [HttpGet("GetCrewById")]
         public async Task<IActionResult> GetCrewById([FromQuery] int id)
         {
@@ -77,6 +81,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Create)]
         [HttpPost("AddCrew")]
         public async Task<IActionResult> AddCrew([FromBody] CrewAddDTO crewDTO)
         {
@@ -91,6 +96,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Delete)]
         [HttpDelete("DeleteCrew")]
         public async Task<IActionResult> DeleteCrew([FromQuery] int id)
         {
@@ -105,6 +111,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Update)]
         [HttpPut("UpdateCrew")]
         public async Task<IActionResult> UpdateCrew([FromBody] CrewUpdateDTO crewDTO)
         {

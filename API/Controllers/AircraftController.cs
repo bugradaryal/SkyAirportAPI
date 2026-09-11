@@ -31,7 +31,7 @@ namespace API.Controllers
         private readonly IMediator _mediator;
         private readonly ITokenServices _tokenServices;
         private readonly IMapper _mapper;
-        public AircraftController(IMediator mediator,ITokenServices tokenServices, IMapper mapper)
+        public AircraftController(IMediator mediator, ITokenServices tokenServices, IMapper mapper)
         {
             _tokenServices = tokenServices;
             _mediator = mediator;
@@ -45,6 +45,7 @@ namespace API.Controllers
             var getAllResponse = await _mediator.Send(new GetAllAircraftsRequest());
             return Ok(getAllResponse.entity);
         }
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetAircraftById")]
         public async Task<IActionResult> GetAircraftById([FromQuery] int id)
@@ -54,9 +55,10 @@ namespace API.Controllers
             var getByIdResponse = await _mediator.Send(new GetAircraftByIdRequest(id));
             return Ok(getByIdResponse.entity);
         }
+        [LogAction(Action_Type.Create)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("AddAircraft")]
-        public async Task<IActionResult> AddAircraft([FromBody]AircraftAddDto aircraftDTO)
+        public async Task<IActionResult> AddAircraft([FromBody] AircraftAddDto aircraftDTO)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))
@@ -67,6 +69,7 @@ namespace API.Controllers
             }
             return Unauthorized("Unvalid Token!!");
         }
+        [LogAction(Action_Type.Delete)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpDelete("DeleteAircraft/{id}")]
         public async Task<IActionResult> DeleteAircraft([FromRoute] int id)
@@ -82,9 +85,10 @@ namespace API.Controllers
             }
             return Unauthorized("Unvalid Token!!");
         }
+        [LogAction(Action_Type.Update)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPut("UpdateAircraft")]
-        public async Task<IActionResult> UpdateAircraft([FromBody]AircraftUpdateDTO aircraftDTO)
+        public async Task<IActionResult> UpdateAircraft([FromBody] AircraftUpdateDTO aircraftDTO)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))

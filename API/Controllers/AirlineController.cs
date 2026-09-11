@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Utilitys.Logging;
 using Utilitys.Mapper;
 
 namespace API.Controllers
@@ -28,13 +29,14 @@ namespace API.Controllers
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly ITokenServices _tokenServices;
-        public AirlineController(IMediator mediator, IMapper mapper, ITokenServices tokenServices) 
+        public AirlineController(IMediator mediator, IMapper mapper, ITokenServices tokenServices)
         {
             _mapper = mapper;
             _mediator = mediator;
             _tokenServices = tokenServices;
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetAllAirlines")]
         public async Task<IActionResult> GetAllAirlines()
@@ -43,6 +45,7 @@ namespace API.Controllers
             return Ok(getAllRepository.entity);
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetAllAirlinesByAirportId")]
         public async Task<IActionResult> GetAllAirlinesByAirportId([FromQuery] int id)
@@ -51,6 +54,7 @@ namespace API.Controllers
             return Ok(getAllResponse.entity);
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetAirlineById")]
         public async Task<IActionResult> GetAirlineById([FromQuery] int id)
@@ -60,9 +64,10 @@ namespace API.Controllers
             var getByIdResponse = await _mediator.Send(new GenericGetByIdRequest<Airline>(id));
             return Ok(getByIdResponse.entity);
         }
+        [LogAction(Action_Type.Create)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("AddAirline")]
-        public async Task<IActionResult> AddAirline([FromBody]AirlineAddDTO airlineDTO)
+        public async Task<IActionResult> AddAirline([FromBody] AirlineAddDTO airlineDTO)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))
@@ -73,6 +78,7 @@ namespace API.Controllers
             }
             return Unauthorized("Unvalid Token!!");
         }
+        [LogAction(Action_Type.Delete)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpDelete("DeleteAirline/{id}")]
         public async Task<IActionResult> DeleteAirline([FromRoute] int id)
@@ -87,9 +93,10 @@ namespace API.Controllers
             }
             return Unauthorized("Unvalid Token!!");
         }
+        [LogAction(Action_Type.Update)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPut("UpdateAirline")]
-        public async Task<IActionResult> UpdateAirline([FromBody]AirlineUpdateDTO airlineDTO)
+        public async Task<IActionResult> UpdateAirline([FromBody] AirlineUpdateDTO airlineDTO)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))

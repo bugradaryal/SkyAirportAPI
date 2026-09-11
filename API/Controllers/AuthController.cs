@@ -25,6 +25,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Win32;
 using System;
 using System.ComponentModel.DataAnnotations;
+using Utilitys.Logging;
 using Utilitys.MailServices;
 using Utilitys.Mapper;
 using Business.Features.Account.Commands.SuspendUser;
@@ -38,12 +39,13 @@ namespace API.Controllers
     public class AuthController : Controller
     {
         private readonly ITokenServices _tokenServices;
-        public AuthController(ITokenServices tokenServices) 
+        public AuthController(ITokenServices tokenServices)
         {
             _tokenServices = tokenServices;
         }
 
 
+        [LogAction(Action_Type.Update)]
         [AllowAnonymous]
         [HttpPost("RefreshToken")]
         public async Task<IActionResult> RefreshToken([FromHeader(Name = "RefreshToken")] string refreshToken)

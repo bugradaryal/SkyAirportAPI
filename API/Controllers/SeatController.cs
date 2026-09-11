@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Utilitys.Logging;
 using Utilitys.Mapper;
 
 namespace API.Controllers
@@ -37,6 +38,7 @@ namespace API.Controllers
             _tokenServices = tokenServices;
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetAllSeat")]
         public async Task<IActionResult> GetAllSeat()
@@ -45,6 +47,7 @@ namespace API.Controllers
             return Ok(getAllRepository.entity);
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetAllSeatByFlightId")]
         public async Task<IActionResult> GetAllSeatByFlightId([FromQuery] int id)
@@ -55,6 +58,7 @@ namespace API.Controllers
             return Ok(getAllResponse.entity);
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetSeatById")]
         public async Task<IActionResult> GetSeatById([FromQuery] int id)
@@ -65,6 +69,7 @@ namespace API.Controllers
             return Ok(getByIdResponse.entity);
         }
 
+        [LogAction(Action_Type.Create)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("AddSeat")]
         public async Task<IActionResult> AddSeat([FromBody] SeatAddDTO seatDTO)
@@ -79,6 +84,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Delete)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpDelete("DeleteSeat")]
         public async Task<IActionResult> DeleteSeat([FromQuery] int id)
@@ -94,6 +100,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Update)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPut("UpdateSeat")]
         public async Task<IActionResult> UpdateSeat([FromBody] SeatUpdateDTO seatDTO)

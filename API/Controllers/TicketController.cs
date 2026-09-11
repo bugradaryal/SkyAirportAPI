@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Utilitys.Logging;
 using Utilitys.Mapper;
 
 namespace API.Controllers
@@ -45,6 +46,7 @@ namespace API.Controllers
             _redisServices = redisServices;
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetAllTicket")]
         public async Task<IActionResult> GetAllTicket([FromQuery] string type = "TRY")
@@ -64,6 +66,7 @@ namespace API.Controllers
             return Ok(getAllResponse.entity);
         }
 
+        [LogAction(Action_Type.Read)]
         [AllowAnonymous]
         [HttpGet("GetTicketById")]
         public async Task<IActionResult> GetTicketById([FromQuery] int id, [FromQuery] string type = "TRY")
@@ -75,11 +78,12 @@ namespace API.Controllers
             {
                 var forex = await _redisServices.GetAsync("forex");
                 if (!string.IsNullOrEmpty(forex))
-                    getAllResponse.entity.Price = getAllResponse.entity.Price * decimal.Parse(forex, CultureInfo.InvariantCulture);          
+                    getAllResponse.entity.Price = getAllResponse.entity.Price * decimal.Parse(forex, CultureInfo.InvariantCulture);
             }
             return Ok(getAllResponse.entity);
         }
 
+        [LogAction(Action_Type.Create)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("AddTicket")]
         public async Task<IActionResult> AddTicket([FromBody] TicketAddDTO ticketAddDTO)
@@ -94,6 +98,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Delete)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpDelete("DeleteTicket")]
         public async Task<IActionResult> DeleteTicket([FromQuery] int id)
@@ -109,6 +114,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Update)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPut("UpdateTicket")]
         public async Task<IActionResult> UpdateTicket([FromBody] TicketUpdateDTO ticketUpdateDTO)

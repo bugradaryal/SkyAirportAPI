@@ -25,6 +25,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Win32;
 using System;
 using System.ComponentModel.DataAnnotations;
+using Utilitys.Logging;
 using Utilitys.MailServices;
 using Utilitys.Mapper;
 using Business.Features.Account.Commands.SuspendUser;
@@ -42,7 +43,7 @@ namespace API.Controllers
         private readonly IPhoneServices _phoneServices;
         private readonly string _callBackURL;
         public AccountController(IMediator mediator, IOptions<CallBackURL> callBackURL,
-            ITokenServices tokenServices, IMailServices mailServices, IPhoneServices phoneServices) 
+            ITokenServices tokenServices, IMailServices mailServices, IPhoneServices phoneServices)
         {
             _tokenServices = tokenServices;
             _mediator = mediator;
@@ -52,14 +53,16 @@ namespace API.Controllers
         }
 
 
+        [LogAction(Action_Type.Create)]
         [AllowAnonymous]
         [HttpPost("Register")]
-        public async Task<IActionResult> CreateAccount([FromBody]CreateAccountDTO createAccountDTO)
+        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountDTO createAccountDTO)
         {
             await _mediator.Send(new CreateAccountRequest(createAccountDTO));
             return Ok(new { message = "Account Created!" });
         }
 
+        [LogAction(Action_Type.Login)]
         [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<IActionResult> LoginAccount([FromBody] LoginAccountDTO loginAccountDTO)
@@ -95,6 +98,7 @@ namespace API.Controllers
             });
         }
 
+        [LogAction(Action_Type.Delete)]
         [Authorize(Policy = "IsUserSuspended")]
         [HttpDelete("DeleteAccount/{userId}")]
         public async Task<IActionResult> DeleteAccount([FromRoute] string userId)
@@ -111,6 +115,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Update)]
         [Authorize(Policy = "IsUserSuspended")]
         [HttpPut("UpdateAccount")]
         public async Task<IActionResult> UpdateAccount([FromBody] UpdateAccountDTO updateAccountDTO)
@@ -124,6 +129,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Update)]
         [Authorize(Policy = "IsUserSuspended")]
         [HttpPut("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO changePasswordDTO)
@@ -138,6 +144,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Create)]
         [HttpPost("SendingEmail")]
         [AllowAnonymous]
         public async Task<IActionResult> SendingEmail([FromBody] string email)
@@ -154,6 +161,7 @@ namespace API.Controllers
             return Ok(new { message = "Email verification code sended!!!" });
         }
 
+        [LogAction(Action_Type.Update)]
         [HttpGet("EmailVerification")]
         [AllowAnonymous]
         public async Task<IActionResult> EmailVerification([FromQuery] string userId, [FromQuery] string emailConfUrl)
@@ -163,6 +171,7 @@ namespace API.Controllers
         }
 
 
+        [LogAction(Action_Type.Update)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("AddRoleToUser")]
         public async Task<IActionResult> AddRoleToUser([FromBody] RoleManagerDTO roleDTO)
@@ -176,6 +185,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Update)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("RemoveRolFromUser")]
         public async Task<IActionResult> RemoveRolFromUser([FromBody] RoleManagerDTO roleDTO)
@@ -189,6 +199,7 @@ namespace API.Controllers
             return Unauthorized("Unvalid Token!!");
         }
 
+        [LogAction(Action_Type.Update)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
         [HttpPost("SuspendUser")]
         public async Task<IActionResult> SuspendUser([FromQuery] string userId)
