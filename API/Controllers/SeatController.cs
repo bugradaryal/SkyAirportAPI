@@ -42,8 +42,8 @@ namespace API.Controllers
 
         [LogAction(Action_Type.Read)]
         [AllowAnonymous]
-        [HttpGet("GetAllSeatByFlightId")]
-        public async Task<IActionResult> GetAllSeatByFlightId([FromQuery] int id)
+        [HttpGet("GetAllSeatByFlightId/{id}")]
+        public async Task<IActionResult> GetAllSeatByFlightId([FromRoute] int id)
         {
             if (id <= 0)
                 return BadRequest(new { message = "Invalid Id!!" });
@@ -53,8 +53,8 @@ namespace API.Controllers
 
         [LogAction(Action_Type.Read)]
         [AllowAnonymous]
-        [HttpGet("GetSeatById")]
-        public async Task<IActionResult> GetSeatById([FromQuery] int id)
+        [HttpGet("GetSeatById/{id}  ")]
+        public async Task<IActionResult> GetSeatById([FromRoute] int id)
         {
             if (id <= 0)
                 return BadRequest(new { message = "Invalid Id!!" });
@@ -79,8 +79,8 @@ namespace API.Controllers
 
         [LogAction(Action_Type.Delete)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
-        [HttpDelete("DeleteSeat")]
-        public async Task<IActionResult> DeleteSeat([FromQuery] int id)
+        [HttpDelete("DeleteSeat/{id}")]
+        public async Task<IActionResult> DeleteSeat([FromRoute] int id)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))

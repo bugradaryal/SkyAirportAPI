@@ -41,9 +41,9 @@ namespace API.Controllers
         }
 
         [LogAction(Action_Type.Read)]
-        [HttpGet("GetAllOperationalDelayByFlightId")]
+        [HttpGet("GetAllOperationalDelayByFlightId/{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllOperationalDelayByFlightId([FromQuery] int id)
+        public async Task<IActionResult> GetAllOperationalDelayByFlightId([FromRoute] int id)
         {
             if (id <= 0)
                 return BadRequest(new { message = "Invalid Id!!" });
@@ -52,9 +52,9 @@ namespace API.Controllers
         }
 
         [LogAction(Action_Type.Read)]
-        [HttpGet("GetOperationalDelayById")]
+        [HttpGet("GetOperationalDelayById/{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetOperationalDelayById([FromQuery] int id)
+        public async Task<IActionResult> GetOperationalDelayById([FromRoute] int id)
         {
             if (id <= 0)
                 return BadRequest(new { message = "Invalid Id!!" });
@@ -78,9 +78,9 @@ namespace API.Controllers
         }
 
         [LogAction(Action_Type.Delete)]
-        [HttpDelete("DeleteOperationalDelay")]
+        [HttpDelete("DeleteOperationalDelay/{id}")]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
-        public async Task<IActionResult> DeleteOperationalDelay([FromQuery] int id)
+        public async Task<IActionResult> DeleteOperationalDelay([FromRoute] int id)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))

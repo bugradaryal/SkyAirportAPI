@@ -88,8 +88,8 @@ namespace API.Controllers
 
         [LogAction(Action_Type.Delete)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
-        [HttpDelete("DeleteTicket")]
-        public async Task<IActionResult> DeleteTicket([FromQuery] int id)
+        [HttpDelete("DeleteTicket/{id}")]
+        public async Task<IActionResult> DeleteTicket([FromRoute] int id)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))

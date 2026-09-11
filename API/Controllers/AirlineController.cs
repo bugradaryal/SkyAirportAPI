@@ -41,8 +41,8 @@ namespace API.Controllers
 
         [LogAction(Action_Type.Read)]
         [AllowAnonymous]
-        [HttpGet("GetAllAirlinesByAirportId")]
-        public async Task<IActionResult> GetAllAirlinesByAirportId([FromQuery] int id)
+        [HttpGet("GetAllAirlinesByAirportId/{id}")]
+        public async Task<IActionResult> GetAllAirlinesByAirportId([FromRoute] int id)
         {
             var getAllResponse = await _mediator.Send(new GetAllAirlinesByAirportIdRequest(id));
             return Ok(getAllResponse.entity);
@@ -50,8 +50,8 @@ namespace API.Controllers
 
         [LogAction(Action_Type.Read)]
         [AllowAnonymous]
-        [HttpGet("GetAirlineById")]
-        public async Task<IActionResult> GetAirlineById([FromQuery] int id)
+        [HttpGet("GetAirlineById/{id}")]
+        public async Task<IActionResult> GetAirlineById([FromRoute] int id)
         {
             if (id <= 0)
                 return BadRequest(new { message = "Invalid Id!!" });

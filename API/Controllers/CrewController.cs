@@ -46,8 +46,8 @@ namespace API.Controllers
         }
 
         [LogAction(Action_Type.Read)]
-        [HttpGet("GetAllCrewByAircraftId")]
-        public async Task<IActionResult> GetAllCrewByAircraftId([FromQuery] int id)
+        [HttpGet("GetAllCrewByAircraftId/{id}")]
+        public async Task<IActionResult> GetAllCrewByAircraftId([FromRoute] int id)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))
@@ -61,8 +61,8 @@ namespace API.Controllers
         }
 
         [LogAction(Action_Type.Read)]
-        [HttpGet("GetCrewById")]
-        public async Task<IActionResult> GetCrewById([FromQuery] int id)
+        [HttpGet("GetCrewById/{id}")]
+        public async Task<IActionResult> GetCrewById([FromRoute] int id)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))
@@ -91,8 +91,8 @@ namespace API.Controllers
         }
 
         [LogAction(Action_Type.Delete)]
-        [HttpDelete("DeleteCrew")]
-        public async Task<IActionResult> DeleteCrew([FromQuery] int id)
+        [HttpDelete("DeleteCrew/{id}")]
+        public async Task<IActionResult> DeleteCrew([FromRoute] int id)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))

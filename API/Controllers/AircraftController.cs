@@ -39,8 +39,8 @@ namespace API.Controllers
         }
         [LogAction(Action_Type.Read)]
         [AllowAnonymous]
-        [HttpGet("GetAircraftById")]
-        public async Task<IActionResult> GetAircraftById([FromQuery] int id)
+        [HttpGet("GetAircraftById/{id}")]
+        public async Task<IActionResult> GetAircraftById([FromRoute] int id)
         {
             if (id <= 0)
                 return BadRequest(new { message = "Invalid Id!!" });

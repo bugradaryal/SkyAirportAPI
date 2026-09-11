@@ -42,8 +42,8 @@ namespace API.Controllers
 
         [LogAction(Action_Type.Read)]
         [AllowAnonymous]
-        [HttpGet("GetAllOwnedTicketBySeatId")]
-        public async Task<IActionResult> GetAllOwnedTicketBySeatId([FromQuery] int id)
+        [HttpGet("GetAllOwnedTicketBySeatId/{id}")]
+        public async Task<IActionResult> GetAllOwnedTicketBySeatId([FromRoute] int id)
         {
             if (id <= 0)
                 return BadRequest(new { message = "Invalid Id!!" });
@@ -53,8 +53,8 @@ namespace API.Controllers
 
         [LogAction(Action_Type.Read)]
         [AllowAnonymous]
-        [HttpGet("GetOwnedTicketById")]
-        public async Task<IActionResult> GetOwnedTicketById([FromQuery] int id)
+        [HttpGet("GetOwnedTicketById/{id}")]
+        public async Task<IActionResult> GetOwnedTicketById([FromRoute] int id)
         {
             if (id <= 0)
                 return BadRequest(new { message = "Invalid Id!!" });
@@ -79,8 +79,8 @@ namespace API.Controllers
 
         [LogAction(Action_Type.Delete)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
-        [HttpDelete("DeleteOwnedTicket")]
-        public async Task<IActionResult> DeleteOwnedTicket([FromQuery] int id)
+        [HttpDelete("DeleteOwnedTicket/{id}")]
+        public async Task<IActionResult> DeleteOwnedTicket([FromRoute] int id)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))

@@ -66,8 +66,6 @@ namespace API.Controllers
             {
                 var userResponse = await _mediator.Send(new GetUserByIdRequest(userId));
                 user = userResponse.user;
-                if (user.IsSuspended)
-                    return Unauthorized("User Suspended!!");
             }
             else
             {
@@ -80,6 +78,7 @@ namespace API.Controllers
             roleResponse = await _mediator.Send(new GetUserRoleRequest(user.Id));
             return Ok(new AuthenticationModel
             {
+                UserId = user.Id,
                 Email = user.Email,
                 UserName = user.UserName,
                 Roles = roleResponse.UserRoles,
@@ -177,8 +176,8 @@ namespace API.Controllers
 
         [LogAction(Action_Type.Update)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
-        [HttpPost("RemoveRolFromUser")]
-        public async Task<IActionResult> RemoveRolFromUser([FromBody] RoleManagerDTO roleDTO)
+        [HttpPost("RemoveRoleFromUser")]
+        public async Task<IActionResult> RemoveRoleFromUser([FromBody] RoleManagerDTO roleDTO)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))
@@ -191,8 +190,8 @@ namespace API.Controllers
 
         [LogAction(Action_Type.Update)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
-        [HttpPost("SuspendUser")]
-        public async Task<IActionResult> SuspendUser([FromQuery] string userId)
+        [HttpPost("SuspendUser/{userId}")]
+        public async Task<IActionResult> SuspendUser([FromRoute] string userId)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))

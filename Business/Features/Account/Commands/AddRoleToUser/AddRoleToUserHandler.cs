@@ -29,7 +29,8 @@ namespace Business.Features.Account.Commands.AddRoleToUser
                 if (!result.Succeeded)
                     throw new CustomException("Role cant be added!", (int)HttpStatusCode.BadRequest, result.Errors?.FirstOrDefault()?.ToString());
             }
-            throw new CustomException("User not exist!", (int)HttpStatusCode.NotFound);
+            else
+                throw new CustomException("User not exist!", (int)HttpStatusCode.NotFound);
         }
     }
 }

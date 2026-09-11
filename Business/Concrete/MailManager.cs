@@ -26,7 +26,7 @@ namespace Utilitys.MailServices
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress("Email Verification<No-Reply>", _mail.Email));
             message.To.Add(new MailboxAddress("", email));
-            message.Subject = "Email Verification by SelfBookAPI";
+            message.Subject = "Email Verification by SkyAirportAPI";
 
             var bodyBuilder = new BodyBuilder();
             bodyBuilder.HtmlBody = "<b>Email verification url: </b>" + "<a href = " + url + "> link text </a> <br>" +

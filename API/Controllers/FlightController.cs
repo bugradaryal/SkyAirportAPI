@@ -42,8 +42,8 @@ namespace API.Controllers
 
         [LogAction(Action_Type.Read)]
         [AllowAnonymous]
-        [HttpGet("GetAllFlightByAirlineId")]
-        public async Task<IActionResult> GetAllFlightByAirlineId([FromQuery] int id)
+        [HttpGet("GetAllFlightByAirlineId/{id}")]
+        public async Task<IActionResult> GetAllFlightByAirlineId([FromRoute] int id)
         {
             if (id <= 0)
                 return BadRequest(new { message = "Invalid Id!!" });
@@ -53,8 +53,8 @@ namespace API.Controllers
 
         [LogAction(Action_Type.Read)]
         [AllowAnonymous]
-        [HttpGet("GetAllFlightByAircraftId")]
-        public async Task<IActionResult> GetAllFlightByAircraftId([FromQuery] int id)
+        [HttpGet("GetAllFlightByAircraftId/{id}")]
+        public async Task<IActionResult> GetAllFlightByAircraftId([FromRoute] int id)
         {
             if (id <= 0)
                 return BadRequest(new { message = "Invalid Id!!" });
@@ -64,8 +64,8 @@ namespace API.Controllers
 
         [LogAction(Action_Type.Read)]
         [AllowAnonymous]
-        [HttpGet("GetFlightById")]
-        public async Task<IActionResult> GetFlightById([FromQuery] int id)
+        [HttpGet("GetFlightById/{id}")]
+        public async Task<IActionResult> GetFlightById([FromRoute] int id)
         {
             if (id <= 0)
                 return BadRequest(new { message = "Invalid Id!!" });
@@ -91,8 +91,8 @@ namespace API.Controllers
 
         [LogAction(Action_Type.Delete)]
         [Authorize(Roles = "Administrator", Policy = "IsUserSuspended")]
-        [HttpDelete("DeleteFlight")]
-        public async Task<IActionResult> DeleteFlight([FromQuery] int id)
+        [HttpDelete("DeleteFlight/{id}")]
+        public async Task<IActionResult> DeleteFlight([FromRoute] int id)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))

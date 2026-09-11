@@ -1,4 +1,5 @@
 using Business.Abstract;
+using Business.Features.AircraftStatus.Commands;
 using Business.Features.Generic.Commands.Add;
 using Business.Features.Generic.Commands.Delete;
 using Business.Features.Generic.Commands.Update;
@@ -45,8 +46,8 @@ namespace API.Controllers
         }
 
         [LogAction(Action_Type.Read)]
-        [HttpGet("GetAircraftStatusById")]
-        public async Task<IActionResult> GetAircraftStatusById([FromQuery] int id)
+        [HttpGet("GetAircraftStatusById/{id}")]
+        public async Task<IActionResult> GetAircraftStatusById([FromRoute] int id)
         {
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))
@@ -67,7 +68,7 @@ namespace API.Controllers
             var tokenUserId = User.FindFirst("uid")?.Value;
             if (!string.IsNullOrEmpty(tokenUserId))
             {
-                await _mediator.Send(new GenericAddRequest<AircraftStatus>(new AircraftStatus { Status = newStatus }));
+                await _mediator.Send(new AddAircraftStatusRequest(newStatus));
                 return Ok(new { message = "AircraftStatus added!" });
             }
             return Unauthorized("Unvalid Token!!");
