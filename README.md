@@ -22,9 +22,12 @@ A layered, production-style RESTful API built with **.NET Core** for managing ai
 
 ## 🔍 Logging & Observability
 
-- **Serilog** structured logging, wrapped in a custom `LoggerManager` that also persists log entries to the database with severity levels (`Trace` → `Emergency`).
-- **`CustomException`** carries an `ErrorCode` (mapped to HTTP status codes), an `ExceptionLevel`, and an optional `InnerMessage`. The `ExceptionLevel` drives the severity of the log entry it produces, so every thrown exception is automatically logged at the right level rather than being logged separately by hand.
-- Every log entry (`LogDTO`) is tagged with an `Action_Type` (e.g. `APIRequest`, `APIResponse`, `Create`, `Update`, `Delete`, `SystemError`), a `Target_table`, an optional `user_id`, and `AdditionalData`, making individual log records traceable back to the endpoint, entity, and user involved.
+- **Fully automatic request logging** — `LoggingMiddleware` logs every request without any manual calls in the handlers. If the hit endpoint is decorated with `[LogAction(Action_Type.X)]`, the request is logged once (after execution) with that action type; otherwise it falls back to logging an `APIRequest` on the way in and an `APIResponse` on the way out.
+- **`LogActionAttribute`** — a `[LogAction(...)]` attribute (method or class level) is the only thing a controller/action needs to opt into a specific `Action_Type` (`Create`, `Update`, `Delete`, etc.) instead of the generic request/response pair.
+- **`LogLevelResolver`** — maps an HTTP status code to a log severity (`>=500` → Error, `>=400` → Warn, else Info) shared by both `LoggingMiddleware` and `ExceptionMiddleware`, so severity is derived consistently in one place instead of being decided ad hoc per call site.
+- **`ExceptionMiddleware`** — catches unhandled exceptions globally, resolves the status code from `CustomException.ErrorCode` (or 500), logs it through the same `ILoggerServices` pipeline, and returns a JSON error response — so an exception never needs an explicit logging call either.
+- **`LoggerManager`** (`ILoggerServices`) is the single sink all logging funnels through: it maps the incoming `LogDTO` to a `LogEntry`, writes to **Serilog** (`ISerilogServices`/`SerilogLogger`) at the resolved level, and persists the same entry to the database via `ILogRepository`. If logging itself throws, it falls back to a `Fatal`-level "Critical Fatal Error" record so a logging failure is never silent.
+- Every log entry is tagged with an `Action_Type`, a `Target_table` (the request path), an optional `user_id` (from the `uid` claim), and `AdditionalData`, making individual log records traceable back to the endpoint, entity, and user involved.
 - **Elasticsearch + Kibana** — logs are shipped for centralized search and visualization.
 
 ## ⚡ Caching & Background Processing
@@ -65,6 +68,40 @@ docker-compose up -d
 ```
 
 This spins up the supporting infrastructure (PostgreSQL, Redis, Elasticsearch, Kibana). Run the API project separately (`dotnet run` or via your IDE) once the containers are healthy.
+
+## 🗄️ Database Configuration
+
+The project ships with three `appsettings` files to cover three different run scenarios. Pick the one that matches how you're running the API:
+
+| File | Used when | Port | Host |
+|---|---|---|---|
+| `appsettings.json` | Running the API natively (default, no extra setup) | 5432 | localhost |
+| `appsettings.Docker.json` | API running **inside a container** (`ASPNETCORE_ENVIRONMENT=Docker`), loaded automatically by `docker-compose up` | 5432 (internal) | `postgres` (container name) |
+| `appsettings.DockerHost.json` | Reaching the Dockerized Postgres **from the host** — for running migrations, or hybrid debugging | 5433 | localhost |
+
+> Port 5433 is used for host access because native Postgres already listens on 5432; the container maps `5433:5432` in `docker-compose.yml` to avoid a conflict.
+
+**Scenario 1 — Native / local:** just run the API (`dotnet run` or F5 with the default profile). Uses `appsettings.json` against native Postgres (5432).
+
+**Scenario 2 — Fully Dockerized (API + DB in containers):**
+```bash
+docker-compose up -d --build
+cd API
+dotnet ef database update --project DataAccess --startup-project API -- --environment DockerHost
+```
+`docker-compose up` starts the API with `appsettings.Docker.json` (internal 5432). Migrations are applied from the host via the `DockerHost` environment (5433) against the same physical database, so the containerized API picks them up. Re-run the `dotnet ef` command whenever a new migration is added.
+
+**Scenario 3 — Hybrid (API on host, DB in Docker):**
+```bash
+docker-compose up -d postgres
+dotnet run --launch-profile DockerDB-Local
+```
+Uses `appsettings.DockerHost.json` (5433). Mainly useful for debugging with breakpoints on the host while the DB runs in Docker.
+
+**Notes:**
+- `dotnet ef` does not read `launchSettings.json` profiles — always pass `-- --environment <name>` explicitly when running migrations.
+- On a new machine: install Docker Desktop, clone the repo, install the EF tool (`dotnet tool install --global dotnet-ef`), then follow Scenario 2.
+- `appsettings.DockerHost.json` contains a password and would normally be excluded from source control; it currently holds a local dev-only password, but should move to User Secrets / environment variables before targeting a real environment.
 
 ---
 
