@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Utilitys.ExceptionHandler;
 using Business.Features.Account.Commands.UpdateAccount;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Utilitys.ResponseHandler;
+using Utilitys.Logging.ExceptionHandler;
+
 
 namespace Business.Features.Account.Queries.GetUserByEmail
 {
@@ -23,17 +24,10 @@ namespace Business.Features.Account.Queries.GetUserByEmail
 
         public async Task<GetUserByEmailResponse> Handle(GetUserByEmailRequest request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var result = await _userManager.FindByEmailAsync(request.email);
-                if (result == null)
-                    return new GetUserByEmailResponse { response = new ResponseModel { Message = "Account doesnt exist!!" } };
-                return new GetUserByEmailResponse { user = result, error = false };
-            }
-            catch (Exception ex)
-            {
-                return new GetUserByEmailResponse { response = new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) } };
-            }
+            var user = await _userManager.FindByEmailAsync(request.email);
+            if (user == null)
+                throw new CustomException("Account doesnt exist!!", (int)HttpStatusCode.NotFound);
+            return new GetUserByEmailResponse { user = user };
         }
     }
 }

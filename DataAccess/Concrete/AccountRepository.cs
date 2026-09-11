@@ -11,21 +11,19 @@ namespace DataAccess.Concrete
 {
     public class AccountRepository : IAccountRepository
     {
-        public async Task SuspendUser(string userId)
+        private DataDbContext _dbContext;
+        public AccountRepository(DataDbContext dbContext)
         {
-            using (var _dbContext = new DataDbContext())
-            {
-                bool suspend = false;
-                var user = new User { Id = userId };
-                _dbContext.Users.Attach(user);
+            _dbContext = dbContext;
+        }
+        public async Task<bool> SuspendUser(string userId)
+        {
+            var user = await _dbContext.Users.FindAsync(userId);
+            if (user == null) return false;
 
-                if (!user.IsSuspended)
-                    suspend = true;
-
-                    _dbContext.Entry(user).Property(u => u.IsSuspended).IsModified = true;
-
-                await _dbContext.SaveChangesAsync();
-            }
+            user.IsSuspended = !user.IsSuspended;
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
     }
 }

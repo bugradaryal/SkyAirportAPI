@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Utilitys.ExceptionHandler;
 using DTO;
+using DTO.Account;
 using Entities;
 using MediatR;
-using Utilitys.ResponseHandler;
+
 
 namespace Business.Features.Account.Commands.UpdateAccount
 {
-    public record UpdateAccountRequest(User user) : IRequest<ResponseModel>;
+    public record UpdateAccountRequest(UpdateAccountDTO updateAccountDTO, string userId) : IRequest;
 }

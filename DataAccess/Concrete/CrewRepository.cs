@@ -11,17 +11,20 @@ namespace DataAccess.Concrete
 {
     public class CrewRepository : ICrewRepository
     {
+        private DataDbContext _dbContext;
+        public CrewRepository(DataDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
         public async Task<List<Crew>> GetAllByAircraftId(int id)
         {
-            using (var _dbContext = new DataDbContext())
-            {
-                var crew = await _dbContext.Crew_Aircrafts
-                    .Where(af => af.aircraft_id == id)
-                    .Include(af => af.crew)
-                    .Select(af => af.crew)
-                    .ToListAsync();
-                return crew;
-            }
+
+            var crew = await _dbContext.Crew_Aircrafts
+                .Where(af => af.aircraft_id == id)
+                .Include(af => af.crew)
+                .Select(af => af.crew)
+                .ToListAsync();
+            return crew;
         }
     }
 }

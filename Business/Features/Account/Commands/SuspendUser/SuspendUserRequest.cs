@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using DTO.Account;
 using MediatR;
-using Utilitys.ResponseHandler;
+
 
 namespace Business.Features.Account.Commands.SuspendUser
 {
-    public record SuspendUserRequest(string userId) : IRequest<ResponseModel>;
+    public record SuspendUserRequest(string userId) : IRequest;
 }

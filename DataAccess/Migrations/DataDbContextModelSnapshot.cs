@@ -762,19 +762,19 @@ namespace DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "88c09c19-1368-439a-a14e-9d8ef5d939d8",
+                            Id = "563e043b-4cc5-4614-b65e-ac3ba0b7274f",
                             Name = "Administrator",
                             NormalizedName = "ADMİNİSTRATOR"
                         },
                         new
                         {
-                            Id = "bb51480d-ee83-40fc-860d-224d8c1171a0",
+                            Id = "f5bc6697-cc7b-4493-a380-f799d27aa0f9",
                             Name = "Support",
                             NormalizedName = "SUPPORT"
                         },
                         new
                         {
-                            Id = "b0043bfb-988e-4494-9e9f-7bcc7a4e04ca",
+                            Id = "0f0fa19e-13f8-4d68-9064-c3542e4d6fb6",
                             Name = "User",
                             NormalizedName = "USER"
                         });

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Business.Abstract;
 using DataAccess.Abstract;
 using DataAccess.Concrete;
 using DTO;
@@ -14,55 +13,55 @@ using Entities.Moderation;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Serilog.Events;
-using Utilitys.ExceptionHandler;
-using Utilitys.Logger;
+using Utilitys.Logging.ExceptionHandler;
+using Utilitys.Logging.Serilog;
 using Utilitys.Mapper;
 
-namespace Business.Concrete
+namespace Utilitys.Logging
 {
     public class LoggerManager : ILoggerServices
     {
         private readonly ISerilogServices _logger;
         private readonly IMapper _mapper;
         private readonly ILogRepository _logRepository;
-        public LoggerManager(IMapper mapper)
+        public LoggerManager(IMapper mapper, ISerilogServices logger, ILogRepository logRepository)
         {
             _mapper = mapper;
-            _logger = new SerilogLogger();
-            _logRepository = new LogRepository();
+            _logger = logger;
+            _logRepository = logRepository;
         }
         public async Task Logger(LogDTO logdto, CustomException? exception = null)
         {
+            var logData = _mapper.Map<LogEntry, LogDTO>(logdto);
             try
             {
-                var logData = _mapper.Map<LogEntry, LogDTO>(logdto);
-                if (logdto.loglevel_id < 3)
+                if (logData.loglevel_id == 1)
                 {
-                    _logger.Info(logdto);
+                    _logger.Info(logData);
                     await _logRepository.AddLog(logData);
                 }
-                else if(logdto.loglevel_id == 3)
+                else if(logData.loglevel_id == 2)
                 {
-                    _logger.Warn(logdto);
+                    _logger.Warn(logData);
                     await _logRepository.AddLog(logData);
                 }
                 else
                 {
-                    logdto.Message += $"       /       {JsonConvert.SerializeObject(exception)}";
-                    _logger.Error(logdto, exception);
+                    logData.Message += $"Error!!       /       {JsonConvert.SerializeObject(exception)}";
+                    _logger.Error(logData, exception);
                     await _logRepository.AddLog(logData);
                 }
             }
             catch (Exception ex) 
             {
-                _logger.Fatal(logdto, ex);
+                _logger.Fatal(logData, ex);
                 await _logRepository.AddLog(new LogEntry {  
                     Action_type = Action_Type.SystemError, 
-                    loglevel_id = (int)LogEventLevel.Fatal,
+                    loglevel_id = 4,
                     Message = "Critical Fatal Error!!       /       " + JsonConvert.SerializeObject(ex),
-                    Target_table = logdto.Target_table,
-                    user_id = logdto.user_id,
-                    AdditionalData = logdto.AdditionalData
+                    Target_table = logData.Target_table,
+                    user_id = logData.user_id ?? null,
+                    AdditionalData = logData.AdditionalData
                 });
             }
 

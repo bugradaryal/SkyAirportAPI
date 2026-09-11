@@ -7,33 +7,28 @@ using System.Threading.Tasks;
 using Business.Features.Account.Commands.ChangePassword;
 using DataAccess.Abstract;
 using DataAccess.Concrete;
+using DTO;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Utilitys.ExceptionHandler;
-using Utilitys.ResponseHandler;
+using Utilitys.Logging.ExceptionHandler;
+
 
 namespace Business.Features.Account.Commands.SuspendUser
 {
-    public class SuspendUserHandler : IRequestHandler<SuspendUserRequest, ResponseModel>
+    public class SuspendUserHandler : IRequestHandler<SuspendUserRequest>
     {
         private IAccountRepository _accountRepository;
-        public SuspendUserHandler()
+        public SuspendUserHandler(IAccountRepository accountRepository)
         {
-            _accountRepository = new AccountRepository();
+            _accountRepository = accountRepository;
         }
 
-        public async Task<ResponseModel> Handle(SuspendUserRequest request, CancellationToken cancellationToken)
+        public async Task Handle(SuspendUserRequest request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _accountRepository.SuspendUser(request.userId);
-                return null;
-            }
-            catch (Exception ex)
-            {
-                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) };
-            }
+            var suspendResult = await _accountRepository.SuspendUser(request.userId);
+            if(!suspendResult)
+                throw new CustomException("User not exist!", (int)HttpStatusCode.NotFound);
         }
     }
 }

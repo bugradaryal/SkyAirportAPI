@@ -12,7 +12,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Utilitys.CurrencyService;
-using Utilitys.ExceptionHandler;
+using Utilitys.Logging;
+using Utilitys.Logging.ExceptionHandler;
 
 namespace Business.Hangfire.Manager
 {
@@ -34,8 +35,8 @@ namespace Business.Hangfire.Manager
                     Message = "BackgroundJob starting!",
                     Action_type = Action_Type.APIRequest,
                     Target_table = "Hangfire",
-                    loglevel_id = 1,
-                }, null);
+                    loglevel_id = 1
+                });
                 var list = await ForexManager.CurrencyGetter();
 
                 string redisKey = "forex";
@@ -51,8 +52,8 @@ namespace Business.Hangfire.Manager
                     Message = "Current forex:    "+ json,
                     Action_type = Action_Type.APIResponse,
                     Target_table = "Hangfire",
-                    loglevel_id = 1,
-                }, null);
+                    loglevel_id = 1
+                });
             }
             catch(Exception ex) 
             {
@@ -61,8 +62,8 @@ namespace Business.Hangfire.Manager
                     Message =  "Exception throw!",
                     Action_type = Action_Type.SystemError,
                     Target_table = "Hangfire",
-                    loglevel_id = 5,
-                }, new CustomException(ex.Message,4,(int)HttpStatusCode.BadRequest,ex.InnerException?.Message));
+                    loglevel_id = 3
+                }, new CustomException(ex.Message,(int)HttpStatusCode.InternalServerError, ex.InnerException?.Message));
             }
 
         }

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DTO;
-using Utilitys.ExceptionHandler;
+using Utilitys.Logging.ExceptionHandler;
 
-namespace Business.Abstract
+namespace Utilitys.Logging
 {
     public interface ILoggerServices
     {

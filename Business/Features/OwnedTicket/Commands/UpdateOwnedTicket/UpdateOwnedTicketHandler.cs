@@ -8,47 +8,45 @@ using DataAccess.Abstract;
 using DataAccess.Concrete.Generic;
 using DataAccess.Concrete;
 using MediatR;
-using Utilitys.ExceptionHandler;
-using Utilitys.ResponseHandler;
+
+using Utilitys.Logging.ExceptionHandler;
 
 namespace Business.Features.OwnedTicket.Commands.UpdateOwnedTicket
 {
-    public class UpdateOwnedTicketHandler : IRequestHandler<UpdateOwnedTicketRequest, ResponseModel>
+    public class UpdateOwnedTicketHandler : IRequestHandler<UpdateOwnedTicketRequest>
     {
         private readonly ISeatRepository _seatRepository;
         private readonly IOwnedTicketRepository _ticketRepository;
         private readonly IGenericRepository<Entities.Aircraft> _aircraftGenericRepository;
         private readonly IGenericRepository<Entities.OwnedTicket> _ticketGenericRepository;
-        public UpdateOwnedTicketHandler()
+        public UpdateOwnedTicketHandler(ISeatRepository seatRepository, 
+            IGenericRepository<Entities.Aircraft> genericAircraftRepository, IGenericRepository<Entities.OwnedTicket>genericOwnedTicketRepository,
+            IOwnedTicketRepository ownedTicketRepository)
         {
-            _seatRepository = new SeatRepository();
-            _aircraftGenericRepository = new GenericRepository<Entities.Aircraft>();
-            _ticketGenericRepository = new GenericRepository<Entities.OwnedTicket>();
-            _ticketRepository = new OwnedTicketRepository(); 
+            _seatRepository = seatRepository;
+            _aircraftGenericRepository = genericAircraftRepository;
+            _ticketGenericRepository = genericOwnedTicketRepository;
+            _ticketRepository = ownedTicketRepository;
         }
 
-        public async Task<ResponseModel> Handle(UpdateOwnedTicketRequest request, CancellationToken cancellationToken)
+        public async Task Handle(UpdateOwnedTicketRequest request, CancellationToken cancellationToken)
         {
-            try
+            var ticket = request.Ticket;
+            if (ticket == null)
+                throw new CustomException("Ticket must not null!!", (int)HttpStatusCode.BadRequest);
+            if (!await _ticketGenericRepository.Any(ticket.id))
+                throw new CustomException("Ticket not found!!", (int)HttpStatusCode.NotFound);
+            var oldWeight = await _ticketRepository.GetTicketWeightById(ticket.id);
+            if (ticket.Baggage_weight != oldWeight)
             {
-                var ticket = request.Ticket;
-                var oldWeight = await _ticketRepository.GetTicketWeightById(ticket.id);
-                if(ticket.Baggage_weight != oldWeight)
-                {
-                    var aircraft = await _seatRepository.GetSeatAndAircraftByTicketId(ticket.id);
-                    var newCapacity = (aircraft.Current_Capacity - oldWeight) + ticket.Baggage_weight;
-                    if (aircraft.Carry_Capacity < newCapacity)
-                        return new ResponseModel { Message = "Capacity Exceeded!!" };
-                    aircraft.Current_Capacity = newCapacity;
-                    await _aircraftGenericRepository.Update(aircraft);
-                }
-                await _ticketGenericRepository.Update(ticket);
-                return null;
+                var aircraft = await _seatRepository.GetAircraftByOwnedTicketId(ticket.id);
+                var newCapacity = (aircraft.Current_Capacity - oldWeight) + ticket.Baggage_weight;
+                if (aircraft.Carry_Capacity < newCapacity)
+                    throw new CustomException("Capacity Exceeded!!", (int)HttpStatusCode.BadRequest);
+                aircraft.Current_Capacity = newCapacity;
+                await _aircraftGenericRepository.Update(aircraft);
             }
-            catch (Exception ex)
-            {
-                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) };
-            }
+            await _ticketGenericRepository.Update(ticket);
         }
     }
 }

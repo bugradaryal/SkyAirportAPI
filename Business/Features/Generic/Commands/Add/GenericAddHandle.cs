@@ -4,34 +4,25 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Utilitys.ExceptionHandler;
 using DataAccess.Abstract;
 using DataAccess.Concrete.Generic;
 using MediatR;
-using Utilitys.ResponseHandler;
+
 
 namespace Business.Features.Generic.Commands.Add
 {
-    public class GenericAddHandle<TEntity> : IRequestHandler<GenericAddRequest<TEntity>, ResponseModel> where TEntity : class
+    public class GenericAddHandle<TEntity> : IRequestHandler<GenericAddRequest<TEntity>> where TEntity : class
     {
         private readonly IGenericRepository<TEntity> _genericRepository;
 
-        public GenericAddHandle()
+        public GenericAddHandle(IGenericRepository<TEntity> genericRepository)
         {
-            _genericRepository = new GenericRepository<TEntity>();
+            _genericRepository = genericRepository;
         }
 
-        public async Task<ResponseModel> Handle(GenericAddRequest<TEntity> request, CancellationToken cancellationToken)
+        public async Task Handle(GenericAddRequest<TEntity> request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _genericRepository.Add(request.ToEntity());
-                return null;
-            }
-            catch (Exception ex)
-            {
-                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
-            }
+            await _genericRepository.Add(request.ToEntity());
         }
     }
 }

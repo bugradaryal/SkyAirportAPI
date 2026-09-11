@@ -11,12 +11,14 @@ namespace DataAccess.Concrete
 {
     public class PersonalRepository : IPersonalRepository
     {
+        private DataDbContext _dbContext;
+        public PersonalRepository(DataDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
         public async Task<List<Personal>> GetAllByAirportId(int id)
         {
-            using (var _dbContext = new DataDbContext())
-            {
-                return await _dbContext.Personals.Where(x => x.airport_id == id).ToListAsync();
-            }
+            return await _dbContext.Personals.Where(x => x.airport_id == id).ToListAsync();
         }
     }
 }

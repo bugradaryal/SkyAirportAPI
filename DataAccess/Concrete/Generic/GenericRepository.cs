@@ -10,54 +10,39 @@ namespace DataAccess.Concrete.Generic
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        public GenericRepository() { }
-
+        private DataDbContext _dbContext;
+        public GenericRepository(DataDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
         public async Task<List<T>> GetAll()
         {
-            using (var _dbContext = new DataDbContext())
-            {
-                return await _dbContext.Set<T>().ToListAsync();
-            }
+            return await _dbContext.Set<T>().ToListAsync();
         }
         public async Task<T> GetValue(int id)
         {
-            using (var _dbContext = new DataDbContext())
-            {
-                return await _dbContext.Set<T>().FirstOrDefaultAsync(x => EF.Property<int>(x, "id") == id);
-            }
+            return await _dbContext.Set<T>().FirstOrDefaultAsync(x => EF.Property<int>(x, "id") == id);
         }
         public async Task Add(T generic)
         {
-            using (var _dbContext = new DataDbContext())
-            {
-                _dbContext.Set<T>().Add(generic);
-                await _dbContext.SaveChangesAsync();
-            }
+            _dbContext.Set<T>().Add(generic);
+            await _dbContext.SaveChangesAsync();
         }
         public async Task Delete(int id)
         {
-            using (var _dbContext = new DataDbContext())
-            {
-                var value = await _dbContext.Set<T>().FirstOrDefaultAsync(x => EF.Property<int>(x, "id") == id);
-                _dbContext.Set<T>().Remove(value);
-                await _dbContext.SaveChangesAsync();
-            }
+            var value = await _dbContext.Set<T>().FirstOrDefaultAsync(x => EF.Property<int>(x, "id") == id);
+            _dbContext.Set<T>().Remove(value);
+            await _dbContext.SaveChangesAsync();
         }
         public async Task Update(T generic)
         {
-            using (var _dbContext = new DataDbContext())
-            {
-                _dbContext.Set<T>().Update(generic);
-                await _dbContext.SaveChangesAsync();
-            }
+            _dbContext.Set<T>().Update(generic);
+            await _dbContext.SaveChangesAsync();
         }
         public async Task<bool> Any(int id)
         {
-            using (var _dbContext = new DataDbContext())
-            {
-                bool value = await _dbContext.Set<T>().AnyAsync(x => EF.Property<int>(x, "id") == id);
-                return value;
-            }
+            bool value = await _dbContext.Set<T>().AnyAsync(x => EF.Property<int>(x, "id") == id);
+            return value;
         }
     }
 }

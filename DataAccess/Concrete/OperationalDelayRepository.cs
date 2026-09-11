@@ -11,12 +11,15 @@ namespace DataAccess.Concrete
 {
     public class OperationalDelayRepository : IOperationalDelayRepository
     {
+        private DataDbContext _dbContext;
+        public OperationalDelayRepository(DataDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
         public async Task<List<OperationalDelay>> GetAllByFlightId(int id)
         {
-            using (var _dbContext = new DataDbContext())
-            {
-                return await _dbContext.OperationalDelays.Where(x => x.flight_id == id).ToListAsync();
-            }
+
+            return await _dbContext.OperationalDelays.Where(x => x.flight_id == id).ToListAsync();
         }
     }
 }

@@ -4,43 +4,33 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Utilitys.ExceptionHandler;
 using DataAccess.Abstract;
 using DataAccess.Concrete.Generic;
 using MediatR;
-using Utilitys.ResponseHandler;
+
+using Utilitys.Logging.ExceptionHandler;
+using System.Reflection;
 
 namespace Business.Features.Generic.Commands.Update
 {
-    public class GenericUpdateHandle<TEntity> : IRequestHandler<GenericUpdateRequest<TEntity>, ResponseModel> where TEntity : class
+    public class GenericUpdateHandle<TEntity> : IRequestHandler<GenericUpdateRequest<TEntity>> where TEntity : class
     {
         private readonly IGenericRepository<TEntity> _genericRepository;
 
-        public GenericUpdateHandle()
+        public GenericUpdateHandle(IGenericRepository<TEntity> genericRepository)
         {
-            _genericRepository = new GenericRepository<TEntity>();
+            _genericRepository = genericRepository;
         }
 
-        public async Task<ResponseModel> Handle(GenericUpdateRequest<TEntity> request, CancellationToken cancellationToken)
+        public async Task Handle(GenericUpdateRequest<TEntity> request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var entity = request.ToEntity();
-                var entityId = entity.GetType().GetProperty("id").GetValue(entity);
-                if(entityId != null)
-                {
-                    if(await _genericRepository.Any((int)entityId))
-                    {
-                        await _genericRepository.Update(request.ToEntity());
-                        return null;
-                    }
-                }
-                return new ResponseModel { Message = "Id not matched - Update failed!!" };
-            }
-            catch (Exception ex) 
-            {
-                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
-            }
+            var entity = request.ToEntity();
+            var idValue = entity.GetType().GetProperty("id")?.GetValue(entity);
+            if (idValue is not int entityId || entityId <= 0)
+                throw new CustomException("Id is invalid!!", (int)HttpStatusCode.BadRequest);
+            if (!await _genericRepository.Any(entityId))
+                throw new CustomException("Id not matched!!", (int)HttpStatusCode.NotFound);
+            await _genericRepository.Update(entity);
         }
     }
 }

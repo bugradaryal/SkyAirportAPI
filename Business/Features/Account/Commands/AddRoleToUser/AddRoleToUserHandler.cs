@@ -8,12 +8,12 @@ using Business.Features.Account.Commands.ChangePassword;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Utilitys.ExceptionHandler;
-using Utilitys.ResponseHandler;
+using Utilitys.Logging.ExceptionHandler;
+
 
 namespace Business.Features.Account.Commands.AddRoleToUser
 {
-    public class AddRoleToUserHandler : IRequestHandler<AddRoleToUserRequest, ResponseModel>
+    public class AddRoleToUserHandler : IRequestHandler<AddRoleToUserRequest>
     {
         private UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -23,27 +23,19 @@ namespace Business.Features.Account.Commands.AddRoleToUser
             _roleManager = roleManager;
         }
 
-        public async Task<ResponseModel> Handle(AddRoleToUserRequest request, CancellationToken cancellationToken)
+        public async Task Handle(AddRoleToUserRequest request, CancellationToken cancellationToken)
         {
-            try
+            var rolDTO = request.roleDTO;
+            var user = await _userManager.FindByIdAsync(rolDTO.userId);
+            if (user != null)
             {
-                var rolDTO = request.roleDTO;
-                var user = await _userManager.FindByIdAsync(rolDTO.userId);
-                if (user != null)
-                {
-                    if (!await _roleManager.RoleExistsAsync(rolDTO.roleName))
-                        return new ResponseModel { Message = "Role not exist!" };
-                    var result = await _userManager.AddToRoleAsync(user, rolDTO.roleName);
-                    if (!result.Succeeded)
-                        return new ResponseModel { Message = "Role cant be added!", Exception = new CustomException(result.Errors.FirstOrDefault().ToString(), 3, (int)HttpStatusCode.BadRequest) };
-                    return null;
-                }
-                return new ResponseModel { Message = "User not exist!" };
+                if (!await _roleManager.RoleExistsAsync(rolDTO.roleName))
+                    throw new CustomException("Role not exist!", (int)HttpStatusCode.NotFound);
+                var result = await _userManager.AddToRoleAsync(user, rolDTO.roleName);
+                if (!result.Succeeded)
+                    throw new CustomException("Role cant be added!", (int)HttpStatusCode.BadRequest, result.Errors?.FirstOrDefault()?.ToString());
             }
-            catch (Exception ex)
-            {
-                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) };
-            }
+            throw new CustomException("User not exist!", (int)HttpStatusCode.NotFound);
         }
     }
 }

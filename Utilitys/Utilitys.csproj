@@ -1,21 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
-    <ProjectReference Include="..\DTO\DTO.csproj" />
-    <ProjectReference Include="..\Entities\Entities.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="14.0.0" />
-    <PackageReference Include="MailKit" Version="4.11.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\DataAccess\DataAccess.csproj" />
+		<ProjectReference Include="..\DTO\DTO.csproj" />
+		<ProjectReference Include="..\Entities\Entities.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="14.0.0" />
+		<PackageReference Include="MailKit" Version="4.17.0" />
+		<PackageReference Include="Scrutor" Version="7.0.0" />
+	</ItemGroup>
 
 </Project>

@@ -18,7 +18,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Business;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
-using Utilitys.Logger;
 using Serilog.Sinks.Elasticsearch;
 using Serilog.Exceptions;
 using Business.FluentValidation;
@@ -28,12 +27,13 @@ using Business.Abstract;
 using Business.Concrete;
 using Microsoft.AspNetCore.Mvc;
 using Utilitys;
-using Utilitys.Mapper;
 using Hangfire;
 using Business.Hangfire;
 using Business.Hangfire.Manager;
 using Business.Hangfire.Jobs;
 using Business.Redis;
+using Utilitys.Logging.Serilog;
+using Utilitys.Logging;
 
 namespace API
 {
@@ -43,17 +43,33 @@ namespace API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<DataDbContext>();
+
+            builder.Configuration.AddJsonFile(
+                "appsettings.Local.json",
+                optional: true,
+                reloadOnChange: true
+            );
+            if (builder.Environment.EnvironmentName == "Docker")
+            {
+                builder.Configuration.AddJsonFile(
+                    "appsettings.Docker.json",
+                    optional: true,
+                    reloadOnChange: true
+                );
+            }
+
+            builder.Services.AddDbContext<DataDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
             builder.WebHost.UseIISIntegration();
-            builder.WebHost.ConfigureKestrel(options =>
+            if (!builder.Environment.IsEnvironment("Docker"))
             {
-                options.ListenAnyIP(7257, listenOptions =>
+                builder.WebHost.ConfigureKestrel(options =>
                 {
-                    listenOptions.UseHttps(); // HTTPS
+                    options.ListenAnyIP(7257, listenOptions => listenOptions.UseHttps());
                 });
-            });
+            }
 
             // Serilog'u ayarlıyoruz
             Log.Logger = new LoggerConfiguration()
@@ -63,8 +79,6 @@ namespace API
 
             // 🔹 Uygulama logger'ı olarak tanıt
             builder.Host.UseSerilog();
-            builder.Services.AddSingleton<ISerilogServices, SerilogLogger>();
-            builder.Services.AddScoped<ILoggerServices, LoggerManager>();
 
             builder.Services.AddValidationApplication();
 
@@ -76,7 +90,7 @@ namespace API
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
-                options.SignIn.RequireConfirmedPhoneNumber = true;
+                options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.SignIn.RequireConfirmedEmail = true;
 
                 options.Password.RequireDigit = true;  // Sayı zorunlu
@@ -150,7 +164,7 @@ namespace API
                 });
             });
             // FluentValidation için gerekli konfigürasyonları ekleyin
-            builder.Services.AddFluentValidationAutoValidation()  // Sunucu tarafı doğrulama
+            builder.Services.AddFluentValidationAutoValidation()  // Sunucu tharafı doğrulama
                 .AddFluentValidationClientsideAdapters();
             builder.Services.AddControllers()
                     .AddNewtonsoftJson(options => {
@@ -168,12 +182,8 @@ namespace API
                     });
             string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             HangfireRegistration.AddHangfireApplication(builder.Services, connectionString);
-            builder.Services.AddTransient<GetForex>();
-            builder.Services.AddScoped<BackGroundSchedule>();
-            builder.Services.AddMediatRApplication();
-            builder.Services.AddMapperApplication();
+            builder.Services.AddServices();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddScoped<IRedisServices, RedisServices>();
             builder.Services.AddSwaggerGen(opt =>
             {
                 opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
@@ -197,6 +207,15 @@ namespace API
                     Name = "X-API-KEY",
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "ApiKeyScheme"
+                });
+
+                opt.AddSecurityDefinition("RefreshToken", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Refresh token header'ı (RefreshToken: <token>)",
+                    Name = "RefreshToken",
+                    Type = SecuritySchemeType.ApiKey,   // header bazlı, custom bir key gibi davranıyor
+                    Scheme = "RefreshTokenScheme"
                 });
 
                 // Security Requirements - JWT ve API Key birlikte
@@ -225,50 +244,74 @@ namespace API
                             In = ParameterLocation.Header
                         },
                         new string[] {}
+                    },
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "RefreshToken"
+                            },
+                            In = ParameterLocation.Header
+                        },
+                        new string[] {}
                     }
                 });
             });
 
-
+            //validation
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.InvalidModelStateResponseFactory = context =>
                 {
-                    var logger = context.HttpContext.RequestServices.GetRequiredService<ISerilogServices>();
+                    var logger = context.HttpContext.RequestServices
+                        .GetRequiredService<ILoggerServices>();
 
-                    // Hata loglama: ModelState hatalarını logla
-                    logger.Info(new DTO.LogDTO { Message = "Validation hatası: " + context.ModelState , Action_type = Entities.Enums.Action_Type.APIResponse, loglevel_id = 3, AdditionalData= context.ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()});
+                    var errors = context.ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
 
-                    // Hata mesajını özelleştirme
+                    logger.Logger(new DTO.LogDTO
+                    {
+                        Message = "Validation hatası",
+                        Action_type = Entities.Enums.Action_Type.APIResponse,
+                        AdditionalData = errors,
+                        Target_table = context.HttpContext.Request.Path,
+                        user_id = context.HttpContext.User?
+                            .FindFirst("uid")?.Value
+                    });
+
                     var problemDetails = new ValidationProblemDetails(context.ModelState)
                     {
                         Status = StatusCodes.Status400BadRequest,
-                        Title = "Geçersiz veri gönderildi", // İstediğiniz başlık
+                        Title = "Geçersiz veri gönderildi"
                     };
 
-                    // Response'u döndür
                     return new BadRequestObjectResult(problemDetails);
                 };
             });
 
-            //builder.Services.AddSignalR();
             var app = builder.Build();
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+
+            app.UseMiddleware<ExceptionMiddleware>();
+            if (!builder.Environment.IsEnvironment("Docker"))
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+                app.UseHttpsRedirection();
             }
-
-            app.UseHttpsRedirection();
             app.UseRateLimiter();
-            app.UseRouting(); 
-            app.UseAuthentication();  
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseMiddleware<LoggingMiddleware>();   // <-- buraya taşı
             app.UseAuthorization();
             app.UseWhen(context => context.Request.Path.StartsWithSegments("/api"), appBuilder =>
             {
                 appBuilder.UseMiddleware<ApiKeyMiddleware>();
             });
+
             var allowedOrigins = builder.Configuration["CORS:Origin"].ToString();
             app.UseCors(builder =>
                 builder.WithOrigins(allowedOrigins)
@@ -279,7 +322,6 @@ namespace API
             app.UseHangfireDashboard("/hangfire");  // Dashboard '/hangfire' üzerinden erişilebilir olacak
 
             // Hangfire server'ı başlatıyoruz
-            app.UseHangfireServer();
             using (var scope = app.Services.CreateScope())
             {
                 var jobs = scope.ServiceProvider.GetRequiredService<BackGroundSchedule>();

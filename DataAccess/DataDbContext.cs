@@ -10,11 +10,10 @@ namespace DataAccess
 {
     public class DataDbContext : IdentityDbContext<User>
     {
-        public DataDbContext() { }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public DataDbContext(DbContextOptions<DataDbContext> options): base(options)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Database=SkyAirportAPI;Username=postgres;Password=123456;Port=5432");
         }
+
         public DbSet<User> Users { get; set; }
         public DbSet<OwnedTicket> OwnedTickets { get; set; }
         public DbSet<Ticket> Tickets { get; set; }

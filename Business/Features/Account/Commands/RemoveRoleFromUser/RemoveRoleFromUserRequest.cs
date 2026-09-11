@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using DTO.Account;
 using MediatR;
-using Utilitys.ResponseHandler;
+
 
 namespace Business.Features.Account.Commands.RemoveRoleFromUser
 {
-    public record RemoveRoleFromUserRequest(RoleManagerDTO roleDTO) : IRequest<ResponseModel>;
+    public record RemoveRoleFromUserRequest(RoleManagerDTO roleDTO) : IRequest;
 }

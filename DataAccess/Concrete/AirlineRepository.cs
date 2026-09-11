@@ -11,12 +11,14 @@ namespace DataAccess.Concrete
 {
     public class AirlineRepository : IAirlineRepository
     {
+        private DataDbContext _dbContext;
+        public AirlineRepository(DataDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
         public async Task<List<Airline>> GetAllByAirportId(int id)
         {
-            using (var _dbContext = new DataDbContext())
-            {
-                return await _dbContext.Airlines.Where(x => x.airport_id == id).ToListAsync();
-            }
+            return await _dbContext.Airlines.Where(x => x.airport_id == id).ToListAsync();
         }
     }
 }

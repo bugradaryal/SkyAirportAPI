@@ -5,17 +5,17 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using Utilitys.ExceptionHandler;
 using Business.Features.Account.Commands.CreateAccount;
 using Entities.Enums;
 using Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Utilitys.ResponseHandler;
+
+using Utilitys.Logging.ExceptionHandler;
 
 namespace Business.Features.Account.Commands.DeleteAccount
 {
-    public class DeleteAccountHandle : IRequestHandler<DeleteAccountRequest, ResponseModel>
+    public class DeleteAccountHandle : IRequestHandler<DeleteAccountRequest>
     {
         private UserManager<User> _userManager;
         public DeleteAccountHandle(UserManager<User> userManager)
@@ -23,19 +23,12 @@ namespace Business.Features.Account.Commands.DeleteAccount
             _userManager = userManager;
         }
 
-        public async Task<ResponseModel> Handle(DeleteAccountRequest request, CancellationToken cancellationToken)
+        public async Task Handle(DeleteAccountRequest request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var result = await _userManager.DeleteAsync(request.user);
-                if (!result.Succeeded)
-                    return new ResponseModel { Message = "Cant delete account!", Exception = new CustomException(result.Errors.FirstOrDefault().ToString(), 3, (int)HttpStatusCode.BadRequest) };
-                return null;
-            }
-            catch (Exception ex)
-            {
-                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) };
-            }
+
+            var result = await _userManager.DeleteAsync(request.user);
+            if (!result.Succeeded)
+                throw new CustomException("Cant delete account!", (int)HttpStatusCode.BadRequest, result.Errors?.FirstOrDefault()?.ToString());
         }
     }
 }

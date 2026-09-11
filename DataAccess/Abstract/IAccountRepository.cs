@@ -8,6 +8,6 @@ namespace DataAccess.Abstract
 {
     public interface IAccountRepository
     {
-        Task SuspendUser(string userId);
+        Task<bool> SuspendUser(string userId);
     }
 }

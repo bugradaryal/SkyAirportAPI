@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Utilitys.ExceptionHandler;
 using Business.Features.Generic.Commands.Add;
 using Business.Features.Generic.Commands.Delete;
 using Business.Features.Generic.Commands.Update;
@@ -13,10 +12,9 @@ using Business.Features.Generic.Queries.GetById;
 using Entities;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Utilitys.ResponseHandler;
 using Entities.Moderation;
 
-namespace Business
+namespace Business.Features
 {
     public static class MediatrRegistration
     {
@@ -27,44 +25,41 @@ namespace Business
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
 
             var entityTypes = new[] { 
-                typeof(Aircraft), 
-                typeof(AircraftStatus),
-                typeof(Airline),
-                typeof(Airport),
-                typeof(Crew),
-                typeof(Flight),
-                typeof(OperationalDelay),
-                typeof(Personal),
-                typeof(Seat),
-                typeof(OwnedTicket),
-                typeof(Ticket),
+                typeof(Entities.Aircraft), 
+                typeof(Entities.AircraftStatus),
+                typeof(Entities.Airline),
+                typeof(Entities.Airport),
+                typeof(Entities.Crew),
+                typeof(Entities.Flight),
+                typeof(Entities.OperationalDelay),
+                typeof(Entities.Personal),
+                typeof(Entities.Seat),
+                typeof(Entities.OwnedTicket),
+                typeof(Entities.Ticket),
             };
-
+            //generic için
             foreach(var entity in entityTypes)
 {
                 // Add
                 services.AddTransient(
-                    typeof(IRequestHandler<,>).MakeGenericType(
-                        typeof(GenericAddRequest<>).MakeGenericType(entity),
-                        typeof(ResponseModel)
+                    typeof(IRequestHandler<>).MakeGenericType(     
+                        typeof(GenericAddRequest<>).MakeGenericType(entity)
                     ),
                     typeof(GenericAddHandle<>).MakeGenericType(entity)
                 );
 
                 // Delete
                 services.AddTransient(
-                    typeof(IRequestHandler<,>).MakeGenericType(
-                        typeof(GenericDeleteRequest<>).MakeGenericType(entity),
-                        typeof(ResponseModel)
+                    typeof(IRequestHandler<>).MakeGenericType(
+                        typeof(GenericDeleteRequest<>).MakeGenericType(entity)
                     ),
                     typeof(GenericDeleteHandle<>).MakeGenericType(entity)
                 );
 
                 // Update
                 services.AddTransient(
-                    typeof(IRequestHandler<,>).MakeGenericType(
-                        typeof(GenericUpdateRequest<>).MakeGenericType(entity),
-                        typeof(ResponseModel)
+                    typeof(IRequestHandler<>).MakeGenericType(
+                        typeof(GenericUpdateRequest<>).MakeGenericType(entity)
                     ),
                     typeof(GenericUpdateHandle<>).MakeGenericType(entity)
                 );
@@ -78,7 +73,7 @@ namespace Business
                     typeof(GenericGetAllHandler<>).MakeGenericType(entity)
                 );
 
-                // GetById
+                // GetById 
                 services.AddTransient(
                     typeof(IRequestHandler<,>).MakeGenericType(
                         typeof(GenericGetByIdRequest<>).MakeGenericType(entity),

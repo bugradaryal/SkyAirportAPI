@@ -4,28 +4,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DTO;
+using Entities.Moderation;
 using Serilog;
 
-namespace Utilitys.Logger
+namespace Utilitys.Logging.Serilog
 {
     public class SerilogLogger : ISerilogServices
     {
-        public void Info(LogDTO logDTO)
+        public void Info(LogEntry logDTO)
         {
             Log.Information("{@Log}", logDTO);
         }
 
-        public void Warn(LogDTO logDTO)
+        public void Warn(LogEntry logDTO)
         {
             Log.Warning("{@Log}", logDTO);
         }
 
-        public void Error(LogDTO logDTO, Exception ex = null)
+        public void Error(LogEntry logDTO, Exception ex = null)
         {
             Log.Error(ex, "{@Log}", logDTO);
         }
 
-        public void Fatal(LogDTO logDTO, Exception ex = null)
+        public void Fatal(LogEntry logDTO, Exception ex = null)
         {
             Log.Fatal(ex, "{@Log}", logDTO);
         }

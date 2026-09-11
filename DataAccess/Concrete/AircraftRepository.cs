@@ -11,19 +11,18 @@ namespace DataAccess.Concrete
 {
     public class AircraftRepository : IAircraftRepository
     {
+        private DataDbContext _dbContext;
+        public AircraftRepository(DataDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
         public async Task<List<Aircraft>> GetAllById(int id)
         {
-            using (var _dbContext = new DataDbContext())
-            {
-                return await _dbContext.Aircrafts.Where(x => x.id == id).Include(g => g.aircraftStatus).ToListAsync();
-            }
+            return await _dbContext.Aircrafts.Where(x => x.id == id).Include(g => g.aircraftStatus).ToListAsync();
         }
         public async Task<List<Aircraft>> GetAll()
         {
-            using (var _dbContext = new DataDbContext())
-            {
-                return await _dbContext.Aircrafts.Include(g => g.aircraftStatus).ToListAsync();
-            }
+            return await _dbContext.Aircrafts.Include(g => g.aircraftStatus).ToListAsync();
         }
     }
 }

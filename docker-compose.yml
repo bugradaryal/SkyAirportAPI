@@ -1,30 +1,68 @@
 services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api16
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      ASPNETCORE_URLS: "http://+:8080"
+    ports:
+      - "7257:8080"
+    depends_on:
+      - postgres
+      - redis
+      - elasticsearch
+    networks:
+      - backend
+
+  postgres:
+    image: postgres:16
+    container_name: postgres16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: SkyAirportAPI
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
-    container_name: elasticsearch
+    container_name: elasticsearch16
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
     ports:
       - "9200:9200"
+    networks:
+      - backend
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.10.2
-    container_name: kibana
+    container_name: kibana16
     ports:
       - "5601:5601"
     environment:
       ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
     depends_on:
       - elasticsearch
+    networks:
+      - backend
 
   redis:
     image: redis:7.2
-    container_name: redis
+    container_name: redis16
     ports:
       - "6379:6379"
     networks:
       - backend
+
+volumes:
+  postgres_data:
 
 networks:
   backend:

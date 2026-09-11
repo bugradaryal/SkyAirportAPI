@@ -14,7 +14,6 @@ using Entities.Configuration;
 using Entities.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -27,341 +26,97 @@ namespace API.Controllers
     [ApiController]
     public class CrewController : ControllerBase
     {
-        private readonly ILoggerServices _logger;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly ITokenServices _tokenServices;
 
-        public CrewController(IMediator mediator, IMapper mapper, ILoggerServices logger, IOptions<JwtBearer> jwt, UserManager<User> userManager)
+        public CrewController(IMediator mediator, IMapper mapper, ITokenServices tokenServices)
         {
             _mapper = mapper;
             _mediator = mediator;
-            _logger = logger;
-            _tokenServices = new TokenManager(jwt, userManager);
+            _tokenServices = tokenServices;
         }
 
         [HttpGet("GetAllCrew")]
         public async Task<IActionResult> GetAllCrew()
         {
-            await _logger.Logger(new LogDTO
+            var tokenUserId = User.FindFirst("uid")?.Value;
+            if (!string.IsNullOrEmpty(tokenUserId))
             {
-                Message = "GetAllCrew endpoint called.",
-                Action_type = Action_Type.APIRequest,
-                Target_table = "Crew",
-                loglevel_id = 1,
-            }, null);
-            var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
-            if (!validateTokenDTO.IsTokenValid)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = "Token is not valid!",
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "User",
-                    loglevel_id = 3,
-                    user_id = validateTokenDTO.user.Id ?? null
-                }, null);
-                return Unauthorized(new { message = "Token not valid!!" });
+                var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Crew>());
+                return Ok(getAllRepository.entity);
             }
-            var getAllRepository = await _mediator.Send(new GenericGetAllRequest<Crew>());
-            if (getAllRepository.error == true)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = getAllRepository.response.Message,
-                    Action_type = Action_Type.APIRequest,
-                    Target_table = "Crew",
-                    loglevel_id = getAllRepository.response.Exception.ExceptionLevel,
-                    user_id = validateTokenDTO.user.Id
-                }, getAllRepository.response.Exception);
-                return BadRequest(getAllRepository.response);
-            }
-
-            await _logger.Logger(new LogDTO
-            {
-                Message = "GetAllCrew action done!",
-                Action_type = Action_Type.APIResponse,
-                Target_table = "Crew",
-                loglevel_id = 1,
-                user_id= validateTokenDTO.user.Id
-            }, null);
-            return Ok(getAllRepository.entity);
+            return Unauthorized("Unvalid Token!!");
         }
 
         [HttpGet("GetAllCrewByAircraftId")]
         public async Task<IActionResult> GetAllCrewByAircraftId([FromQuery] int id)
         {
-            await _logger.Logger(new LogDTO
+            var tokenUserId = User.FindFirst("uid")?.Value;
+            if (!string.IsNullOrEmpty(tokenUserId))
             {
-                Message = "GetAllCrewByAircraftId endpoint called for {" + id ?? null + "}",
-                Action_type = Action_Type.APIRequest,
-                Target_table = "Crew",
-                loglevel_id = 1,
-            }, null);
-            if (id == null || id == 0)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = "Invalid Id!!",
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "Crew",
-                    loglevel_id = 3
-                }, null);
-                return BadRequest(new { message = "Invalid Id!!" });
+                if (id <= 0)
+                    return BadRequest(new { message = "Invalid Id!!" });
+                var getAllResponse = await _mediator.Send(new GetAllCrewByAircraftIdRequest(id));
+                return Ok(getAllResponse.entity);
             }
-            var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
-            if (!validateTokenDTO.IsTokenValid)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = "Token is not valid!",
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "User",
-                    loglevel_id = 3,
-                    user_id = validateTokenDTO.user.Id ?? null
-                }, null);
-                return Unauthorized(new { message = "Token not valid!!" });
-            }
-            var getAllResponse = await _mediator.Send(new GetAllCrewByAircraftIdRequest(id));
-            if (getAllResponse.error)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = getAllResponse.response.Message,
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "Crew",
-                    loglevel_id = getAllResponse.response?.Exception?.ExceptionLevel,
-                    user_id = validateTokenDTO.user.Id
-                }, getAllResponse.response?.Exception);
-                return BadRequest(getAllResponse.response);
-            }
-            await _logger.Logger(new LogDTO
-            {
-                Message = "GetAllCrewByAircraftId action done for {"+id+"}",
-                Action_type = Action_Type.APIResponse,
-                Target_table = "Crew",
-                loglevel_id = 1,
-                user_id=validateTokenDTO.user.Id
-            }, null);
-            return Ok(getAllResponse.entity);
+            return Unauthorized("Unvalid Token!!");
         }
 
         [HttpGet("GetCrewById")]
         public async Task<IActionResult> GetCrewById([FromQuery] int id)
         {
-            await _logger.Logger(new LogDTO
+            var tokenUserId = User.FindFirst("uid")?.Value;
+            if (!string.IsNullOrEmpty(tokenUserId))
             {
-                Message = "GetCrewById endpoint called for {" + id ?? null + "}",
-                Action_type = Action_Type.APIRequest,
-                Target_table = "Crew",
-                loglevel_id = 1,
-            }, null);
-            if (id == null || id == 0)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = "Invalid Id!!",
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "Crew",
-                    loglevel_id = 3
-                }, null);
-                return BadRequest(new { message = "Invalid Id!!" });
+                if (id <= 0)
+                    return BadRequest(new { message = "Invalid Id!!" });
+                var getByIdResponse = await _mediator.Send(new GenericGetByIdRequest<Crew>(id));
+                return Ok(getByIdResponse.entity);
             }
-            var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
-            if (!validateTokenDTO.IsTokenValid)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = "Token is not valid!",
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "User",
-                    loglevel_id = 3,
-                    user_id = validateTokenDTO.user.Id ?? null
-                }, null);
-                return Unauthorized(new { message = "Token not valid!!" });
-            }
-            var getByIdResponse = await _mediator.Send(new GenericGetByIdRequest<Crew>(id));
-            if (getByIdResponse.error)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = getByIdResponse.response.Message,
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "Crew",
-                    loglevel_id = getByIdResponse.response?.Exception?.ExceptionLevel,
-                    user_id = validateTokenDTO.user.Id
-                }, getByIdResponse.response?.Exception);
-                return BadRequest(getByIdResponse.response);
-            }
-                
-            await _logger.Logger(new LogDTO
-            {
-                Message = "GetCrewById action done for {"+id+"}",
-                Action_type = Action_Type.APIResponse,
-                Target_table = "Crew",
-                loglevel_id = 1,
-                user_id = validateTokenDTO.user.Id
-            }, null);
-            return Ok(getByIdResponse.entity);
+            return Unauthorized("Unvalid Token!!");
         }
 
         [HttpPost("AddCrew")]
-        public async Task<IActionResult> AddCrew(CrewAddDTO crewDTO)
+        public async Task<IActionResult> AddCrew([FromBody] CrewAddDTO crewDTO)
         {
-            await _logger.Logger(new LogDTO
+            var tokenUserId = User.FindFirst("uid")?.Value;
+            if (!string.IsNullOrEmpty(tokenUserId))
             {
-                Message = "AddCrew endpoint called.",
-                Action_type = Action_Type.APIRequest,
-                Target_table = "Crew",
-                loglevel_id = 1,
-            }, null);
-            var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
-            if (!validateTokenDTO.IsTokenValid)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = "Token is not valid!",
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "User",
-                    loglevel_id = 3,
-                    user_id = validateTokenDTO.user.Id ?? null
-                }, null);
-                return Unauthorized(new { message = "Token not valid!!" });
+                var crew = _mapper.Map<Crew, CrewAddDTO>(crewDTO);
+                crew.crew_Aircraft = new List<Crew_Aircraft> { new Crew_Aircraft { aircraft_id = crewDTO.aircraft_id } };
+                await _mediator.Send(new GenericAddRequest<Crew>(crew));
+                return Ok(new { message = "Crew added!" });
             }
-            var crew = _mapper.Map<Crew, CrewAddDTO>(crewDTO);
-            crew.crew_Aircraft = new List<Crew_Aircraft> { new Crew_Aircraft { aircraft_id = crewDTO.aircraft_id } };
-            var addResponse = await _mediator.Send(new GenericAddRequest<Crew>(crew));
-            if (addResponse != null)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = addResponse.Message,
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "Crew",
-                    loglevel_id = addResponse.Exception.ExceptionLevel,
-                    user_id = validateTokenDTO.user.Id
-                }, addResponse.Exception);
-                return BadRequest(addResponse);
-            }
-
-            await _logger.Logger(new LogDTO
-            {
-                Message = "Crew added!",
-                Action_type = Action_Type.Create,
-                Target_table = "Crew",
-                loglevel_id = 1,
-                user_id = validateTokenDTO.user.Id
-            }, null);
-            return Ok(new { message = "Crew added!" });
+            return Unauthorized("Unvalid Token!!");
         }
 
         [HttpDelete("DeleteCrew")]
         public async Task<IActionResult> DeleteCrew([FromQuery] int id)
         {
-            await _logger.Logger(new LogDTO
+            var tokenUserId = User.FindFirst("uid")?.Value;
+            if (!string.IsNullOrEmpty(tokenUserId))
             {
-                Message = "DeleteCrew endpoint called for {" + id ?? null + "}",
-                Action_type = Action_Type.APIRequest,
-                Target_table = "Crew",
-                loglevel_id = 1,
-            }, null);
-            if (id == null || id == 0)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = "Invalid Id!!",
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "Crew",
-                    loglevel_id = 3
-                }, null);
-                return BadRequest(new { message = "Invalid Id!!" });
+                if (id <= 0)
+                    return BadRequest(new { message = "Invalid Id!!" });
+                await _mediator.Send(new GenericDeleteRequest<Crew>(id));
+                return Ok(new { message = "Crew deleted!" });
             }
-            var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
-            if (!validateTokenDTO.IsTokenValid)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = "Token is not valid!",
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "User",
-                    loglevel_id = 3,
-                    user_id = validateTokenDTO.user.Id ?? null
-                }, null);
-                return Unauthorized(new { message = "Token not valid!!" });
-            }
-            var deleteResponse = await _mediator.Send(new GenericDeleteRequest<Crew>(id));
-            if (deleteResponse != null)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = deleteResponse.Message,
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "Crew",
-                    loglevel_id = deleteResponse.Exception.ExceptionLevel,
-                    user_id = validateTokenDTO.user.Id
-                }, deleteResponse.Exception);
-                return BadRequest(deleteResponse);
-            }
-
-            await _logger.Logger(new LogDTO
-            {
-                Message = "Crew deleted for {"+id+"}",
-                Action_type = Action_Type.Delete,
-                Target_table = "Crew",
-                loglevel_id = 1,
-                user_id = validateTokenDTO.user.Id
-            }, null);
-            return Ok(new { message = "Crew deleted!" });
+            return Unauthorized("Unvalid Token!!");
         }
 
         [HttpPut("UpdateCrew")]
-        public async Task<IActionResult> UpdateCrew(CrewUpdateDTO crewDTO)
+        public async Task<IActionResult> UpdateCrew([FromBody] CrewUpdateDTO crewDTO)
         {
-            await _logger.Logger(new LogDTO
+            var tokenUserId = User.FindFirst("uid")?.Value;
+            if (!string.IsNullOrEmpty(tokenUserId))
             {
-                Message = "UpdateCrew endpoint called for {" + crewDTO.id ?? null + "}",
-                Action_type = Action_Type.APIRequest,
-                Target_table = "Crew",
-                loglevel_id = 1,
-            }, null);
-            var validateTokenDTO = await _tokenServices.ValidateToken(this.HttpContext);
-            if (!validateTokenDTO.IsTokenValid)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = "Token is not valid!",
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "User",
-                    loglevel_id = 3,
-                    user_id = validateTokenDTO.user.Id ?? null
-                }, null);
-                return Unauthorized(new { message = "Token not valid!!" });
+                var data = await _mediator.Send(new GenericGetByIdRequest<Crew>(crewDTO.id));
+                var crew = _mapper.Map<Crew, CrewUpdateDTO>(crewDTO, data.entity);
+                await _mediator.Send(new GenericUpdateRequest<Crew>(crew));
+                return Ok(new { message = "Crew Updated!" });
             }
-            var data = await _mediator.Send(new GenericGetByIdRequest<Crew>(crewDTO.id));
-            var crew = _mapper.Map<Crew, CrewUpdateDTO>(crewDTO, data.entity);
-            var updateResponse = await _mediator.Send(new GenericUpdateRequest<Crew>(crew));
-            if (updateResponse != null)
-            {
-                await _logger.Logger(new LogDTO
-                {
-                    Message = updateResponse.Message,
-                    Action_type = Action_Type.APIResponse,
-                    Target_table = "Crew",
-                    loglevel_id = updateResponse.Exception.ExceptionLevel,
-                    user_id= validateTokenDTO.user.Id
-                }, updateResponse.Exception);
-                return BadRequest(updateResponse);
-            }
-
-            await _logger.Logger(new LogDTO
-            {
-                Message = "Crew updated for {"+crewDTO.id+"}",
-                Action_type = Action_Type.Update,
-                Target_table = "Crew",
-                loglevel_id = 1,
-                user_id = validateTokenDTO.user.Id
-            }, null);
-            return Ok(new { message = "Crew Updated!" });
+            return Unauthorized("Unvalid Token!!");
         }
     }
 }

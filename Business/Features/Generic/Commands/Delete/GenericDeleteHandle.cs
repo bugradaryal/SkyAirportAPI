@@ -4,42 +4,31 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Utilitys.ExceptionHandler;
 using DataAccess.Abstract;
 using DataAccess.Concrete.Generic;
 using MediatR;
-using Utilitys.ResponseHandler;
+using Utilitys.Logging.ExceptionHandler;
+
 
 namespace Business.Features.Generic.Commands.Delete
 {
-    public class GenericDeleteHandle<TEntity> : IRequestHandler<GenericDeleteRequest<TEntity>, ResponseModel> where TEntity : class
+    public class GenericDeleteHandle<TEntity> : IRequestHandler<GenericDeleteRequest<TEntity>> where TEntity : class
     {
         private readonly IGenericRepository<TEntity> _genericRepository;
 
-        public GenericDeleteHandle()
+        public GenericDeleteHandle(IGenericRepository<TEntity> genericRepository)
         {
-            _genericRepository = new GenericRepository<TEntity>();
+            _genericRepository = genericRepository;
         }
 
-        public async Task<ResponseModel> Handle(GenericDeleteRequest<TEntity> request, CancellationToken cancellationToken)
+        public async Task Handle(GenericDeleteRequest<TEntity> request, CancellationToken cancellationToken)
         {
-            try
-            {
-                int entityId = request.objectId;
-                if (entityId != null)
-                {
-                    if (await _genericRepository.Any((int)entityId))
-                    {
-                        await _genericRepository.Delete(entityId);
-                        return null;
-                    }
-                }
-                return new ResponseModel { Message = "Id not matched - Deleting failed!" };
-            }
-            catch (Exception ex)
-            {
-                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest, ex.InnerException?.Message) };
-            }
+            int entityId = request.objectId;
+            if (entityId <= 0)
+                throw new CustomException("Id is null!!", (int)HttpStatusCode.BadRequest);
+            else if (!await _genericRepository.Any((int)entityId))
+                throw new CustomException("Id not found!!", (int)HttpStatusCode.NotFound);
+            await _genericRepository.Delete(entityId);
         }
     }
 }

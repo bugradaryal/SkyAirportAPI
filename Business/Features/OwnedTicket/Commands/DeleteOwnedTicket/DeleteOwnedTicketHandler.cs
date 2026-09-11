@@ -8,43 +8,40 @@ using DataAccess.Abstract;
 using DataAccess.Concrete.Generic;
 using DataAccess.Concrete;
 using MediatR;
-using Utilitys.ExceptionHandler;
-using Utilitys.ResponseHandler;
+
+using Utilitys.Logging.ExceptionHandler;
 
 namespace Business.Features.OwnedTicket.Commands.DeleteOwnedTicket
 {
-    public class DeleteOwnedTicketHandler : IRequestHandler<DeleteOwnedTicketRequest, ResponseModel>
+    public class DeleteOwnedTicketHandler : IRequestHandler<DeleteOwnedTicketRequest>
     {
         private readonly ISeatRepository _seatRepository;
         private readonly IGenericRepository<Entities.Aircraft> _aircraftGenericRepository;
         private readonly IGenericRepository<Entities.OwnedTicket> _ticketGenericRepository;
-        public DeleteOwnedTicketHandler()
+        public DeleteOwnedTicketHandler(ISeatRepository seatRepository, IGenericRepository<Entities.Aircraft> genericAircraftRepository,
+            IGenericRepository<Entities.OwnedTicket> genericOwnedTicketRepository)
         {
-            _seatRepository = new SeatRepository();
-            _aircraftGenericRepository = new GenericRepository<Entities.Aircraft>();
-            _ticketGenericRepository = new GenericRepository<Entities.OwnedTicket>();
+            _seatRepository = seatRepository;
+            _aircraftGenericRepository = genericAircraftRepository;
+            _ticketGenericRepository = genericOwnedTicketRepository;
         }
 
-        public async Task<ResponseModel> Handle(DeleteOwnedTicketRequest request, CancellationToken cancellationToken)
+        public async Task Handle(DeleteOwnedTicketRequest request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var ticket = await _ticketGenericRepository.GetValue(request.id);
-                var aircraft = await _seatRepository.GetSeatAndAircraftByTicketId(ticket.id);
-                var sumCapacity = aircraft.Current_Capacity - ticket.Baggage_weight;
-                if (sumCapacity < 0)
-                    sumCapacity = 0;
+            var ticket = await _ticketGenericRepository.GetValue(request.id);
+            if (ticket == null)
+                throw new CustomException("Ticket not found!!", (int)HttpStatusCode.NotFound);
+            if (!await _ticketGenericRepository.Any(ticket.id))
+                throw new CustomException("Ticket not found!!", (int)HttpStatusCode.NotFound);
+            var aircraft = await _seatRepository.GetAircraftByOwnedTicketId(ticket.id);
+            var sumCapacity = aircraft.Current_Capacity - ticket.Baggage_weight;
+            if (sumCapacity < 0)
+                sumCapacity = 0;
 
-                aircraft.Current_Capacity = sumCapacity;
-                await _aircraftGenericRepository.Update(aircraft);
-                await _ticketGenericRepository.Delete(ticket.id);
-                await _seatRepository.SetSeatAvailable(ticket.ticket_id, true);
-                return null;
-            }
-            catch (Exception ex)
-            {
-                return new ResponseModel { Message = "Exception Throw!", Exception = new CustomException(ex.Message, 4, (int)HttpStatusCode.BadRequest) };
-            }
+            aircraft.Current_Capacity = sumCapacity;
+            await _aircraftGenericRepository.Update(aircraft);
+            await _ticketGenericRepository.Delete(ticket.id);
+            await _seatRepository.SetSeatAvailable(ticket.ticket_id, true);
         }
     }
 }
